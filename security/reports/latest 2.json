@@ -1,0 +1,2239 @@
+{
+  "timestamp": "2026-03-12T05:38:11.883855",
+  "scanners_run": [
+    "semgrep",
+    "osv-scanner",
+    "dast-headers",
+    "dast-tls",
+    "dast-crawl"
+  ],
+  "baseline_used": false,
+  "summary": {
+    "total": 124,
+    "blocked": 0,
+    "warned": 119,
+    "tracked": 5,
+    "accepted": 0,
+    "new": 124
+  },
+  "findings": [
+    {
+      "id": "semgrep-security.dns-tool-tls-skip-verify-untagged-/home/runner/workspace/go-server/cmd/probe/main.go:310",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-tls-skip-verify-untagged",
+      "severity": "medium",
+      "message": "TLS certificate verification is disabled. If this is intentional for a security diagnostic tool, add a SECINTENT tag and register in security/security-intents.yaml. Otherwise, enable verification.\n",
+      "file": "/home/runner/workspace/go-server/cmd/probe/main.go",
+      "line": 310,
+      "end_line": 313,
+      "cwe": [
+        "CWE-295: Improper Certificate Validation"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion-/home/runner/workspace/go-server/cmd/probe/main.go:310",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion",
+      "severity": "medium",
+      "message": "`MinVersion` is missing from this TLS configuration.  By default, as of Go 1.22, TLS 1.2 is currently used as the minimum. General purpose web applications should default to TLS 1.3 with all other protocols disabled.  Only where it is known that a web server must support legacy clients with unsupported an insecure browsers (such as Internet Explorer 10), it may be necessary to enable TLS 1.0 to provide support. Add `MinVersion: tls.VersionTLS13' to the TLS configuration to bump the minimum version to TLS 1.3.",
+      "file": "/home/runner/workspace/go-server/cmd/probe/main.go",
+      "line": 310,
+      "end_line": 313,
+      "cwe": [
+        "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion-/home/runner/workspace/go-server/cmd/probe/main.go:363",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion",
+      "severity": "medium",
+      "message": "`MinVersion` is missing from this TLS configuration.  By default, as of Go 1.22, TLS 1.2 is currently used as the minimum. General purpose web applications should default to TLS 1.3 with all other protocols disabled.  Only where it is known that a web server must support legacy clients with unsupported an insecure browsers (such as Internet Explorer 10), it may be necessary to enable TLS 1.0 to provide support. Add `MinVersion: tls.VersionTLS13' to the TLS configuration to bump the minimum version to TLS 1.3.",
+      "file": "/home/runner/workspace/go-server/cmd/probe/main.go",
+      "line": 363,
+      "end_line": 363,
+      "cwe": [
+        "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-tls-skip-verify-untagged-/home/runner/workspace/go-server/cmd/probe/main.go:406",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-tls-skip-verify-untagged",
+      "severity": "medium",
+      "message": "TLS certificate verification is disabled. If this is intentional for a security diagnostic tool, add a SECINTENT tag and register in security/security-intents.yaml. Otherwise, enable verification.\n",
+      "file": "/home/runner/workspace/go-server/cmd/probe/main.go",
+      "line": 406,
+      "end_line": 409,
+      "cwe": [
+        "CWE-295: Improper Certificate Validation"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion-/home/runner/workspace/go-server/cmd/probe/main.go:406",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion",
+      "severity": "medium",
+      "message": "`MinVersion` is missing from this TLS configuration.  By default, as of Go 1.22, TLS 1.2 is currently used as the minimum. General purpose web applications should default to TLS 1.3 with all other protocols disabled.  Only where it is known that a web server must support legacy clients with unsupported an insecure browsers (such as Internet Explorer 10), it may be necessary to enable TLS 1.0 to provide support. Add `MinVersion: tls.VersionTLS13' to the TLS configuration to bump the minimum version to TLS 1.3.",
+      "file": "/home/runner/workspace/go-server/cmd/probe/main.go",
+      "line": 406,
+      "end_line": 409,
+      "cwe": [
+        "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-tls-skip-verify-untagged-/home/runner/workspace/go-server/cmd/probe/main.go:639",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-tls-skip-verify-untagged",
+      "severity": "medium",
+      "message": "TLS certificate verification is disabled. If this is intentional for a security diagnostic tool, add a SECINTENT tag and register in security/security-intents.yaml. Otherwise, enable verification.\n",
+      "file": "/home/runner/workspace/go-server/cmd/probe/main.go",
+      "line": 639,
+      "end_line": 642,
+      "cwe": [
+        "CWE-295: Improper Certificate Validation"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion-/home/runner/workspace/go-server/cmd/probe/main.go:639",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion",
+      "severity": "medium",
+      "message": "`MinVersion` is missing from this TLS configuration.  By default, as of Go 1.22, TLS 1.2 is currently used as the minimum. General purpose web applications should default to TLS 1.3 with all other protocols disabled.  Only where it is known that a web server must support legacy clients with unsupported an insecure browsers (such as Internet Explorer 10), it may be necessary to enable TLS 1.0 to provide support. Add `MinVersion: tls.VersionTLS13' to the TLS configuration to bump the minimum version to TLS 1.3.",
+      "file": "/home/runner/workspace/go-server/cmd/probe/main.go",
+      "line": 639,
+      "end_line": 642,
+      "cwe": [
+        "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/cmd/server/main.go:353",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/cmd/server/main.go",
+      "line": 353,
+      "end_line": 353,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-tls-skip-verify-untagged-/home/runner/workspace/go-server/internal/analyzer/smtp_transport.go:987",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-tls-skip-verify-untagged",
+      "severity": "medium",
+      "message": "TLS certificate verification is disabled. If this is intentional for a security diagnostic tool, add a SECINTENT tag and register in security/security-intents.yaml. Otherwise, enable verification.\n",
+      "file": "/home/runner/workspace/go-server/internal/analyzer/smtp_transport.go",
+      "line": 987,
+      "end_line": 990,
+      "cwe": [
+        "CWE-295: Improper Certificate Validation"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion-/home/runner/workspace/go-server/internal/analyzer/smtp_transport.go:987",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion",
+      "severity": "medium",
+      "message": "`MinVersion` is missing from this TLS configuration.  By default, as of Go 1.22, TLS 1.2 is currently used as the minimum. General purpose web applications should default to TLS 1.3 with all other protocols disabled.  Only where it is known that a web server must support legacy clients with unsupported an insecure browsers (such as Internet Explorer 10), it may be necessary to enable TLS 1.0 to provide support. Add `MinVersion: tls.VersionTLS13' to the TLS configuration to bump the minimum version to TLS 1.3.",
+      "file": "/home/runner/workspace/go-server/internal/analyzer/smtp_transport.go",
+      "line": 987,
+      "end_line": 990,
+      "cwe": [
+        "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion-/home/runner/workspace/go-server/internal/analyzer/smtp_transport.go:1030",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion",
+      "severity": "medium",
+      "message": "`MinVersion` is missing from this TLS configuration.  By default, as of Go 1.22, TLS 1.2 is currently used as the minimum. General purpose web applications should default to TLS 1.3 with all other protocols disabled.  Only where it is known that a web server must support legacy clients with unsupported an insecure browsers (such as Internet Explorer 10), it may be necessary to enable TLS 1.0 to provide support. Add `MinVersion: tls.VersionTLS13' to the TLS configuration to bump the minimum version to TLS 1.3.",
+      "file": "/home/runner/workspace/go-server/internal/analyzer/smtp_transport.go",
+      "line": 1030,
+      "end_line": 1030,
+      "cwe": [
+        "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/admin.go:370",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/admin.go",
+      "line": 370,
+      "end_line": 370,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/admin.go:396",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/admin.go",
+      "line": 396,
+      "end_line": 396,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/admin.go:410",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/admin.go",
+      "line": 410,
+      "end_line": 410,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/analysis.go:1108",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/analysis.go",
+      "line": 1108,
+      "end_line": 1108,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/analysis.go:1112",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/analysis.go",
+      "line": 1112,
+      "end_line": 1112,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/analysis.go:1118",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/analysis.go",
+      "line": 1118,
+      "end_line": 1118,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.deserialization.unsafe-deserialization-interface.go-unsafe-deserialization-interface-/home/runner/workspace/go-server/internal/handlers/analysis.go:1175",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.deserialization.unsafe-deserialization-interface.go-unsafe-deserialization-interface",
+      "severity": "medium",
+      "message": "Deserializing into `interface{}` allows arbitrary data structures and types, which can lead to security vulnerabilities (CWE-502). Use a concrete struct type instead. Consider using github.com/ravisastryk/go-safeinput/safedeserialize for automatic protection.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/analysis.go",
+      "line": 1175,
+      "end_line": 1178,
+      "cwe": [
+        "CWE-502: Deserialization of Untrusted Data"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/auth.go:84",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/auth.go",
+      "line": 84,
+      "end_line": 84,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/auth.go:91",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/auth.go",
+      "line": 91,
+      "end_line": 91,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/auth.go:98",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/auth.go",
+      "line": 98,
+      "end_line": 98,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/auth.go:123",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/auth.go",
+      "line": 123,
+      "end_line": 123,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/auth.go:129",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/auth.go",
+      "line": 129,
+      "end_line": 129,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/auth.go:136",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/auth.go",
+      "line": 136,
+      "end_line": 136,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/auth.go:141",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/auth.go",
+      "line": 141,
+      "end_line": 141,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/auth.go:148",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/auth.go",
+      "line": 148,
+      "end_line": 148,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/auth.go:155",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/auth.go",
+      "line": 155,
+      "end_line": 155,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/auth.go:166",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/auth.go",
+      "line": 166,
+      "end_line": 166,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/auth.go:182",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/auth.go",
+      "line": 182,
+      "end_line": 182,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/auth.go:190",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/auth.go",
+      "line": 190,
+      "end_line": 190,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/auth.go:228",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/auth.go",
+      "line": 228,
+      "end_line": 228,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/auth.go:230",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/auth.go",
+      "line": 230,
+      "end_line": 230,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/auth.go:348",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/auth.go",
+      "line": 348,
+      "end_line": 348,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.deserialization.unsafe-deserialization-interface.go-unsafe-deserialization-interface-/home/runner/workspace/go-server/internal/handlers/export.go:62",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.deserialization.unsafe-deserialization-interface.go-unsafe-deserialization-interface",
+      "severity": "medium",
+      "message": "Deserializing into `interface{}` allows arbitrary data structures and types, which can lead to security vulnerabilities (CWE-502). Use a concrete struct type instead. Consider using github.com/ravisastryk/go-safeinput/safedeserialize for automatic protection.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/export.go",
+      "line": 62,
+      "end_line": 67,
+      "cwe": [
+        "CWE-502: Deserialization of Untrusted Data"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:251",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 251,
+      "end_line": 251,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:251",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 251,
+      "end_line": 251,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:261",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 261,
+      "end_line": 261,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:261",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 261,
+      "end_line": 261,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:271",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 271,
+      "end_line": 271,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:271",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 271,
+      "end_line": 271,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:272",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 272,
+      "end_line": 272,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:272",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 272,
+      "end_line": 272,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:282",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 282,
+      "end_line": 282,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:282",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 282,
+      "end_line": 282,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:283",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 283,
+      "end_line": 283,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:283",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 283,
+      "end_line": 283,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:284",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 284,
+      "end_line": 284,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:284",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 284,
+      "end_line": 284,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:294",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 294,
+      "end_line": 294,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:294",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 294,
+      "end_line": 294,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:295",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 295,
+      "end_line": 295,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:295",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 295,
+      "end_line": 295,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:296",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 296,
+      "end_line": 296,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/handlers/random_base64_test.go:296",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go",
+      "line": 296,
+      "end_line": 296,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/stats.go:305",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/stats.go",
+      "line": 305,
+      "end_line": 305,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:197",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 197,
+      "end_line": 197,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:204",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 204,
+      "end_line": 204,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:216",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 216,
+      "end_line": 216,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:220",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 220,
+      "end_line": 220,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:234",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 234,
+      "end_line": 234,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:241",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 241,
+      "end_line": 241,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:248",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 248,
+      "end_line": 248,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:260",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 260,
+      "end_line": 260,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:267",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 267,
+      "end_line": 267,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:274",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 274,
+      "end_line": 274,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:289",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 289,
+      "end_line": 289,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:296",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 296,
+      "end_line": 296,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:303",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 303,
+      "end_line": 303,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:323",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 323,
+      "end_line": 323,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:330",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 330,
+      "end_line": 330,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:337",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 337,
+      "end_line": 337,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:349",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 349,
+      "end_line": 349,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:356",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 356,
+      "end_line": 356,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:363",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 363,
+      "end_line": 363,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:378",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 378,
+      "end_line": 378,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:384",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 384,
+      "end_line": 384,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/handlers/watchlist.go:393",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/handlers/watchlist.go",
+      "line": 393,
+      "end_line": 393,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.formatted-template-string.formatted-template-string-/home/runner/workspace/go-server/internal/icons/icons.go:248",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.formatted-template-string.formatted-template-string",
+      "severity": "medium",
+      "message": "Found a formatted template string passed to 'template.HTML()'. 'template.HTML()' does not escape contents. Be absolutely sure there is no user-controlled data in this template. If user data can reach this template, you may have a XSS vulnerability.",
+      "file": "/home/runner/workspace/go-server/internal/icons/icons.go",
+      "line": 248,
+      "end_line": 248,
+      "cwe": [
+        "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.formatted-template-string.formatted-template-string-/home/runner/workspace/go-server/internal/icons/icons.go:259",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.formatted-template-string.formatted-template-string",
+      "severity": "medium",
+      "message": "Found a formatted template string passed to 'template.HTML()'. 'template.HTML()' does not escape contents. Be absolutely sure there is no user-controlled data in this template. If user data can reach this template, you may have a XSS vulnerability.",
+      "file": "/home/runner/workspace/go-server/internal/icons/icons.go",
+      "line": 259,
+      "end_line": 262,
+      "cwe": [
+        "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/middleware/csrf.go:160",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/middleware/csrf.go",
+      "line": 160,
+      "end_line": 160,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/middleware/csrf.go:162",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/middleware/csrf.go",
+      "line": 162,
+      "end_line": 162,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/middleware/edge_test.go:161",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/edge_test.go",
+      "line": 161,
+      "end_line": 161,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/middleware/edge_test.go:161",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/edge_test.go",
+      "line": 161,
+      "end_line": 161,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/middleware/edge_test.go:958",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/edge_test.go",
+      "line": 958,
+      "end_line": 958,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/middleware/edge_test.go:958",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/edge_test.go",
+      "line": 958,
+      "end_line": 958,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/middleware/edge_test.go:980",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/edge_test.go",
+      "line": 980,
+      "end_line": 980,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/middleware/edge_test.go:980",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/edge_test.go",
+      "line": 980,
+      "end_line": 980,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/middleware/edge_test.go:1022",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/edge_test.go",
+      "line": 1022,
+      "end_line": 1022,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/middleware/edge_test.go:1022",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/edge_test.go",
+      "line": 1022,
+      "end_line": 1022,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/middleware/edge_test.go:1046",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/edge_test.go",
+      "line": 1046,
+      "end_line": 1046,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/middleware/edge_test.go:1046",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/edge_test.go",
+      "line": 1046,
+      "end_line": 1046,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/middleware/edge_test.go:1432",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/edge_test.go",
+      "line": 1432,
+      "end_line": 1432,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/middleware/edge_test.go:1432",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/edge_test.go",
+      "line": 1432,
+      "end_line": 1432,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/middleware/middleware.go:222",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/middleware/middleware.go",
+      "line": 222,
+      "end_line": 222,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/middleware/middleware_test.go:105",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go",
+      "line": 105,
+      "end_line": 108,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/middleware/middleware_test.go:105",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go",
+      "line": 105,
+      "end_line": 108,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/middleware/middleware_test.go:145",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go",
+      "line": 145,
+      "end_line": 148,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/middleware/middleware_test.go:145",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go",
+      "line": 145,
+      "end_line": 148,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/middleware/middleware_test.go:183",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go",
+      "line": 183,
+      "end_line": 186,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/middleware/middleware_test.go:183",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go",
+      "line": 183,
+      "end_line": 186,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/middleware/middleware_test.go:221",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go",
+      "line": 221,
+      "end_line": 224,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/middleware/middleware_test.go:221",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go",
+      "line": 221,
+      "end_line": 224,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/middleware/middleware_test.go:438",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go",
+      "line": 438,
+      "end_line": 438,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/middleware/middleware_test.go:438",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go",
+      "line": 438,
+      "end_line": 438,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/middleware/ratelimit.go:154",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/middleware/ratelimit.go",
+      "line": 154,
+      "end_line": 154,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-security.dns-tool-raw-redirect-no-wrapper-/home/runner/workspace/go-server/internal/middleware/ratelimit.go:223",
+      "scanner": "semgrep",
+      "rule_id": "security.dns-tool-raw-redirect-no-wrapper",
+      "severity": "medium",
+      "message": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n",
+      "file": "/home/runner/workspace/go-server/internal/middleware/ratelimit.go",
+      "line": 223,
+      "end_line": 223,
+      "cwe": [
+        "CWE-601: URL Redirection to Untrusted Site"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly-/home/runner/workspace/go-server/internal/middleware/security_headers_test.go:555",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/security_headers_test.go",
+      "line": 555,
+      "end_line": 555,
+      "cwe": [
+        "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure-/home/runner/workspace/go-server/internal/middleware/security_headers_test.go:555",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+      "severity": "medium",
+      "message": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct.",
+      "file": "/home/runner/workspace/go-server/internal/middleware/security_headers_test.go",
+      "line": 555,
+      "end_line": 555,
+      "cwe": [
+        "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-go.lang.security.audit.net.formatted-template-string.formatted-template-string-/home/runner/workspace/go-server/internal/templates/funcs.go:767",
+      "scanner": "semgrep",
+      "rule_id": "go.lang.security.audit.net.formatted-template-string.formatted-template-string",
+      "severity": "medium",
+      "message": "Found a formatted template string passed to 'template.HTML()'. 'template.HTML()' does not escape contents. Be absolutely sure there is no user-controlled data in this template. If user data can reach this template, you may have a XSS vulnerability.",
+      "file": "/home/runner/workspace/go-server/internal/templates/funcs.go",
+      "line": 767,
+      "end_line": 767,
+      "cwe": [
+        "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "semgrep-html.security.plaintext-http-link.plaintext-http-link-/home/runner/workspace/go-server/templates/results_covert.html:1404",
+      "scanner": "semgrep",
+      "rule_id": "html.security.plaintext-http-link.plaintext-http-link",
+      "severity": "medium",
+      "message": "This link points to a plaintext HTTP URL. Prefer an encrypted HTTPS URL if possible.",
+      "file": "/home/runner/workspace/go-server/templates/results_covert.html",
+      "line": 1404,
+      "end_line": 1404,
+      "cwe": [
+        "CWE-319: Cleartext Transmission of Sensitive Information"
+      ],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "osv-GO-2026-4559",
+      "scanner": "osv-scanner",
+      "rule_id": "GO-2026-4559",
+      "severity": "medium",
+      "message": "Sending certain HTTP/2 frames can cause a server to panic in golang.org/x/net",
+      "file": "/home/runner/workspace/go.mod",
+      "line": 0,
+      "end_line": 0,
+      "cwe": [],
+      "remediation": "Update golang.org/x/net (current: 0.50.0)",
+      "status": "new",
+      "secintent_id": null,
+      "package": "golang.org/x/net",
+      "package_version": "0.50.0",
+      "action": "warned"
+    },
+    {
+      "id": "osv-GO-2026-4337",
+      "scanner": "osv-scanner",
+      "rule_id": "GO-2026-4337",
+      "severity": "medium",
+      "message": "Unexpected session resumption in crypto/tls",
+      "file": "/home/runner/workspace/go.mod",
+      "line": 0,
+      "end_line": 0,
+      "cwe": [],
+      "remediation": "Update stdlib (current: 1.25.5)",
+      "status": "new",
+      "secintent_id": null,
+      "package": "stdlib",
+      "package_version": "1.25.5",
+      "action": "warned"
+    },
+    {
+      "id": "osv-GO-2026-4340",
+      "scanner": "osv-scanner",
+      "rule_id": "GO-2026-4340",
+      "severity": "medium",
+      "message": "Handshake messages may be processed at the incorrect encryption level in crypto/tls",
+      "file": "/home/runner/workspace/go.mod",
+      "line": 0,
+      "end_line": 0,
+      "cwe": [],
+      "remediation": "Update stdlib (current: 1.25.5)",
+      "status": "new",
+      "secintent_id": null,
+      "package": "stdlib",
+      "package_version": "1.25.5",
+      "action": "warned"
+    },
+    {
+      "id": "osv-GO-2026-4341",
+      "scanner": "osv-scanner",
+      "rule_id": "GO-2026-4341",
+      "severity": "medium",
+      "message": "Memory exhaustion in query parameter parsing in net/url",
+      "file": "/home/runner/workspace/go.mod",
+      "line": 0,
+      "end_line": 0,
+      "cwe": [],
+      "remediation": "Update stdlib (current: 1.25.5)",
+      "status": "new",
+      "secintent_id": null,
+      "package": "stdlib",
+      "package_version": "1.25.5",
+      "action": "warned"
+    },
+    {
+      "id": "osv-GO-2026-4342",
+      "scanner": "osv-scanner",
+      "rule_id": "GO-2026-4342",
+      "severity": "medium",
+      "message": "Excessive CPU consumption when building archive index in archive/zip",
+      "file": "/home/runner/workspace/go.mod",
+      "line": 0,
+      "end_line": 0,
+      "cwe": [],
+      "remediation": "Update stdlib (current: 1.25.5)",
+      "status": "new",
+      "secintent_id": null,
+      "package": "stdlib",
+      "package_version": "1.25.5",
+      "action": "warned"
+    },
+    {
+      "id": "osv-GO-2026-4601",
+      "scanner": "osv-scanner",
+      "rule_id": "GO-2026-4601",
+      "severity": "medium",
+      "message": "Incorrect parsing of IPv6 host literals in net/url",
+      "file": "/home/runner/workspace/go.mod",
+      "line": 0,
+      "end_line": 0,
+      "cwe": [],
+      "remediation": "Update stdlib (current: 1.25.5)",
+      "status": "new",
+      "secintent_id": null,
+      "package": "stdlib",
+      "package_version": "1.25.5",
+      "action": "warned"
+    },
+    {
+      "id": "osv-GO-2026-4602",
+      "scanner": "osv-scanner",
+      "rule_id": "GO-2026-4602",
+      "severity": "medium",
+      "message": "FileInfo can escape from a Root in os",
+      "file": "/home/runner/workspace/go.mod",
+      "line": 0,
+      "end_line": 0,
+      "cwe": [],
+      "remediation": "Update stdlib (current: 1.25.5)",
+      "status": "new",
+      "secintent_id": null,
+      "package": "stdlib",
+      "package_version": "1.25.5",
+      "action": "warned"
+    },
+    {
+      "id": "osv-GO-2026-4603",
+      "scanner": "osv-scanner",
+      "rule_id": "GO-2026-4603",
+      "severity": "medium",
+      "message": "URLs in meta content attribute actions are not escaped in html/template",
+      "file": "/home/runner/workspace/go.mod",
+      "line": 0,
+      "end_line": 0,
+      "cwe": [],
+      "remediation": "Update stdlib (current: 1.25.5)",
+      "status": "new",
+      "secintent_id": null,
+      "package": "stdlib",
+      "package_version": "1.25.5",
+      "action": "warned"
+    },
+    {
+      "id": "osv-GHSA-pxg6-pf52-xh8x",
+      "scanner": "osv-scanner",
+      "rule_id": "GHSA-pxg6-pf52-xh8x",
+      "severity": "l",
+      "message": "cookie accepts cookie name, path, and domain with out of bounds characters",
+      "file": "/home/runner/workspace/package-lock.json",
+      "line": 0,
+      "end_line": 0,
+      "cwe": [],
+      "remediation": "Update cookie (current: 0.3.1)",
+      "status": "new",
+      "secintent_id": null,
+      "package": "cookie",
+      "package_version": "0.3.1",
+      "action": "tracked"
+    },
+    {
+      "id": "osv-GHSA-pxg6-pf52-xh8x",
+      "scanner": "osv-scanner",
+      "rule_id": "GHSA-pxg6-pf52-xh8x",
+      "severity": "l",
+      "message": "cookie accepts cookie name, path, and domain with out of bounds characters",
+      "file": "/home/runner/workspace/package-lock.json",
+      "line": 0,
+      "end_line": 0,
+      "cwe": [],
+      "remediation": "Update cookie (current: 0.4.2)",
+      "status": "new",
+      "secintent_id": null,
+      "package": "cookie",
+      "package_version": "0.4.2",
+      "action": "tracked"
+    },
+    {
+      "id": "osv-GHSA-pfrx-2q88-qq97",
+      "scanner": "osv-scanner",
+      "rule_id": "GHSA-pfrx-2q88-qq97",
+      "severity": "m",
+      "message": "Got allows a redirect to a UNIX socket",
+      "file": "/home/runner/workspace/package-lock.json",
+      "line": 0,
+      "end_line": 0,
+      "cwe": [],
+      "remediation": "Update got (current: 9.6.0)",
+      "status": "new",
+      "secintent_id": null,
+      "package": "got",
+      "package_version": "9.6.0",
+      "action": "tracked"
+    },
+    {
+      "id": "dast-headers-missing_header-X-Frame-Options",
+      "scanner": "dast-headers",
+      "rule_id": "missing_header",
+      "severity": "medium",
+      "message": "Missing security header: X-Frame-Options",
+      "file": "https://f2c73519-b3f3-4c33-90b1-699f833acae8-00-2qa7mtebx8ii8.picard.replit.dev",
+      "line": 0,
+      "end_line": 0,
+      "cwe": [],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "warned"
+    },
+    {
+      "id": "dast-headers-missing_header-X-XSS-Protection",
+      "scanner": "dast-headers",
+      "rule_id": "missing_header",
+      "severity": "info",
+      "message": "Missing security header: X-XSS-Protection",
+      "file": "https://f2c73519-b3f3-4c33-90b1-699f833acae8-00-2qa7mtebx8ii8.picard.replit.dev",
+      "line": 0,
+      "end_line": 0,
+      "cwe": [],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "tracked"
+    },
+    {
+      "id": "dast-headers-missing_header-Cache-Control",
+      "scanner": "dast-headers",
+      "rule_id": "missing_header",
+      "severity": "info",
+      "message": "Missing security header: Cache-Control",
+      "file": "https://f2c73519-b3f3-4c33-90b1-699f833acae8-00-2qa7mtebx8ii8.picard.replit.dev",
+      "line": 0,
+      "end_line": 0,
+      "cwe": [],
+      "remediation": "",
+      "status": "new",
+      "secintent_id": null,
+      "action": "tracked"
+    }
+  ],
+  "secintent": {
+    "timestamp": "2026-03-12T05:38:11.758214",
+    "total_intents": 6,
+    "total_code_tags": 9,
+    "unique_code_tags": 6,
+    "errors": [],
+    "warnings": [],
+    "status": "PASS",
+    "intents": [
+      {
+        "id": "SECINTENT-001",
+        "title": "TLS skip-verify in SMTP transport analyzer",
+        "category": "accepted-risk",
+        "severity": "medium",
+        "expires": "2027-01-15",
+        "code_locations": [
+          {
+            "file": "go-server/internal/analyzer/smtp_transport.go",
+            "line": 989,
+            "text": "InsecureSkipVerify: true, //NOSONAR \u2014 S4830/S5527: deliberate diagnostic probe; verifyCert() validates independently // SECINTENT-001"
+          }
+        ],
+        "has_code_tag": true
+      },
+      {
+        "id": "SECINTENT-002",
+        "title": "TLS skip-verify in probe binary",
+        "category": "accepted-risk",
+        "severity": "medium",
+        "expires": "2027-01-15",
+        "code_locations": [
+          {
+            "file": "go-server/cmd/probe/main.go",
+            "line": 312,
+            "text": "InsecureSkipVerify: true, //NOSONAR \u2014 S4830/S5527: probe intentionally tests TLS; certificate validation happens separately // SECINTENT-002"
+          },
+          {
+            "file": "go-server/cmd/probe/main.go",
+            "line": 408,
+            "text": "InsecureSkipVerify: true, //NOSONAR \u2014 S4830/S5527: diagnostic probe; cert validation is separate // SECINTENT-002"
+          },
+          {
+            "file": "go-server/cmd/probe/main.go",
+            "line": 641,
+            "text": "InsecureSkipVerify: true, //NOSONAR \u2014 S4830/S5527: needs to connect regardless of cert validity to extract cert info // SECINTENT-002"
+          }
+        ],
+        "has_code_tag": true
+      },
+      {
+        "id": "SECINTENT-003",
+        "title": "Hardcoded DNS resolver IPs",
+        "category": "intentional-behavior",
+        "severity": "info",
+        "expires": "2027-01-15",
+        "code_locations": [
+          {
+            "file": "go-server/internal/dnsclient/client.go",
+            "line": 32,
+            "text": "// SECINTENT-003: Hardcoded DNS resolver IPs"
+          }
+        ],
+        "has_code_tag": true
+      },
+      {
+        "id": "SECINTENT-004",
+        "title": "Empty stub bodies for open-core boundary",
+        "category": "intentional-behavior",
+        "severity": "info",
+        "expires": "2027-01-15",
+        "code_locations": [
+          {
+            "file": "stubs/go-server/internal/analyzer/commands.go",
+            "line": 4,
+            "text": "// SECINTENT-004: Empty stub bodies for open-core boundary"
+          }
+        ],
+        "has_code_tag": true
+      },
+      {
+        "id": "SECINTENT-005",
+        "title": "Math.random for non-crypto UI purposes",
+        "category": "accepted-risk",
+        "severity": "low",
+        "expires": "2027-01-15",
+        "code_locations": [
+          {
+            "file": "static/js/main.js",
+            "line": 134,
+            "text": "const doneDelay = delay + 1800 + Math.random() * 1200; // NOSONAR \u2014 animation timing, not cryptographic // SECINTENT-005"
+          }
+        ],
+        "has_code_tag": true
+      },
+      {
+        "id": "SECINTENT-006",
+        "title": "DNS record test fixtures contain verification tokens",
+        "category": "test-fixture",
+        "severity": "info",
+        "expires": "2027-01-15",
+        "code_locations": [
+          {
+            "file": ".gitleaks.toml",
+            "line": 1,
+            "text": "# SECINTENT-006: DNS record test fixtures contain verification tokens"
+          },
+          {
+            "file": ".gitleaks.toml",
+            "line": 1,
+            "text": "# SECINTENT-006: DNS record test fixtures contain verification tokens"
+          }
+        ],
+        "has_code_tag": true
+      }
+    ]
+  }
+}

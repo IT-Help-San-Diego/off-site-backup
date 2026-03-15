@@ -1,0 +1,46 @@
+{
+  "target": "https://f2c73519-b3f3-4c33-90b1-699f833acae8-00-2qa7mtebx8ii8.picard.replit.dev",
+  "status_code": 200,
+  "headers_present": [
+    "Content-Security-Policy",
+    "Content-Type",
+    "Cross-Origin-Opener-Policy",
+    "Cross-Origin-Resource-Policy",
+    "Date",
+    "Permissions-Policy",
+    "Referrer-Policy",
+    "Replit-Cluster",
+    "Set-Cookie",
+    "Strict-Transport-Security",
+    "X-Content-Type-Options",
+    "X-Permitted-Cross-Domain-Policies",
+    "X-Robots-Tag",
+    "Connection",
+    "Transfer-Encoding"
+  ],
+  "findings": [
+    {
+      "type": "missing_header",
+      "header": "X-Frame-Options",
+      "severity": "medium",
+      "required": false,
+      "message": "Missing security header: X-Frame-Options"
+    },
+    {
+      "type": "missing_header",
+      "header": "X-XSS-Protection",
+      "severity": "info",
+      "required": false,
+      "message": "Missing security header: X-XSS-Protection"
+    },
+    {
+      "type": "missing_header",
+      "header": "Cache-Control",
+      "severity": "info",
+      "required": false,
+      "message": "Missing security header: Cache-Control"
+    }
+  ],
+  "total_findings": 3,
+  "critical_high": 0
+}

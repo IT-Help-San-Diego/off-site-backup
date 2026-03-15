@@ -1,0 +1,2509 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "semgrep",
+          "rules": [
+            {
+              "id": "security.dns-tool-tls-skip-verify-untagged",
+              "shortDescription": {
+                "text": "TLS certificate verification is disabled. If this is intentional for a security diagnostic tool, add a SECINTENT tag and register in security/security-intents.yaml. Otherwise, enable verification.\n"
+              }
+            },
+            {
+              "id": "go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion",
+              "shortDescription": {
+                "text": "`MinVersion` is missing from this TLS configuration.  By default, as of Go 1.22, TLS 1.2 is currently used as the minimum. General purpose web applications should default to TLS 1.3 with all other pro"
+              }
+            },
+            {
+              "id": "security.dns-tool-raw-redirect-no-wrapper",
+              "shortDescription": {
+                "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are ac"
+              }
+            },
+            {
+              "id": "go.lang.security.deserialization.unsafe-deserialization-interface.go-unsafe-deserialization-interface",
+              "shortDescription": {
+                "text": "Deserializing into `interface{}` allows arbitrary data structures and types, which can lead to security vulnerabilities (CWE-502). Use a concrete struct type instead. Consider using github.com/ravisas"
+              }
+            },
+            {
+              "id": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+              "shortDescription": {
+                "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attac"
+              }
+            },
+            {
+              "id": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+              "shortDescription": {
+                "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' fl"
+              }
+            },
+            {
+              "id": "go.lang.security.audit.net.formatted-template-string.formatted-template-string",
+              "shortDescription": {
+                "text": "Found a formatted template string passed to 'template.HTML()'. 'template.HTML()' does not escape contents. Be absolutely sure there is no user-controlled data in this template. If user data can reach "
+              }
+            },
+            {
+              "id": "html.security.plaintext-http-link.plaintext-http-link",
+              "shortDescription": {
+                "text": "This link points to a plaintext HTTP URL. Prefer an encrypted HTTPS URL if possible."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "security.dns-tool-tls-skip-verify-untagged",
+          "level": "warning",
+          "message": {
+            "text": "TLS certificate verification is disabled. If this is intentional for a security diagnostic tool, add a SECINTENT tag and register in security/security-intents.yaml. Otherwise, enable verification.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/cmd/probe/main.go"
+                },
+                "region": {
+                  "startLine": 310
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion",
+          "level": "warning",
+          "message": {
+            "text": "`MinVersion` is missing from this TLS configuration.  By default, as of Go 1.22, TLS 1.2 is currently used as the minimum. General purpose web applications should default to TLS 1.3 with all other protocols disabled.  Only where it is known that a web server must support legacy clients with unsupported an insecure browsers (such as Internet Explorer 10), it may be necessary to enable TLS 1.0 to provide support. Add `MinVersion: tls.VersionTLS13' to the TLS configuration to bump the minimum version to TLS 1.3."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/cmd/probe/main.go"
+                },
+                "region": {
+                  "startLine": 310
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion",
+          "level": "warning",
+          "message": {
+            "text": "`MinVersion` is missing from this TLS configuration.  By default, as of Go 1.22, TLS 1.2 is currently used as the minimum. General purpose web applications should default to TLS 1.3 with all other protocols disabled.  Only where it is known that a web server must support legacy clients with unsupported an insecure browsers (such as Internet Explorer 10), it may be necessary to enable TLS 1.0 to provide support. Add `MinVersion: tls.VersionTLS13' to the TLS configuration to bump the minimum version to TLS 1.3."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/cmd/probe/main.go"
+                },
+                "region": {
+                  "startLine": 363
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-tls-skip-verify-untagged",
+          "level": "warning",
+          "message": {
+            "text": "TLS certificate verification is disabled. If this is intentional for a security diagnostic tool, add a SECINTENT tag and register in security/security-intents.yaml. Otherwise, enable verification.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/cmd/probe/main.go"
+                },
+                "region": {
+                  "startLine": 406
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion",
+          "level": "warning",
+          "message": {
+            "text": "`MinVersion` is missing from this TLS configuration.  By default, as of Go 1.22, TLS 1.2 is currently used as the minimum. General purpose web applications should default to TLS 1.3 with all other protocols disabled.  Only where it is known that a web server must support legacy clients with unsupported an insecure browsers (such as Internet Explorer 10), it may be necessary to enable TLS 1.0 to provide support. Add `MinVersion: tls.VersionTLS13' to the TLS configuration to bump the minimum version to TLS 1.3."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/cmd/probe/main.go"
+                },
+                "region": {
+                  "startLine": 406
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-tls-skip-verify-untagged",
+          "level": "warning",
+          "message": {
+            "text": "TLS certificate verification is disabled. If this is intentional for a security diagnostic tool, add a SECINTENT tag and register in security/security-intents.yaml. Otherwise, enable verification.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/cmd/probe/main.go"
+                },
+                "region": {
+                  "startLine": 639
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion",
+          "level": "warning",
+          "message": {
+            "text": "`MinVersion` is missing from this TLS configuration.  By default, as of Go 1.22, TLS 1.2 is currently used as the minimum. General purpose web applications should default to TLS 1.3 with all other protocols disabled.  Only where it is known that a web server must support legacy clients with unsupported an insecure browsers (such as Internet Explorer 10), it may be necessary to enable TLS 1.0 to provide support. Add `MinVersion: tls.VersionTLS13' to the TLS configuration to bump the minimum version to TLS 1.3."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/cmd/probe/main.go"
+                },
+                "region": {
+                  "startLine": 639
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/cmd/server/main.go"
+                },
+                "region": {
+                  "startLine": 353
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-tls-skip-verify-untagged",
+          "level": "warning",
+          "message": {
+            "text": "TLS certificate verification is disabled. If this is intentional for a security diagnostic tool, add a SECINTENT tag and register in security/security-intents.yaml. Otherwise, enable verification.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/analyzer/smtp_transport.go"
+                },
+                "region": {
+                  "startLine": 987
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion",
+          "level": "warning",
+          "message": {
+            "text": "`MinVersion` is missing from this TLS configuration.  By default, as of Go 1.22, TLS 1.2 is currently used as the minimum. General purpose web applications should default to TLS 1.3 with all other protocols disabled.  Only where it is known that a web server must support legacy clients with unsupported an insecure browsers (such as Internet Explorer 10), it may be necessary to enable TLS 1.0 to provide support. Add `MinVersion: tls.VersionTLS13' to the TLS configuration to bump the minimum version to TLS 1.3."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/analyzer/smtp_transport.go"
+                },
+                "region": {
+                  "startLine": 987
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.crypto.missing-ssl-minversion.missing-ssl-minversion",
+          "level": "warning",
+          "message": {
+            "text": "`MinVersion` is missing from this TLS configuration.  By default, as of Go 1.22, TLS 1.2 is currently used as the minimum. General purpose web applications should default to TLS 1.3 with all other protocols disabled.  Only where it is known that a web server must support legacy clients with unsupported an insecure browsers (such as Internet Explorer 10), it may be necessary to enable TLS 1.0 to provide support. Add `MinVersion: tls.VersionTLS13' to the TLS configuration to bump the minimum version to TLS 1.3."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/analyzer/smtp_transport.go"
+                },
+                "region": {
+                  "startLine": 1030
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/admin.go"
+                },
+                "region": {
+                  "startLine": 370
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/admin.go"
+                },
+                "region": {
+                  "startLine": 396
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/admin.go"
+                },
+                "region": {
+                  "startLine": 410
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/analysis.go"
+                },
+                "region": {
+                  "startLine": 1108
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/analysis.go"
+                },
+                "region": {
+                  "startLine": 1112
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/analysis.go"
+                },
+                "region": {
+                  "startLine": 1118
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.deserialization.unsafe-deserialization-interface.go-unsafe-deserialization-interface",
+          "level": "warning",
+          "message": {
+            "text": "Deserializing into `interface{}` allows arbitrary data structures and types, which can lead to security vulnerabilities (CWE-502). Use a concrete struct type instead. Consider using github.com/ravisastryk/go-safeinput/safedeserialize for automatic protection."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/analysis.go"
+                },
+                "region": {
+                  "startLine": 1175
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/auth.go"
+                },
+                "region": {
+                  "startLine": 84
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/auth.go"
+                },
+                "region": {
+                  "startLine": 91
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/auth.go"
+                },
+                "region": {
+                  "startLine": 98
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/auth.go"
+                },
+                "region": {
+                  "startLine": 123
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/auth.go"
+                },
+                "region": {
+                  "startLine": 129
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/auth.go"
+                },
+                "region": {
+                  "startLine": 136
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/auth.go"
+                },
+                "region": {
+                  "startLine": 141
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/auth.go"
+                },
+                "region": {
+                  "startLine": 148
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/auth.go"
+                },
+                "region": {
+                  "startLine": 155
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/auth.go"
+                },
+                "region": {
+                  "startLine": 166
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/auth.go"
+                },
+                "region": {
+                  "startLine": 182
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/auth.go"
+                },
+                "region": {
+                  "startLine": 190
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/auth.go"
+                },
+                "region": {
+                  "startLine": 228
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/auth.go"
+                },
+                "region": {
+                  "startLine": 230
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/auth.go"
+                },
+                "region": {
+                  "startLine": 348
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.deserialization.unsafe-deserialization-interface.go-unsafe-deserialization-interface",
+          "level": "warning",
+          "message": {
+            "text": "Deserializing into `interface{}` allows arbitrary data structures and types, which can lead to security vulnerabilities (CWE-502). Use a concrete struct type instead. Consider using github.com/ravisastryk/go-safeinput/safedeserialize for automatic protection."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/export.go"
+                },
+                "region": {
+                  "startLine": 62
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 251
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 251
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 261
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 261
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 271
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 271
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 272
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 272
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 282
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 282
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 283
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 283
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 284
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 284
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 294
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 294
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 295
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 295
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 296
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/random_base64_test.go"
+                },
+                "region": {
+                  "startLine": 296
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/stats.go"
+                },
+                "region": {
+                  "startLine": 305
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 197
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 204
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 216
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 220
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 234
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 241
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 248
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 260
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 267
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 274
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 289
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 296
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 303
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 323
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 330
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 337
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 349
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 356
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 363
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 378
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 384
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/handlers/watchlist.go"
+                },
+                "region": {
+                  "startLine": 393
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.formatted-template-string.formatted-template-string",
+          "level": "warning",
+          "message": {
+            "text": "Found a formatted template string passed to 'template.HTML()'. 'template.HTML()' does not escape contents. Be absolutely sure there is no user-controlled data in this template. If user data can reach this template, you may have a XSS vulnerability."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/icons/icons.go"
+                },
+                "region": {
+                  "startLine": 248
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.formatted-template-string.formatted-template-string",
+          "level": "warning",
+          "message": {
+            "text": "Found a formatted template string passed to 'template.HTML()'. 'template.HTML()' does not escape contents. Be absolutely sure there is no user-controlled data in this template. If user data can reach this template, you may have a XSS vulnerability."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/icons/icons.go"
+                },
+                "region": {
+                  "startLine": 259
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/csrf.go"
+                },
+                "region": {
+                  "startLine": 160
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/csrf.go"
+                },
+                "region": {
+                  "startLine": 162
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/edge_test.go"
+                },
+                "region": {
+                  "startLine": 161
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/edge_test.go"
+                },
+                "region": {
+                  "startLine": 161
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/edge_test.go"
+                },
+                "region": {
+                  "startLine": 958
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/edge_test.go"
+                },
+                "region": {
+                  "startLine": 958
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/edge_test.go"
+                },
+                "region": {
+                  "startLine": 980
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/edge_test.go"
+                },
+                "region": {
+                  "startLine": 980
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/edge_test.go"
+                },
+                "region": {
+                  "startLine": 1022
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/edge_test.go"
+                },
+                "region": {
+                  "startLine": 1022
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/edge_test.go"
+                },
+                "region": {
+                  "startLine": 1046
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/edge_test.go"
+                },
+                "region": {
+                  "startLine": 1046
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/edge_test.go"
+                },
+                "region": {
+                  "startLine": 1432
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/edge_test.go"
+                },
+                "region": {
+                  "startLine": 1432
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/middleware.go"
+                },
+                "region": {
+                  "startLine": 222
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go"
+                },
+                "region": {
+                  "startLine": 105
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go"
+                },
+                "region": {
+                  "startLine": 105
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go"
+                },
+                "region": {
+                  "startLine": 145
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go"
+                },
+                "region": {
+                  "startLine": 145
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go"
+                },
+                "region": {
+                  "startLine": 183
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go"
+                },
+                "region": {
+                  "startLine": 183
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go"
+                },
+                "region": {
+                  "startLine": 221
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go"
+                },
+                "region": {
+                  "startLine": 221
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go"
+                },
+                "region": {
+                  "startLine": 438
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/middleware_test.go"
+                },
+                "region": {
+                  "startLine": 438
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/ratelimit.go"
+                },
+                "region": {
+                  "startLine": 154
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "security.dns-tool-raw-redirect-no-wrapper",
+          "level": "warning",
+          "message": {
+            "text": "Direct use of c.Redirect() detected. For user-controlled or external URLs, prefer safe redirect wrappers that validate the target URL against an allowlist. Internal redirects to hardcoded paths are acceptable.\n"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/ratelimit.go"
+                },
+                "region": {
+                  "startLine": 223
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie which mitigates XSS attacks. Set the 'HttpOnly' flag by setting 'HttpOnly' to 'true' in the Cookie."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/security_headers_test.go"
+                },
+                "region": {
+                  "startLine": 555
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+          "level": "warning",
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'Secure' flag by setting 'Secure' to 'true' in the Options struct."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/middleware/security_headers_test.go"
+                },
+                "region": {
+                  "startLine": 555
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "go.lang.security.audit.net.formatted-template-string.formatted-template-string",
+          "level": "warning",
+          "message": {
+            "text": "Found a formatted template string passed to 'template.HTML()'. 'template.HTML()' does not escape contents. Be absolutely sure there is no user-controlled data in this template. If user data can reach this template, you may have a XSS vulnerability."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/internal/templates/funcs.go"
+                },
+                "region": {
+                  "startLine": 767
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "html.security.plaintext-http-link.plaintext-http-link",
+          "level": "warning",
+          "message": {
+            "text": "This link points to a plaintext HTTP URL. Prefer an encrypted HTTPS URL if possible."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go-server/templates/results_covert.html"
+                },
+                "region": {
+                  "startLine": 1404
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "osv-scanner",
+          "rules": [
+            {
+              "id": "GO-2026-4559",
+              "shortDescription": {
+                "text": "Sending certain HTTP/2 frames can cause a server to panic in golang.org/x/net"
+              }
+            },
+            {
+              "id": "GO-2026-4337",
+              "shortDescription": {
+                "text": "Unexpected session resumption in crypto/tls"
+              }
+            },
+            {
+              "id": "GO-2026-4340",
+              "shortDescription": {
+                "text": "Handshake messages may be processed at the incorrect encryption level in crypto/tls"
+              }
+            },
+            {
+              "id": "GO-2026-4341",
+              "shortDescription": {
+                "text": "Memory exhaustion in query parameter parsing in net/url"
+              }
+            },
+            {
+              "id": "GO-2026-4342",
+              "shortDescription": {
+                "text": "Excessive CPU consumption when building archive index in archive/zip"
+              }
+            },
+            {
+              "id": "GO-2026-4601",
+              "shortDescription": {
+                "text": "Incorrect parsing of IPv6 host literals in net/url"
+              }
+            },
+            {
+              "id": "GO-2026-4602",
+              "shortDescription": {
+                "text": "FileInfo can escape from a Root in os"
+              }
+            },
+            {
+              "id": "GO-2026-4603",
+              "shortDescription": {
+                "text": "URLs in meta content attribute actions are not escaped in html/template"
+              }
+            },
+            {
+              "id": "GHSA-pxg6-pf52-xh8x",
+              "shortDescription": {
+                "text": "cookie accepts cookie name, path, and domain with out of bounds characters"
+              }
+            },
+            {
+              "id": "GHSA-pfrx-2q88-qq97",
+              "shortDescription": {
+                "text": "Got allows a redirect to a UNIX socket"
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "GO-2026-4559",
+          "level": "warning",
+          "message": {
+            "text": "Sending certain HTTP/2 frames can cause a server to panic in golang.org/x/net"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go.mod"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "GO-2026-4337",
+          "level": "warning",
+          "message": {
+            "text": "Unexpected session resumption in crypto/tls"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go.mod"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "GO-2026-4340",
+          "level": "warning",
+          "message": {
+            "text": "Handshake messages may be processed at the incorrect encryption level in crypto/tls"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go.mod"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "GO-2026-4341",
+          "level": "warning",
+          "message": {
+            "text": "Memory exhaustion in query parameter parsing in net/url"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go.mod"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "GO-2026-4342",
+          "level": "warning",
+          "message": {
+            "text": "Excessive CPU consumption when building archive index in archive/zip"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go.mod"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "GO-2026-4601",
+          "level": "warning",
+          "message": {
+            "text": "Incorrect parsing of IPv6 host literals in net/url"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go.mod"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "GO-2026-4602",
+          "level": "warning",
+          "message": {
+            "text": "FileInfo can escape from a Root in os"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go.mod"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "GO-2026-4603",
+          "level": "warning",
+          "message": {
+            "text": "URLs in meta content attribute actions are not escaped in html/template"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/go.mod"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "GHSA-pxg6-pf52-xh8x",
+          "level": "note",
+          "message": {
+            "text": "cookie accepts cookie name, path, and domain with out of bounds characters"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "GHSA-pxg6-pf52-xh8x",
+          "level": "note",
+          "message": {
+            "text": "cookie accepts cookie name, path, and domain with out of bounds characters"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "GHSA-pfrx-2q88-qq97",
+          "level": "note",
+          "message": {
+            "text": "Got allows a redirect to a UNIX socket"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/workspace/package-lock.json"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "dast-headers",
+          "rules": [
+            {
+              "id": "missing_header",
+              "shortDescription": {
+                "text": "Missing security header: X-Frame-Options"
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "missing_header",
+          "level": "warning",
+          "message": {
+            "text": "Missing security header: X-Frame-Options"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://f2c73519-b3f3-4c33-90b1-699f833acae8-00-2qa7mtebx8ii8.picard.replit.dev"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "missing_header",
+          "level": "note",
+          "message": {
+            "text": "Missing security header: X-XSS-Protection"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://f2c73519-b3f3-4c33-90b1-699f833acae8-00-2qa7mtebx8ii8.picard.replit.dev"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "missing_header",
+          "level": "note",
+          "message": {
+            "text": "Missing security header: Cache-Control"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://f2c73519-b3f3-4c33-90b1-699f833acae8-00-2qa7mtebx8ii8.picard.replit.dev"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

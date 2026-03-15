@@ -1,0 +1,64 @@
+{
+  "target": "https://f2c73519-b3f3-4c33-90b1-699f833acae8-00-2qa7mtebx8ii8.picard.replit.dev",
+  "paths_checked": 11,
+  "results": [
+    {
+      "path": "/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "/robots.txt",
+      "status": 200,
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "path": "/.well-known/security.txt",
+      "status": 200,
+      "content_type": "text/plain; charset=utf-8"
+    },
+    {
+      "path": "/.env",
+      "status": 404,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "path": "/.git/config",
+      "status": 404,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "path": "/wp-admin/",
+      "status": 404,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "path": "/admin/",
+      "status": 404,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "path": "/debug/",
+      "status": 404,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "path": "/api/",
+      "status": 404,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "path": "/swagger.json",
+      "status": 404,
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "path": "/openapi.json",
+      "status": 404,
+      "error": "HTTP Error 404: Not Found"
+    }
+  ],
+  "findings": [],
+  "total_findings": 0,
+  "critical_high": 0
+}
