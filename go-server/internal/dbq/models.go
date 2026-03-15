@@ -22,6 +22,15 @@ type AnalysisStat struct {
 	UpdatedAt          pgtype.Timestamp `db:"updated_at" json:"updated_at"`
 }
 
+type CtSubdomainCache struct {
+	Domain      string           `db:"domain" json:"domain"`
+	Subdomains  []byte           `db:"subdomains" json:"subdomains"`
+	UniqueCount int32            `db:"unique_count" json:"unique_count"`
+	Source      string           `db:"source" json:"source"`
+	FetchedAt   pgtype.Timestamp `db:"fetched_at" json:"fetched_at"`
+	ExpiresAt   pgtype.Timestamp `db:"expires_at" json:"expires_at"`
+}
+
 type DataGovernanceEvent struct {
 	ID            int32            `db:"id" json:"id"`
 	EventType     string           `db:"event_type" json:"event_type"`
@@ -64,6 +73,19 @@ type DomainAnalysis struct {
 	ScanFlag             bool             `db:"scan_flag" json:"scan_flag"`
 	ScanSource           *string          `db:"scan_source" json:"scan_source"`
 	ScanIp               *string          `db:"scan_ip" json:"scan_ip"`
+	WaybackUrl           *string          `db:"wayback_url" json:"wayback_url"`
+}
+
+type DomainIndex struct {
+	Domain     string           `db:"domain" json:"domain"`
+	FirstSeen  pgtype.Timestamp `db:"first_seen" json:"first_seen"`
+	LastSeen   pgtype.Timestamp `db:"last_seen" json:"last_seen"`
+	TotalScans int32            `db:"total_scans" json:"total_scans"`
+	LastScore  *float32         `db:"last_score" json:"last_score"`
+	HasDane    bool             `db:"has_dane" json:"has_dane"`
+	HasDnssec  bool             `db:"has_dnssec" json:"has_dnssec"`
+	HasMtaSts  bool             `db:"has_mta_sts" json:"has_mta_sts"`
+	Tags       []string         `db:"tags" json:"tags"`
 }
 
 type DomainWatchlist struct {
@@ -160,6 +182,26 @@ type IceTestRun struct {
 	CreatedAt   pgtype.Timestamp `db:"created_at" json:"created_at"`
 }
 
+type IcuaeDimensionScore struct {
+	ID                   int32    `db:"id" json:"id"`
+	ScanID               int32    `db:"scan_id" json:"scan_id"`
+	Dimension            string   `db:"dimension" json:"dimension"`
+	Score                float32  `db:"score" json:"score"`
+	Grade                string   `db:"grade" json:"grade"`
+	RecordTypesEvaluated []string `db:"record_types_evaluated" json:"record_types_evaluated"`
+}
+
+type IcuaeScanScore struct {
+	ID            int32            `db:"id" json:"id"`
+	Domain        string           `db:"domain" json:"domain"`
+	OverallScore  float32          `db:"overall_score" json:"overall_score"`
+	OverallGrade  string           `db:"overall_grade" json:"overall_grade"`
+	ResolverCount int32            `db:"resolver_count" json:"resolver_count"`
+	RecordCount   int32            `db:"record_count" json:"record_count"`
+	AppVersion    string           `db:"app_version" json:"app_version"`
+	CreatedAt     pgtype.Timestamp `db:"created_at" json:"created_at"`
+}
+
 type NotificationEndpoint struct {
 	ID           int32            `db:"id" json:"id"`
 	UserID       int32            `db:"user_id" json:"user_id"`
@@ -168,6 +210,42 @@ type NotificationEndpoint struct {
 	Secret       *string          `db:"secret" json:"secret"`
 	Enabled      bool             `db:"enabled" json:"enabled"`
 	CreatedAt    pgtype.Timestamp `db:"created_at" json:"created_at"`
+}
+
+type PriorityDomain struct {
+	Domain  string           `db:"domain" json:"domain"`
+	Reason  string           `db:"reason" json:"reason"`
+	AddedAt pgtype.Timestamp `db:"added_at" json:"added_at"`
+	Enabled bool             `db:"enabled" json:"enabled"`
+}
+
+type ScanPhaseTelemetry struct {
+	ID          int32            `db:"id" json:"id"`
+	AnalysisID  int32            `db:"analysis_id" json:"analysis_id"`
+	PhaseGroup  string           `db:"phase_group" json:"phase_group"`
+	PhaseTask   string           `db:"phase_task" json:"phase_task"`
+	StartedAtMs int32            `db:"started_at_ms" json:"started_at_ms"`
+	DurationMs  int32            `db:"duration_ms" json:"duration_ms"`
+	RecordCount *int32           `db:"record_count" json:"record_count"`
+	Error       *string          `db:"error" json:"error"`
+	CreatedAt   pgtype.Timestamp `db:"created_at" json:"created_at"`
+}
+
+type ScanTelemetryHash struct {
+	AnalysisID      int32            `db:"analysis_id" json:"analysis_id"`
+	TotalDurationMs int32            `db:"total_duration_ms" json:"total_duration_ms"`
+	PhaseCount      int32            `db:"phase_count" json:"phase_count"`
+	Sha3512         string           `db:"sha3_512" json:"sha3_512"`
+	CreatedAt       pgtype.Timestamp `db:"created_at" json:"created_at"`
+}
+
+type SecuritytrailsBudget struct {
+	MonthKey        string           `db:"month_key" json:"month_key"`
+	CallsUsed       int32            `db:"calls_used" json:"calls_used"`
+	DomainsEnriched []byte           `db:"domains_enriched" json:"domains_enriched"`
+	LastCalledAt    pgtype.Timestamp `db:"last_called_at" json:"last_called_at"`
+	CreatedAt       pgtype.Timestamp `db:"created_at" json:"created_at"`
+	UpdatedAt       pgtype.Timestamp `db:"updated_at" json:"updated_at"`
 }
 
 type Session struct {

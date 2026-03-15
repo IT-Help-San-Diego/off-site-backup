@@ -10,7 +10,8 @@
 //   - Timeout tuning
 //
 // All suggestions require explicit user approval before applying.
-// Grounded in NIST SP 800-53 SI-18 (accuracy/relevance) and RFC 8767 (TTL behavior).
+// Grounded in NIST SP 800-53 SI-7 (information integrity) and RFC 8767 (TTL behavior).
+// dns-tool:scrutiny science
 package icuae
 
 import (
@@ -22,11 +23,11 @@ import (
 const severityHigh = "high"
 
 const (
-        mapKeyMedium       = "medium"
-        mapKeyTimeout      = "timeout"
-        severityLow        = "low"
-        paramTimeoutSecs   = "timeout_seconds"
-        paramRetryCount    = "retry_count"
+        mapKeyMedium     = "medium"
+        mapKeyTimeout    = "timeout"
+        severityLow      = "low"
+        paramTimeoutSecs = "timeout_seconds"
+        paramRetryCount  = "retry_count"
 )
 
 type ScannerProfile struct {
@@ -37,6 +38,7 @@ type ScannerProfile struct {
         ConcurrencyLimit   int      `json:"concurrency_limit"`
 }
 
+// S1313 suppressed: well-known public DNS resolver IPs — intentional for multi-resolver scanning.
 var DefaultProfile = ScannerProfile{
         ResolverSet:        []string{"8.8.8.8", "1.1.1.1", "9.9.9.9", "208.67.222.222", "185.228.168.168"},
         TimeoutSeconds:     5,
@@ -46,13 +48,13 @@ var DefaultProfile = ScannerProfile{
 }
 
 type ProfileSuggestion struct {
-        Parameter   string `json:"parameter"`
-        Current     string `json:"current"`
-        Suggested   string `json:"suggested"`
-        Rationale   string `json:"rationale"`
-        Standard    string `json:"standard"`
-        Severity    string `json:"severity"`
-        Category    string `json:"category"`
+        Parameter string `json:"parameter"`
+        Current   string `json:"current"`
+        Suggested string `json:"suggested"`
+        Rationale string `json:"rationale"`
+        Standard  string `json:"standard"`
+        Severity  string `json:"severity"`
+        Category  string `json:"category"`
 }
 
 func (s ProfileSuggestion) SeverityClass() string {
@@ -69,25 +71,25 @@ func (s ProfileSuggestion) SeverityClass() string {
 func (s ProfileSuggestion) CategoryIcon() string {
         switch s.Category {
         case "resolver":
-                return "fa-server"
+                return "server"
         case "retry":
-                return "fa-arrows-rotate"
+                return "arrows-rotate"
         case mapKeyTimeout:
-                return "fa-clock"
+                return "clock"
         case "priority":
-                return "fa-cogs"
+                return "cogs"
         default:
-                return "fa-cogs"
+                return "cogs"
         }
 }
 
 type RollingStats struct {
-        ScanCount           int                     `json:"scan_count"`
-        AvgResolverAgreement float64                `json:"avg_resolver_agreement"`
-        TTLDeviations       map[string]float64      `json:"ttl_deviations"`
-        DimensionTrends     map[string][]float64    `json:"dimension_trends"`
-        RecordTypeErrors    map[string]int          `json:"record_type_errors"`
-        AvgScanDuration     float64                 `json:"avg_scan_duration_ms"`
+        ScanCount            int                  `json:"scan_count"`
+        AvgResolverAgreement float64              `json:"avg_resolver_agreement"`
+        TTLDeviations        map[string]float64   `json:"ttl_deviations"`
+        DimensionTrends      map[string][]float64 `json:"dimension_trends"`
+        RecordTypeErrors     map[string]int       `json:"record_type_errors"`
+        AvgScanDuration      float64              `json:"avg_scan_duration_ms"`
 }
 
 type SuggestedConfig struct {
@@ -202,7 +204,7 @@ func suggestResolverChanges(stats RollingStats, current ScannerProfile) []Profil
                                 "Low agreement indicates potential DNS propagation issues or resolver-specific caching behavior. "+
                                 "Adding diverse resolvers improves measurement confidence.",
                                 stats.AvgResolverAgreement),
-                        Standard: StandardNIST80053SI18,
+                        Standard: StandardNIST80053SI7,
                         Severity: resolverSeverity(stats.AvgResolverAgreement),
                         Category: "resolver",
                 })
@@ -231,7 +233,7 @@ func suggestRetryChanges(stats RollingStats, current ScannerProfile) []ProfileSu
                                 Rationale: fmt.Sprintf("Record lookup error rate is %.1f%% across %d scans. "+
                                         "Increasing retries from %d to %d reduces transient failures and improves data completeness.",
                                         errorRate, stats.ScanCount, current.RetryCount, suggestedRetries),
-                                Standard: StandardNIST80053SI18,
+                                Standard: StandardNIST80053SI7,
                                 Severity: mapKeyMedium,
                                 Category: "retry",
                         })
@@ -293,7 +295,7 @@ func suggestRecordPriority(stats RollingStats, current ScannerProfile) []Profile
                                 "Deprioritizing these types allows critical records (A, MX, SPF) to be resolved first, "+
                                 "improving overall scan efficiency.",
                                 errorRecords, stats.ScanCount),
-                        Standard: StandardNIST80053SI18,
+                        Standard: StandardNIST80053SI7,
                         Severity: severityLow,
                         Category: "priority",
                 })
@@ -361,7 +363,7 @@ func totalErrorRate(stats RollingStats) float64 {
 
 func buildPriorityOrder(stats RollingStats) []string {
         type rtError struct {
-                rt    string
+                rt     string
                 errors int
         }
 
@@ -381,4 +383,3 @@ func buildPriorityOrder(stats RollingStats) []string {
         }
         return result
 }
-

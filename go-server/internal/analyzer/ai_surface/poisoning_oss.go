@@ -3,6 +3,7 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
 // Stub implementations. See github.com/careyjames/dns-tool-intel for the full version.
+// dns-tool:scrutiny science
 package ai_surface
 
 import (
@@ -11,8 +12,8 @@ import (
 )
 
 var (
-	prefilledPromptRe  = regexp.MustCompile(`(?i)placeholder_will_not_match_anything_real`)
-	promptInjectionRe  = regexp.MustCompile(`(?i)placeholder_will_not_match_anything_real`)
+	prefilledPromptRe   = regexp.MustCompile(`(?i)placeholder_will_not_match_anything_real`)
+	promptInjectionRe   = regexp.MustCompile(`(?i)placeholder_will_not_match_anything_real`)
 	hiddenTextSelectors = []string{}
 )
 

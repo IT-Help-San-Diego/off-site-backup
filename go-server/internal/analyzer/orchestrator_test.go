@@ -4,6 +4,7 @@ package analyzer
 
 import (
         "testing"
+        "time"
 
         "dnstool/go-server/internal/icuae"
 )
@@ -625,7 +626,7 @@ func TestInferEmailFromDKIM_PreservesExistingConfidence(t *testing.T) {
                 "method": "MX record match",
         }
         hs := map[string]any{
-                "email_hosting":     "Unknown",
+                "email_hosting":    "Unknown",
                 "email_confidence": existingConfidence,
         }
         results := map[string]any{
@@ -720,7 +721,7 @@ func TestKeysOf_Empty(t *testing.T) {
 
 func TestTimedTask(t *testing.T) {
         ch := make(chan namedResult, 1)
-        fn := timedTask(ch, "test_key", func() any {
+        fn := timedTask(ch, "test_key", time.Now(), func() any {
                 return map[string]any{"status": "ok"}
         })
 
@@ -744,7 +745,7 @@ func TestTimedTask(t *testing.T) {
 
 func TestTimedTask_NilResult(t *testing.T) {
         ch := make(chan namedResult, 1)
-        fn := timedTask(ch, "nil_key", func() any {
+        fn := timedTask(ch, "nil_key", time.Now(), func() any {
                 return nil
         })
 

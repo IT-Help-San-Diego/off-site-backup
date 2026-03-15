@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny science
 package analyzer
 
 import (
@@ -12,7 +13,7 @@ import (
 )
 
 const (
-	openPhishFeedURL = "https://raw.githubusercontent.com/openphish/public_feed/refs/heads/main/feed.txt"
+	openPhishFeedURL  = "https://raw.githubusercontent.com/openphish/public_feed/refs/heads/main/feed.txt"
 	openPhishCacheTTL = 12 * time.Hour
 )
 
@@ -42,7 +43,7 @@ func fetchOpenPhishFeed() map[string]bool {
 	if err != nil {
 		return openPhishCache
 	}
-	defer resp.Body.Close()
+	defer safeClose(resp.Body, "openphish")
 
 	if resp.StatusCode != http.StatusOK {
 		return openPhishCache

@@ -107,23 +107,23 @@ func TestSanitizeErrorMessage(t *testing.T) {
                 wantCategory string
                 wantIcon     string
         }{
-                {"nil input", nil, "Unknown Error", "fas fa-question-circle"},
-                {"empty string", strPtr(""), "Unknown Error", "fas fa-question-circle"},
-                {"timeout", strPtr("connection timed out"), "DNS Resolution Timeout", "fas fa-clock"},
-                {"deadline", strPtr("context deadline exceeded"), "DNS Resolution Timeout", "fas fa-clock"},
-                {"nxdomain", strPtr("no such host"), "Domain Not Found (NXDOMAIN)", "fas fa-unlink"},
-                {"nxdomain upper", strPtr("NXDOMAIN returned"), "Domain Not Found (NXDOMAIN)", "fas fa-unlink"},
-                {"connection refused", strPtr("connection refused by server"), "Connection Refused", "fas fa-ban"},
-                {"connection reset", strPtr("connection reset by peer"), "Connection Refused", "fas fa-ban"},
-                {"servfail", strPtr("SERVFAIL from resolver"), "DNS Server Failure (SERVFAIL)", "fas fa-server"},
-                {"network unreachable", strPtr("network is unreachable"), "Network Unreachable", "fas fa-wifi"},
-                {"tls error", strPtr("TLS handshake failed"), "TLS/Certificate Error", "fas fa-lock"},
-                {"x509 error", strPtr("x509 certificate has expired"), "TLS/Certificate Error", "fas fa-lock"},
-                {"refused", strPtr("query refused"), "Query Refused", "fas fa-hand-paper"},
-                {"rate limit", strPtr("rate limit exceeded"), "Rate Limited", "fas fa-tachometer-alt"},
-                {"throttled", strPtr("request throttled"), "Rate Limited", "fas fa-tachometer-alt"},
-                {"invalid", strPtr("invalid domain format"), "Invalid Input", "fas fa-exclamation-triangle"},
-                {"malformed", strPtr("malformed DNS response"), "Invalid Input", "fas fa-exclamation-triangle"},
+                {"nil input", nil, "Unknown Error", "question-circle"},
+                {"empty string", strPtr(""), "Unknown Error", "question-circle"},
+                {"timeout", strPtr("connection timed out"), "DNS Resolution Timeout", "clock"},
+                {"deadline", strPtr("context deadline exceeded"), "DNS Resolution Timeout", "clock"},
+                {"nxdomain", strPtr("no such host"), "Domain Not Found (NXDOMAIN)", "unlink"},
+                {"nxdomain upper", strPtr("NXDOMAIN returned"), "Domain Not Found (NXDOMAIN)", "unlink"},
+                {"connection refused", strPtr("connection refused by server"), "Connection Refused", "ban"},
+                {"connection reset", strPtr("connection reset by peer"), "Connection Refused", "ban"},
+                {"servfail", strPtr("SERVFAIL from resolver"), "DNS Server Failure (SERVFAIL)", "server"},
+                {"network unreachable", strPtr("network is unreachable"), "Network Unreachable", "wifi"},
+                {"tls error", strPtr("TLS handshake failed"), "TLS/Certificate Error", "lock"},
+                {"x509 error", strPtr("x509 certificate has expired"), "TLS/Certificate Error", "lock"},
+                {"refused", strPtr("query refused"), "Query Refused", "hand-paper"},
+                {"rate limit", strPtr("rate limit exceeded"), "Rate Limited", "tachometer-alt"},
+                {"throttled", strPtr("request throttled"), "Rate Limited", "tachometer-alt"},
+                {"invalid", strPtr("invalid domain format"), "Invalid Input", "exclamation-triangle"},
+                {"malformed", strPtr("malformed DNS response"), "Invalid Input", "exclamation-triangle"},
         }
         for _, tt := range tests {
                 t.Run(tt.name, func(t *testing.T) {
@@ -472,12 +472,12 @@ func TestParseOrgDMARC(t *testing.T) {
 
 func TestDetermineDMARCScope(t *testing.T) {
         tests := []struct {
-                name       string
-                subDMARC   bool
-                orgDMARC   bool
-                orgPolicy  string
-                root       string
-                wantScope  string
+                name      string
+                subDMARC  bool
+                orgDMARC  bool
+                orgPolicy string
+                root      string
+                wantScope string
         }{
                 {"sub has DMARC", true, false, "", "example.com", "local"},
                 {"inherited with policy", false, true, "reject", "example.com", "inherited"},
@@ -699,14 +699,14 @@ func TestIterPages(t *testing.T) {
 
 func TestNewPaginationHelper(t *testing.T) {
         tests := []struct {
-                name       string
-                page       int
-                perPage    int
-                total      int64
-                wantPage   int
-                wantPages  int
-                wantPrev   bool
-                wantNext   bool
+                name      string
+                page      int
+                perPage   int
+                total     int64
+                wantPage  int
+                wantPages int
+                wantPrev  bool
+                wantNext  bool
         }{
                 {"first page", 1, 10, 50, 1, 5, false, true},
                 {"middle page", 3, 10, 50, 3, 5, true, true},
@@ -1160,9 +1160,9 @@ func TestGetSectionHelper(t *testing.T) {
 
 func TestExtractRootDomainHelper(t *testing.T) {
         tests := []struct {
-                name    string
-                domain  string
-                wantSub bool
+                name     string
+                domain   string
+                wantSub  bool
                 wantRoot string
         }{
                 {"subdomain", "www.example.com", true, "example.com"},
@@ -1186,9 +1186,9 @@ func TestExtractRootDomainHelper(t *testing.T) {
 
 func TestIsPublicSuffixDomainHelper(t *testing.T) {
         tests := []struct {
-                name string
+                name   string
                 domain string
-                want bool
+                want   bool
         }{
                 {"regular domain", "example.com", false},
                 {"TLD", "com", true},

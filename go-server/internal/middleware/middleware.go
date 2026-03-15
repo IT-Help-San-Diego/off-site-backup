@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny plumbing
 package middleware
 
 import (
@@ -23,16 +24,17 @@ const (
         CSPNonceKey contextKey = "csp_nonce"
         TraceIDKey  contextKey = "trace_id"
 
-        ginKeyCSPNonce    = "csp_nonce"
-        ginKeyTraceID     = "trace_id"
+        ginKeyCSPNonce     = "csp_nonce"
+        ginKeyTraceID      = "trace_id"
         ginKeyRequestStart = "request_start"
-        ginKeyCSRFToken   = "csrf_token"
+        ginKeyCSRFToken    = "csrf_token"
 )
 
 func generateNonce() string {
         b := make([]byte, 16)
-        // crypto/rand.Read always succeeds on supported platforms (Go doc guarantee)
-        _, _ = rand.Read(b)
+        if _, err := rand.Read(b); err != nil {
+                slog.Error("rand.Read failed", "error", err)
+        }
         return base64.URLEncoding.EncodeToString(b)
 }
 
@@ -66,62 +68,91 @@ func RequestContext() gin.HandlerFunc {
 func SecurityHeaders(isDev ...bool) gin.HandlerFunc {
         devMode := len(isDev) > 0 && isDev[0]
         return func(c *gin.Context) {
-                nonce, _ := c.Get(ginKeyCSPNonce)
-                nonceStr, _ := nonce.(string)
-
-                c.Header("X-Content-Type-Options", "nosniff")
-                if !devMode {
-                        c.Header("X-Frame-Options", "DENY")
-                }
-                c.Header("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
-                c.Header("Referrer-Policy", "strict-origin-when-cross-origin")
-                c.Header("Permissions-Policy", "geolocation=(), microphone=(), camera=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), midi=(), screen-wake-lock=(), xr-spatial-tracking=(), interest-cohort=(), browsing-topics=()")
-                if devMode {
-                        c.Header("Cross-Origin-Opener-Policy", "same-origin-allow-popups")
-                        c.Header("Cross-Origin-Resource-Policy", "cross-origin")
-                } else {
-                        c.Header("Cross-Origin-Opener-Policy", "same-origin")
-                        c.Header("Cross-Origin-Resource-Policy", "same-origin")
-                }
-                c.Header("X-Permitted-Cross-Domain-Policies", "none")
-
-                upgradeDirective := ""
-                if c.Request.TLS != nil || c.GetHeader("X-Forwarded-Proto") == "https" {
-                        upgradeDirective = "upgrade-insecure-requests;"
+                if strings.HasPrefix(c.Request.URL.Path, "/static/") {
+                        c.Header("X-Content-Type-Options", "nosniff")
+                        c.Next()
+                        return
                 }
 
-                frameAncestors := "frame-ancestors 'none'; "
-                if devMode {
-                        frameAncestors = "frame-ancestors https://replit.com https://*.replit.com https://*.replit.dev https://*.replit.app https://*.picard.replit.dev; "
-                }
-
-                connectSrc := "connect-src 'self'; "
-                if devMode {
-                        connectSrc = "connect-src 'self' https://replit.com https://*.replit.com https://*.replit.dev; "
-                }
-
-                csp := fmt.Sprintf(
-                        "default-src 'none'; "+
-                                "script-src 'self' 'nonce-%s'; "+
-                                "style-src 'self' 'nonce-%s'; "+
-                                "font-src 'self'; "+
-                                "img-src 'self' data: https:; "+
-                                "%s"+
-                                "%s"+
-                                "base-uri 'none'; "+
-                                "form-action 'self'; "+
-                                "manifest-src 'self'; "+
-                                "object-src 'none'; "+
-                                "frame-src 'none'; "+
-                                "media-src 'self'; "+
-                                "worker-src 'self'; "+
-                                "%s",
-                        nonceStr, nonceStr, connectSrc, frameAncestors, upgradeDirective,
-                )
-                c.Header("Content-Security-Policy", csp)
-
+                nonceStr := extractNonceStr(c)
+                setCommonSecurityHeaders(c, devMode)
+                c.Header("Content-Security-Policy", buildCSP(c, nonceStr, devMode))
                 c.Next()
         }
+}
+
+func extractNonceStr(c *gin.Context) string {
+        nonce, exists := c.Get(ginKeyCSPNonce)
+        if !exists {
+                return ""
+        }
+        if s, ok := nonce.(string); ok {
+                return s
+        }
+        return ""
+}
+
+func setCommonSecurityHeaders(c *gin.Context, devMode bool) {
+        c.Header("X-Content-Type-Options", "nosniff")
+        if !devMode {
+                if c.Request.URL.Path == "/signature" {
+                        c.Header("X-Frame-Options", "SAMEORIGIN")
+                } else {
+                        c.Header("X-Frame-Options", "DENY")
+                }
+        }
+        c.Header("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+        c.Header("Referrer-Policy", "strict-origin-when-cross-origin")
+        c.Header("Permissions-Policy", "geolocation=(), microphone=(), camera=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), midi=(), screen-wake-lock=(), xr-spatial-tracking=(), interest-cohort=(), browsing-topics=()")
+        if devMode {
+                c.Header("Cross-Origin-Opener-Policy", "same-origin-allow-popups")
+                c.Header("Cross-Origin-Resource-Policy", "cross-origin")
+        } else {
+                c.Header("Cross-Origin-Opener-Policy", "same-origin")
+                c.Header("Cross-Origin-Resource-Policy", "same-origin")
+        }
+        c.Header("X-Permitted-Cross-Domain-Policies", "none")
+}
+
+func buildCSP(c *gin.Context, nonceStr string, devMode bool) string {
+        connectSrc := "connect-src 'self'; "
+        if devMode {
+                connectSrc = "connect-src 'self' https://replit.com https://*.replit.com https://*.replit.dev; "
+        }
+
+        frameAncestors := "frame-ancestors 'none'; "
+        if devMode {
+                frameAncestors = "frame-ancestors https://replit.com https://*.replit.com https://*.replit.dev https://*.replit.app https://*.picard.replit.dev; "
+        }
+
+        frameSrc := "frame-src 'none'; "
+        if c.Request.URL.Path == "/signature" {
+                frameSrc = "frame-src 'self'; "
+        }
+
+        upgradeDirective := ""
+        if c.Request.TLS != nil || c.GetHeader("X-Forwarded-Proto") == "https" {
+                upgradeDirective = "upgrade-insecure-requests;"
+        }
+
+        return fmt.Sprintf(
+                "default-src 'none'; "+
+                        "script-src 'self' 'nonce-%s'; "+
+                        "style-src 'self' 'nonce-%s'; "+
+                        "font-src 'self'; "+
+                        "img-src 'self' data: blob: https:; "+
+                        "%s"+
+                        "%s"+
+                        "base-uri 'none'; "+
+                        "form-action 'self'; "+
+                        "manifest-src 'self'; "+
+                        "object-src 'none'; "+
+                        "%s"+
+                        "media-src 'self'; "+
+                        "worker-src 'self'; "+
+                        "%s",
+                nonceStr, nonceStr, connectSrc, frameAncestors, frameSrc, upgradeDirective,
+        )
 }
 
 func Recovery(appVersion string, opts ...map[string]any) gin.HandlerFunc {
@@ -132,14 +163,14 @@ func Recovery(appVersion string, opts ...map[string]any) gin.HandlerFunc {
         return func(c *gin.Context) {
                 defer func() {
                         if err := recover(); err != nil {
-                                traceID, _ := c.Get(ginKeyTraceID)
+                                traceID, _ := c.Get(ginKeyTraceID) //nolint:errcheck // value used for logging only
                                 slog.Error("Panic recovered",
                                         ginKeyTraceID, traceID,
                                         "error", fmt.Sprintf("%v", err),
                                         "path", c.Request.URL.Path,
                                 )
-                                nonce, _ := c.Get(ginKeyCSPNonce)
-                                csrfToken, _ := c.Get(ginKeyCSRFToken)
+                                nonce, _ := c.Get(ginKeyCSPNonce)      //nolint:errcheck // value used for template rendering
+                                csrfToken, _ := c.Get(ginKeyCSRFToken) //nolint:errcheck // value used for template rendering
                                 type flashMsg struct {
                                         Category string
                                         Message  string

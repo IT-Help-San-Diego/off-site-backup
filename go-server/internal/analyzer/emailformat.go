@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny science
 package analyzer
 
 import (
@@ -8,13 +9,13 @@ import (
 )
 
 const (
-        headerSubject   = "Subject: "
-        headerFrom      = "From: "
-        headerSep       = "\r\n"
-        jsonKeyValue    = "value"
-        jsonKeyHeaders  = "headers"
-        jsonKeyName     = "name"
-        formatRaw       = "raw"
+        headerSubject    = "Subject: "
+        headerFrom       = "From: "
+        headerSep        = "\r\n"
+        jsonKeyValue     = "value"
+        jsonKeyHeaders   = "headers"
+        jsonKeyName      = "name"
+        formatRaw        = "raw"
         jsonKeyHeadersUC = "Headers"
 )
 
@@ -63,8 +64,7 @@ func isBinaryContent(data string) bool {
 }
 
 func handleBinaryFile(filename string) *DetectedFormat {
-        lower := strings.ToLower(filename)
-        if strings.HasSuffix(lower, ".msg") {
+        if lower := strings.ToLower(filename); strings.HasSuffix(lower, ".msg") {
                 return &DetectedFormat{
                         Format: "msg",
                         Error:  "Outlook .msg files use a proprietary binary format we can't read directly. In Outlook, open the message → File → Save As → choose \".eml\" format, then upload that instead.",
@@ -196,8 +196,7 @@ func prependMissingHeader(lines []string, prefix string, valueFn func() string) 
                         return lines
                 }
         }
-        val := valueFn()
-        if val != "" {
+        if val := valueFn(); val != "" {
                 lines = append([]string{val}, lines...)
         }
         return lines
@@ -411,8 +410,7 @@ func isMboxFormat(data string) bool {
         if len(lines) < 2 {
                 return false
         }
-        firstLine := lines[0]
-        if !strings.HasPrefix(firstLine, "From ") {
+        if firstLine := lines[0]; !strings.HasPrefix(firstLine, "From ") {
                 return false
         }
         for _, line := range lines[1:] {
@@ -430,8 +428,7 @@ func extractFromMbox(data string) *DetectedFormat {
         }
         remainder := lines[1]
 
-        nextMsg := strings.Index(remainder, "\nFrom ")
-        if nextMsg > 0 {
+        if nextMsg := strings.Index(remainder, "\nFrom "); nextMsg > 0 {
                 remainder = remainder[:nextMsg]
         }
 

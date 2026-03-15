@@ -1,7 +1,7 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
 //
-// ICuAE — Intelligence Currency Audit Engine
+// # ICuAE — Intelligence Currency Audit Engine
 //
 // Companion to ICAE (Intelligence Confidence Audit Engine).
 // ICAE answers: "Did we interpret the DNS data correctly?"
@@ -9,10 +9,11 @@
 //
 // Grounded in five authoritative standards:
 //   - ICD 203 (CIA): Timeliness as core analytic standard
-//   - NIST SP 800-53 SI-18: Accuracy, Relevance, Timeliness, Completeness
+//   - NIST SP 800-53 SI-7: Software, Firmware, and Information Integrity
 //   - ISO/IEC 25012: Currentness — data of the right age for its context
 //   - RFC 8767: TTL-based cache expiration and serve-stale behavior
 //   - SPJ Code of Ethics: Multiple independent sources for verification
+// dns-tool:scrutiny science
 package icuae
 
 import (
@@ -21,13 +22,13 @@ import (
 )
 
 const (
-        StandardNIST80053SI18 = "NIST SP 800-53 SI-18"
+        StandardNIST80053SI7 = "NIST SP 800-53 SI-7"
 
-        DimensionCurrentness      = "currentness"
-        DimensionTTLCompliance    = "ttl_compliance"
-        DimensionCompleteness     = "completeness"
+        DimensionCurrentness       = "currentness"
+        DimensionTTLCompliance     = "ttl_compliance"
+        DimensionCompleteness      = "completeness"
         DimensionSourceCredibility = "source_credibility"
-        DimensionTTLRelevance     = "ttl_relevance"
+        DimensionTTLRelevance      = "ttl_relevance"
 
         GradeExcellent = "excellent"
         GradeGood      = "good"
@@ -47,9 +48,9 @@ var DimensionDisplayNames = map[string]string{
 var DimensionStandards = map[string]string{
         DimensionCurrentness:       "ISO/IEC 25012",
         DimensionTTLCompliance:     "RFC 8767",
-        DimensionCompleteness:      StandardNIST80053SI18,
+        DimensionCompleteness:      StandardNIST80053SI7,
         DimensionSourceCredibility: "ISO/IEC 25012 + SPJ",
-        DimensionTTLRelevance:      StandardNIST80053SI18,
+        DimensionTTLRelevance:      StandardNIST80053SI7,
 }
 
 var GradeOrder = map[string]int{
@@ -86,15 +87,25 @@ type DimensionScore struct {
         Findings    []TTLFinding `json:"findings,omitempty"`
 }
 
+func (d DimensionScore) RecordTypesList() []string {
+        out := make([]string, 0, d.RecordTypes)
+        for _, f := range d.Findings {
+                if f.RecordType != "" {
+                        out = append(out, f.RecordType)
+                }
+        }
+        return out
+}
+
 type TTLFinding struct {
-        RecordType     string `json:"record_type"`
-        ObservedTTL    uint32 `json:"observed_ttl"`
-        TypicalTTL     uint32 `json:"typical_ttl"`
+        RecordType     string  `json:"record_type"`
+        ObservedTTL    uint32  `json:"observed_ttl"`
+        TypicalTTL     uint32  `json:"typical_ttl"`
         Ratio          float64 `json:"ratio"`
-        Severity       string `json:"severity"`
-        Standard       string `json:"standard"`
-        Recommendation string `json:"recommendation"`
-        ProviderNote   string `json:"provider_note,omitempty"`
+        Severity       string  `json:"severity"`
+        Standard       string  `json:"standard"`
+        Recommendation string  `json:"recommendation"`
+        ProviderNote   string  `json:"provider_note,omitempty"`
 }
 
 func (f TTLFinding) HasProviderNote() bool { return f.ProviderNote != "" }
@@ -151,15 +162,15 @@ type TrafficEngineeringContext struct {
 }
 
 type CurrencyReport struct {
-        OverallGrade       string                      `json:"overall_grade"`
-        OverallScore       float64                     `json:"overall_score"`
-        Dimensions         []DimensionScore            `json:"dimensions"`
-        ResolverCount      int                         `json:"resolver_count"`
-        RecordCount        int                         `json:"record_count"`
-        Guidance           string                      `json:"guidance"`
-        ProviderName       string                      `json:"provider_name,omitempty"`
-        SOACompliance      *SOAComplianceReport        `json:"soa_compliance,omitempty"`
-        TrafficEngineering *TrafficEngineeringContext   `json:"traffic_engineering,omitempty"`
+        OverallGrade       string                     `json:"overall_grade"`
+        OverallScore       float64                    `json:"overall_score"`
+        Dimensions         []DimensionScore           `json:"dimensions"`
+        ResolverCount      int                        `json:"resolver_count"`
+        RecordCount        int                        `json:"record_count"`
+        Guidance           string                     `json:"guidance"`
+        ProviderName       string                     `json:"provider_name,omitempty"`
+        SOACompliance      *SOAComplianceReport       `json:"soa_compliance,omitempty"`
+        TrafficEngineering *TrafficEngineeringContext `json:"traffic_engineering,omitempty"`
 }
 
 func (r CurrencyReport) HasProviderIntel() bool {
@@ -260,10 +271,10 @@ type RecordCurrency struct {
 }
 
 type ResolverAgreement struct {
-        RecordType    string `json:"record_type"`
-        AgreeCount    int    `json:"agree_count"`
-        TotalResolvers int   `json:"total_resolvers"`
-        Unanimous     bool   `json:"unanimous"`
+        RecordType     string `json:"record_type"`
+        AgreeCount     int    `json:"agree_count"`
+        TotalResolvers int    `json:"total_resolvers"`
+        Unanimous      bool   `json:"unanimous"`
 }
 
 // typicalTTLs are the baseline TTLs for ICuAE TTL Relevance scoring.
@@ -431,9 +442,9 @@ func ttlComplianceDetails(compliant, total int) string {
         }
         violated := total - compliant
         if violated == 1 {
-                return "1 resolver TTL exceeds its authoritative value — possible caching violation"
+                return "1 resolver TTL exceeds its authoritative value — possible serve-stale (RFC 8767), timing skew, or cache misconfiguration"
         }
-        return fmt.Sprintf("%d of %d resolver TTLs exceed authoritative values — possible caching violations", violated, total)
+        return fmt.Sprintf("%d of %d resolver TTLs exceed authoritative values — possible serve-stale (RFC 8767), timing skew, or cache misconfiguration", violated, total)
 }
 
 func EvaluateCompleteness(observedTypes map[string]bool) DimensionScore {
@@ -580,7 +591,7 @@ func buildTTLFinding(recordType string, observed, typical uint32, ratio float64,
                 TypicalTTL:     typical,
                 Ratio:          ratio,
                 Severity:       severity,
-                Standard:       StandardNIST80053SI18,
+                Standard:       StandardNIST80053SI7,
                 Recommendation: recommendation,
         }
 }
@@ -591,7 +602,7 @@ func ttlRecommendation(recordType string, observed, typical uint32) string {
                         "%s TTL is below typical — observed %s, typical value is %s. "+
                                 "Short TTLs increase DNS query volume but enable faster propagation. "+
                                 "If you are preparing for a migration or need rapid failover, this may be intentional (RFC 1035 §3.2.1). "+
-                                "For steady-state production, consider %d seconds per "+StandardNIST80053SI18+" relevance guidance. "+
+                                "For steady-state production, consider %d seconds per "+StandardNIST80053SI7+" relevance guidance. "+
                                 "Use the TTL Tuner for profile-specific recommendations.",
                         recordType,
                         formatTTLDuration(observed), formatTTLDuration(typical),
@@ -601,7 +612,7 @@ func ttlRecommendation(recordType string, observed, typical uint32) string {
         return fmt.Sprintf(
                 "%s TTL is above typical — observed %s, typical value is %s. "+
                         "Long TTLs reduce DNS query volume but slow propagation when records change. "+
-                        "Consider %d seconds for a balance of performance and flexibility per "+StandardNIST80053SI18+" relevance guidance.",
+                        "Consider %d seconds for a balance of performance and flexibility per "+StandardNIST80053SI7+" relevance guidance.",
                 recordType,
                 formatTTLDuration(observed), formatTTLDuration(typical),
                 typical,

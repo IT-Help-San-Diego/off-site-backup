@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny design
 package handlers
 
 import (
@@ -45,31 +46,7 @@ func (h *ExportHandler) ExportJSON(c *gin.Context) {
                 }
 
                 for _, a := range analyses {
-                        var fullResults interface{}
-                        if len(a.FullResults) > 0 {
-                                if err := json.Unmarshal(a.FullResults, &fullResults); err != nil {
-                                        slog.Warn("Export: failed to unmarshal full results", "domain", a.Domain, mapKeyError, err)
-                                }
-                        }
-
-                        record := map[string]interface{}{
-                                "id":                a.ID,
-                                "domain":           a.Domain,
-                                "ascii_domain":     a.AsciiDomain,
-                                "created_at":       formatTimestampISO(a.CreatedAt),
-                                "updated_at":       formatTimestampISO(a.UpdatedAt),
-                                "analysis_duration": a.AnalysisDuration,
-                                "country_code":     a.CountryCode,
-                                "country_name":     a.CountryName,
-                                "full_results":     fullResults,
-                        }
-
-                        line, err := json.Marshal(record)
-                        if err != nil {
-                                continue
-                        }
-                        c.Writer.Write(line)
-                        c.Writer.Write([]byte("\n"))
+                        writeExportRecord(c.Writer, a)
                 }
 
                 c.Writer.Flush()
@@ -79,4 +56,34 @@ func (h *ExportHandler) ExportJSON(c *gin.Context) {
                 }
                 offset += perPage
         }
+}
+
+func buildExportRecord(a dbq.DomainAnalysis) map[string]interface{} {
+        var fullResults interface{}
+        if len(a.FullResults) > 0 {
+                if err := json.Unmarshal(a.FullResults, &fullResults); err != nil {
+                        slog.Warn("Export: failed to unmarshal full results", "domain", a.Domain, mapKeyError, err)
+                }
+        }
+        return map[string]interface{}{
+                "id":                a.ID,
+                "domain":            a.Domain,
+                "ascii_domain":      a.AsciiDomain,
+                "created_at":        formatTimestampISO(a.CreatedAt),
+                "updated_at":        formatTimestampISO(a.UpdatedAt),
+                "analysis_duration": a.AnalysisDuration,
+                "country_code":      a.CountryCode,
+                "country_name":      a.CountryName,
+                "full_results":      fullResults,
+        }
+}
+
+func writeExportRecord(w interface{ Write([]byte) (int, error) }, a dbq.DomainAnalysis) {
+        record := buildExportRecord(a)
+        line, err := json.Marshal(record)
+        if err != nil {
+                return
+        }
+        w.Write(line)
+        w.Write([]byte("\n"))
 }

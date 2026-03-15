@@ -1,8 +1,12 @@
 package analyzer
 
 import (
+        "context"
         "testing"
         "time"
+
+        "dnstool/go-server/internal/dnsclient"
+        "dnstool/go-server/internal/telemetry"
 )
 
 func TestNormalizeCTName(t *testing.T) {
@@ -860,5 +864,70 @@ func TestMergeCTSubdomainIssuerCap(t *testing.T) {
         issuers := existing[mapKeyIssuers].([]string)
         if len(issuers) != 5 {
                 t.Errorf("should cap issuers at 5, got %d", len(issuers))
+        }
+}
+
+func newTestAnalyzerForCT(reg *telemetry.Registry) *Analyzer {
+        httpClient := dnsclient.NewSafeHTTPClient()
+        return &Analyzer{
+                Telemetry:  reg,
+                HTTP:       httpClient,
+                SlowHTTP:   httpClient,
+                DNS:        NewMockDNSClient(),
+                ctCache:    make(map[string]ctCacheEntry),
+                ctCacheTTL: time.Hour,
+        }
+}
+
+func TestFetchCTEntriesWithFallback_CooldownPath(t *testing.T) {
+        reg := telemetry.NewRegistry()
+        for i := 0; i < 20; i++ {
+                reg.RecordFailure("ct:crt.sh", "test forced failure")
+        }
+        if !reg.InCooldown("ct:crt.sh") {
+                t.Skip("could not trigger cooldown")
+        }
+        a := newTestAnalyzerForCT(reg)
+        ctx, cancel := context.WithCancel(context.Background())
+        cancel()
+        result := a.fetchCTEntriesWithFallback(ctx, "nonexistent-test-domain.invalid")
+        if result.failureReason != "cooldown" {
+                t.Errorf("expected failureReason='cooldown', got %q", result.failureReason)
+        }
+        if result.available {
+                t.Errorf("expected available=false when in cooldown with no certspotter data")
+        }
+}
+
+func TestFetchCTEntriesWithFallback_BothProvidersFailed(t *testing.T) {
+        reg := telemetry.NewRegistry()
+        a := newTestAnalyzerForCT(reg)
+        ctx, cancel := context.WithCancel(context.Background())
+        cancel()
+        result := a.fetchCTEntriesWithFallback(ctx, "nonexistent-test-domain.invalid")
+        if result.failureReason != "both_providers_failed" {
+                t.Errorf("expected failureReason='both_providers_failed', got %q", result.failureReason)
+        }
+        if result.available {
+                t.Errorf("expected available=false when both providers fail")
+        }
+}
+
+func TestDiscoverSubdomainsWithBudget_NoData(t *testing.T) {
+        reg := telemetry.NewRegistry()
+        for i := 0; i < 20; i++ {
+                reg.RecordFailure("ct:crt.sh", "test forced failure")
+        }
+        a := newTestAnalyzerForCT(reg)
+        result := a.discoverSubdomainsWithBudget("nonexistent-test-domain.invalid")
+        if result == nil {
+                t.Fatal("expected non-nil result map")
+        }
+        status, ok := result[mapKeyStatus].(string)
+        if !ok {
+                t.Fatal("expected status key in result")
+        }
+        if status != "success" {
+                t.Errorf("expected status='success', got %q", status)
         }
 }

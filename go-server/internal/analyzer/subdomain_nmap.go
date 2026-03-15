@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny science
 package analyzer
 
 import (
@@ -21,11 +22,11 @@ const (
 )
 
 type nmapProbeResponse struct {
-        Status     string         `json:"status"`
-        Error      string         `json:"error"`
-        Parsed     *nmapParsed    `json:"parsed"`
-        ScriptsRun []string       `json:"scripts_run"`
-        Elapsed    float64        `json:"elapsed_seconds"`
+        Status     string      `json:"status"`
+        Error      string      `json:"error"`
+        Parsed     *nmapParsed `json:"parsed"`
+        ScriptsRun []string    `json:"scripts_run"`
+        Elapsed    float64     `json:"elapsed_seconds"`
 }
 
 type nmapParsed struct {
@@ -33,10 +34,10 @@ type nmapParsed struct {
 }
 
 type nmapHost struct {
-        Status    string            `json:"status"`
-        Addresses []nmapAddr        `json:"addresses"`
-        Hostnames []string          `json:"hostnames"`
-        Ports     []nmapPort        `json:"ports"`
+        Status    string     `json:"status"`
+        Addresses []nmapAddr `json:"addresses"`
+        Hostnames []string   `json:"hostnames"`
+        Ports     []nmapPort `json:"ports"`
 }
 
 type nmapAddr struct {
@@ -45,14 +46,14 @@ type nmapAddr struct {
 }
 
 type nmapPort struct {
-        Port     int            `json:"port"`
-        Protocol string         `json:"protocol"`
-        State    string         `json:"state"`
-        Service  string         `json:"service"`
-        Product  string         `json:"product,omitempty"`
-        Version  string         `json:"version,omitempty"`
-        Tunnel   string         `json:"tunnel,omitempty"`
-        Scripts  []nmapScript   `json:"scripts,omitempty"`
+        Port     int          `json:"port"`
+        Protocol string       `json:"protocol"`
+        State    string       `json:"state"`
+        Service  string       `json:"service"`
+        Product  string       `json:"product,omitempty"`
+        Version  string       `json:"version,omitempty"`
+        Tunnel   string       `json:"tunnel,omitempty"`
+        Scripts  []nmapScript `json:"scripts,omitempty"`
 }
 
 type nmapScript struct {
@@ -237,7 +238,7 @@ func callNmapProbe(ctx context.Context, probe *ProbeEndpoint, host string) *nmap
                 slog.Debug("Nmap probe call failed", "host", host, "error", err)
                 return nil
         }
-        defer resp.Body.Close()
+        defer safeClose(resp.Body, "nmap-probe")
 
         body, err := io.ReadAll(io.LimitReader(resp.Body, 256*1024))
         if err != nil {

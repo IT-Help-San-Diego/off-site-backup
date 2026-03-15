@@ -70,7 +70,7 @@ func TestSendDiscord_Success(t *testing.T) {
         }))
         defer srv.Close()
 
-        n := &Notifier{Client: srv.Client()}
+        n := &Notifier{Client: srv.Client(), AllowLocal: true}
 
         diffJSON, _ := json.Marshal([]struct {
                 Field string `json:"field"`
@@ -128,7 +128,7 @@ func TestSendDiscord_ErrorStatus(t *testing.T) {
         }))
         defer srv.Close()
 
-        n := &Notifier{Client: srv.Client()}
+        n := &Notifier{Client: srv.Client(), AllowLocal: true}
         notif := dbq.ListPendingNotificationsRow{
                 Url:      srv.URL,
                 Domain:   "example.com",
@@ -156,7 +156,7 @@ func TestSendDiscord_NoDiffSummary(t *testing.T) {
         }))
         defer srv.Close()
 
-        n := &Notifier{Client: srv.Client()}
+        n := &Notifier{Client: srv.Client(), AllowLocal: true}
         notif := dbq.ListPendingNotificationsRow{
                 Url:      srv.URL,
                 Domain:   "test.com",
@@ -193,7 +193,7 @@ func TestSendGenericWebhook_Success(t *testing.T) {
         }))
         defer srv.Close()
 
-        n := &Notifier{Client: srv.Client()}
+        n := &Notifier{Client: srv.Client(), AllowLocal: true}
 
         diffJSON := []byte(`[{"field":"DMARC","old":"none","new":"reject"}]`)
         notif := dbq.ListPendingNotificationsRow{
@@ -236,7 +236,7 @@ func TestSendGenericWebhook_NoSecret(t *testing.T) {
         }))
         defer srv.Close()
 
-        n := &Notifier{Client: srv.Client()}
+        n := &Notifier{Client: srv.Client(), AllowLocal: true}
         notif := dbq.ListPendingNotificationsRow{
                 Url:      srv.URL,
                 Domain:   "test.com",
@@ -259,7 +259,7 @@ func TestSendGenericWebhook_ErrorStatus(t *testing.T) {
         }))
         defer srv.Close()
 
-        n := &Notifier{Client: srv.Client()}
+        n := &Notifier{Client: srv.Client(), AllowLocal: true}
         notif := dbq.ListPendingNotificationsRow{
                 Url:      srv.URL,
                 Domain:   "fail.com",
@@ -287,7 +287,7 @@ func TestSendTestDiscord_Success(t *testing.T) {
         }))
         defer srv.Close()
 
-        n := &Notifier{Client: srv.Client()}
+        n := &Notifier{Client: srv.Client(), AllowLocal: true}
         err := n.SendTestDiscord(context.Background(), srv.URL)
         if err != nil {
                 t.Fatalf("unexpected error: %v", err)
@@ -319,7 +319,7 @@ func TestSendTestDiscord_Error(t *testing.T) {
         }))
         defer srv.Close()
 
-        n := &Notifier{Client: srv.Client()}
+        n := &Notifier{Client: srv.Client(), AllowLocal: true}
         err := n.SendTestDiscord(context.Background(), srv.URL)
         if err == nil {
                 t.Fatal("expected error for 400")
@@ -341,8 +341,9 @@ func TestDeliverPending_DiscordEndpoint(t *testing.T) {
         defer srv.Close()
 
         n := &Notifier{
-                Client:  srv.Client(),
-                Queries: nil,
+                Client:     srv.Client(),
+                Queries:    nil,
+                AllowLocal: true,
         }
 
         notif := dbq.ListPendingNotificationsRow{
@@ -372,7 +373,7 @@ func TestSendGenericWebhook_EmptySecret(t *testing.T) {
         }))
         defer srv.Close()
 
-        n := &Notifier{Client: srv.Client()}
+        n := &Notifier{Client: srv.Client(), AllowLocal: true}
         emptySecret := ""
         notif := dbq.ListPendingNotificationsRow{
                 Url:      srv.URL,
@@ -402,7 +403,7 @@ func TestSendGenericWebhook_NoDiffSummary(t *testing.T) {
         }))
         defer srv.Close()
 
-        n := &Notifier{Client: srv.Client()}
+        n := &Notifier{Client: srv.Client(), AllowLocal: true}
         notif := dbq.ListPendingNotificationsRow{
                 Url:      srv.URL,
                 Domain:   "nodiff.com",
@@ -448,7 +449,7 @@ func TestSendDiscord_MalformedDiffSummary(t *testing.T) {
         }))
         defer srv.Close()
 
-        n := &Notifier{Client: srv.Client()}
+        n := &Notifier{Client: srv.Client(), AllowLocal: true}
         notif := dbq.ListPendingNotificationsRow{
                 Url:         srv.URL,
                 Domain:      "test.com",
@@ -573,7 +574,7 @@ func (m *mockDB) UpdateDriftNotificationStatus(_ context.Context, arg dbq.Update
 
 func TestDeliverPending_ListError(t *testing.T) {
         db := &mockDB{listErr: fmt.Errorf("db down")}
-        n := &Notifier{Queries: db, Client: &http.Client{Timeout: 2 * time.Second}}
+        n := &Notifier{Queries: db, Client: &http.Client{Timeout: 2 * time.Second}, AllowLocal: true}
         count, err := n.DeliverPending(context.Background(), 10)
         if err == nil {
                 t.Fatal("expected error")
@@ -585,7 +586,7 @@ func TestDeliverPending_ListError(t *testing.T) {
 
 func TestDeliverPending_EmptyList(t *testing.T) {
         db := &mockDB{pending: nil}
-        n := &Notifier{Queries: db, Client: &http.Client{Timeout: 2 * time.Second}}
+        n := &Notifier{Queries: db, Client: &http.Client{Timeout: 2 * time.Second}, AllowLocal: true}
         count, err := n.DeliverPending(context.Background(), 10)
         if err != nil {
                 t.Fatalf("unexpected error: %v", err)
@@ -614,7 +615,7 @@ func TestDeliverPending_DiscordSuccess(t *testing.T) {
                         },
                 },
         }
-        n := &Notifier{Queries: db, Client: &http.Client{Timeout: 2 * time.Second}}
+        n := &Notifier{Queries: db, Client: &http.Client{Timeout: 2 * time.Second}, AllowLocal: true}
         count, err := n.DeliverPending(context.Background(), 10)
         if err != nil {
                 t.Fatalf("unexpected error: %v", err)
@@ -649,7 +650,7 @@ func TestDeliverPending_GenericWebhookSuccess(t *testing.T) {
                         },
                 },
         }
-        n := &Notifier{Queries: db, Client: &http.Client{Timeout: 2 * time.Second}}
+        n := &Notifier{Queries: db, Client: &http.Client{Timeout: 2 * time.Second}, AllowLocal: true}
         count, err := n.DeliverPending(context.Background(), 10)
         if err != nil {
                 t.Fatalf("unexpected error: %v", err)
@@ -672,7 +673,7 @@ func TestDeliverPending_SendFailure(t *testing.T) {
                         },
                 },
         }
-        n := &Notifier{Queries: db, Client: &http.Client{Timeout: 1 * time.Second}}
+        n := &Notifier{Queries: db, Client: &http.Client{Timeout: 1 * time.Second}, AllowLocal: true}
         count, err := n.DeliverPending(context.Background(), 10)
         if err != nil {
                 t.Fatalf("unexpected error: %v", err)
@@ -707,7 +708,7 @@ func TestDeliverPending_UpdateError(t *testing.T) {
                 },
                 updateErr: fmt.Errorf("update failed"),
         }
-        n := &Notifier{Queries: db, Client: &http.Client{Timeout: 2 * time.Second}}
+        n := &Notifier{Queries: db, Client: &http.Client{Timeout: 2 * time.Second}, AllowLocal: true}
         count, err := n.DeliverPending(context.Background(), 10)
         if err != nil {
                 t.Fatalf("unexpected error: %v", err)
@@ -743,7 +744,7 @@ func TestDeliverPending_MultipleNotifications(t *testing.T) {
                         },
                 },
         }
-        n := &Notifier{Queries: db, Client: &http.Client{Timeout: 2 * time.Second}}
+        n := &Notifier{Queries: db, Client: &http.Client{Timeout: 2 * time.Second}, AllowLocal: true}
         count, err := n.DeliverPending(context.Background(), 10)
         if err != nil {
                 t.Fatalf("unexpected error: %v", err)

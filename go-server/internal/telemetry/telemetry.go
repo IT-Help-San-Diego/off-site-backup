@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny plumbing
 package telemetry
 
 import (
@@ -16,27 +17,27 @@ const (
         Degraded  HealthState = "degraded"
         Unhealthy HealthState = "unhealthy"
 
-        degradedThreshold  = 3
-        unhealthyThreshold = 5
+        degradedThreshold  = 6
+        unhealthyThreshold = 10
         cooldownBase       = 5 * time.Second
-        cooldownMax        = 5 * time.Minute
+        cooldownMax        = 2 * time.Minute
         latencyWindowSize  = 100
 )
 
 type ProviderStats struct {
-        Name             string      `json:"name"`
-        State            HealthState `json:"state"`
-        TotalRequests    int64       `json:"total_requests"`
-        SuccessCount     int64       `json:"success_count"`
-        FailureCount     int64       `json:"failure_count"`
-        ConsecFailures   int         `json:"consecutive_failures"`
-        LastError        string      `json:"last_error,omitempty"`
-        LastErrorTime    *time.Time  `json:"last_error_time,omitempty"`
-        LastSuccessTime  *time.Time  `json:"last_success_time,omitempty"`
-        AvgLatencyMs     float64     `json:"avg_latency_ms"`
-        P95LatencyMs     float64     `json:"p95_latency_ms"`
-        InCooldown       bool        `json:"in_cooldown"`
-        CooldownUntil    *time.Time  `json:"cooldown_until,omitempty"`
+        Name            string      `json:"name"`
+        State           HealthState `json:"state"`
+        TotalRequests   int64       `json:"total_requests"`
+        SuccessCount    int64       `json:"success_count"`
+        FailureCount    int64       `json:"failure_count"`
+        ConsecFailures  int         `json:"consecutive_failures"`
+        LastError       string      `json:"last_error,omitempty"`
+        LastErrorTime   *time.Time  `json:"last_error_time,omitempty"`
+        LastSuccessTime *time.Time  `json:"last_success_time,omitempty"`
+        AvgLatencyMs    float64     `json:"avg_latency_ms"`
+        P95LatencyMs    float64     `json:"p95_latency_ms"`
+        InCooldown      bool        `json:"in_cooldown"`
+        CooldownUntil   *time.Time  `json:"cooldown_until,omitempty"`
 }
 
 type provider struct {

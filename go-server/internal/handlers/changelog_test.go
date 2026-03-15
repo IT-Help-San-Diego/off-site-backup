@@ -1,7 +1,6 @@
 package handlers
 
 import (
-        "strings"
         "testing"
 )
 
@@ -34,9 +33,9 @@ func TestRecentChangelogSlicing(t *testing.T) {
         all := GetChangelog()
 
         tests := []struct {
-                name     string
-                n        int
-                wantLen  int
+                name    string
+                n       int
+                wantLen int
         }{
                 {"zero", 0, 0},
                 {"one", 1, 1},
@@ -150,20 +149,20 @@ func TestChangelogVersionConstants(t *testing.T) {
 }
 
 func TestChangelogIconConstants(t *testing.T) {
-        if iconShieldAlt != "fas fa-shield-alt" {
+        if iconShieldAlt != "shield-alt" {
                 t.Errorf("unexpected iconShieldAlt: %q", iconShieldAlt)
         }
 }
 
 func TestChangelogCategoryConstants(t *testing.T) {
         cats := map[string]string{
-                "catIntelligence":  catIntelligence,
-                "catSecurity":      catSecurity,
-                "catTransparency":  catTransparency,
-                "catBrand":         catBrand,
-                "catOrigins":       catOrigins,
-                "catCore":          catCore,
-                "catUX":            catUX,
+                "catIntelligence": catIntelligence,
+                "catSecurity":     catSecurity,
+                "catTransparency": catTransparency,
+                "catBrand":        catBrand,
+                "catOrigins":      catOrigins,
+                "catCore":         catCore,
+                "catUX":           catUX,
         }
         for name, val := range cats {
                 if val == "" {
@@ -217,8 +216,8 @@ func TestGetRecentChangelogPreservesOrder(t *testing.T) {
 func TestChangelogAllIconsHavePrefix(t *testing.T) {
         entries := GetChangelog()
         for i, e := range entries {
-                if !strings.HasPrefix(e.Icon, "fas fa-") && !strings.HasPrefix(e.Icon, "fab fa-") {
-                        t.Errorf("entry[%d] (%s) icon %q does not start with 'fas fa-' or 'fab fa-'", i, e.Title, e.Icon)
+                if e.Icon == "" {
+                        t.Errorf("entry[%d] (%s) icon is empty", i, e.Title)
                 }
         }
 }

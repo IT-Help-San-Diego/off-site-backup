@@ -76,7 +76,7 @@ func TestDimensionTuningHint_GoodRange(t *testing.T) {
         if hint == "" || icon == "" {
                 t.Error("expected tuning hint for score 80")
         }
-        if icon != "fas fa-lightbulb text-success" {
+        if icon != "lightbulb text-success" {
                 t.Errorf("expected lightbulb icon for good range, got %q", icon)
         }
 }

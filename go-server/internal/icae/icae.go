@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny science
 package icae
 
 import (
@@ -16,14 +17,14 @@ const (
         MaturityGold        = "gold"
         MaturityGoldMaster  = "gold_master"
 
-        ThresholdVerified    = 100
-        ThresholdConsistent  = 500
-        ThresholdGold        = 1000
-        ThresholdGoldMaster  = 5000
+        ThresholdVerified   = 100
+        ThresholdConsistent = 500
+        ThresholdGold       = 1000
+        ThresholdGoldMaster = 5000
 
-        ConsistentDays  = 30
-        GoldDays        = 90
-        GoldMasterDays  = 180
+        ConsistentDays = 30
+        GoldDays       = 90
+        GoldMasterDays = 180
 )
 
 var Protocols = []string{
@@ -126,6 +127,7 @@ type ReportMetrics struct {
         TotalAnalysisCases     int
         TotalAllCases          int
         HashAudit              *HashAuditResult
+        Calibration            *CalibrationResult
 }
 
 type RegressionEvent struct {

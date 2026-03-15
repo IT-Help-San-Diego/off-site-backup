@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny science
 package analyzer
 
 import (
@@ -14,18 +15,18 @@ import (
 )
 
 const (
-        mapKeyCertCount = "cert_count"
-        mapKeyCnameCount = "cname_count"
-        mapKeyCtAvailable = "ct_available"
-        mapKeyCurrentCount = "current_count"
-        mapKeyDisplayedCount = "displayed_count"
-        mapKeyExpiredCount = "expired_count"
-        mapKeyFirstSeen = "first_seen"
-        mapKeyIsCurrent = "is_current"
-        mapKeyIssuers = "issuers"
+        mapKeyCertCount        = "cert_count"
+        mapKeyCnameCount       = "cname_count"
+        mapKeyCtAvailable      = "ct_available"
+        mapKeyCurrentCount     = "current_count"
+        mapKeyDisplayedCount   = "displayed_count"
+        mapKeyExpiredCount     = "expired_count"
+        mapKeyFirstSeen        = "first_seen"
+        mapKeyIsCurrent        = "is_current"
+        mapKeyIssuers          = "issuers"
         mapKeyUniqueSubdomains = "unique_subdomains"
-        mapKeyName = "name"
-        mapKeyDns  = "dns"
+        mapKeyName             = "name"
+        mapKeyDns              = "dns"
 )
 
 type ctEntry struct {
@@ -135,20 +136,25 @@ type ctFetchResult struct {
 
 func (a *Analyzer) fetchCTEntriesWithFallback(ctx context.Context, domain string) ctFetchResult {
         ctProvider := "ct:crt.sh"
-        if a.Telemetry.InCooldown(ctProvider) {
-                slog.Info("CT provider in cooldown, skipping", mapKeyDomain, domain)
-                return ctFetchResult{failureReason: "cooldown"}
-        }
-        entries, available, failReason := a.fetchCTWithRetry(ctx, domain, ctProvider)
-        if available && len(entries) > 0 {
-                return ctFetchResult{entries: entries, available: true}
+        inCooldown := a.Telemetry.InCooldown(ctProvider)
+        if !inCooldown {
+                entries, available, failReason := a.fetchCTWithRetry(ctx, domain, ctProvider)
+                if available && len(entries) > 0 {
+                        return ctFetchResult{entries: entries, available: true}
+                }
+                _ = failReason
+        } else {
+                slog.Info("CT provider in cooldown, trying certspotter", mapKeyDomain, domain)
         }
         csEntries, csOK := a.fetchCertspotter(ctx, domain)
         if csOK && len(csEntries) > 0 {
                 slog.Info("Certspotter fallback succeeded", mapKeyDomain, domain, "entries", len(csEntries))
                 return ctFetchResult{entries: csEntries, available: true, fallback: true}
         }
-        return ctFetchResult{entries: entries, available: available, failureReason: failReason}
+        if inCooldown {
+                return ctFetchResult{failureReason: "cooldown"}
+        }
+        return ctFetchResult{available: false, failureReason: "both_providers_failed"}
 }
 
 func populateCTResults(result map[string]any, ctEntries, dedupedEntries []ctEntry, domain string, ctAvailable bool) {
@@ -162,21 +168,29 @@ func populateCTResults(result map[string]any, ctEntries, dedupedEntries []ctEntr
 
 func (a *Analyzer) DiscoverSubdomains(ctx context.Context, domain string) map[string]any {
         result := map[string]any{
-                mapKeyStatus:            "success",
-                mapKeySubdomains:        []map[string]any{},
+                mapKeyStatus:           "success",
+                mapKeySubdomains:       []map[string]any{},
                 mapKeyUniqueSubdomains: 0,
-                "total_certs":       0,
-                mapKeySource:            "Certificate Transparency + DNS Intelligence",
-                "caveat":            "Subdomains discovered via CT logs (RFC 6962), DNS probing of common service names, and CNAME chain traversal.",
+                "total_certs":          0,
+                mapKeySource:           "Certificate Transparency + DNS Intelligence",
+                "caveat":               "Subdomains discovered via CT logs (RFC 6962), DNS probing of common service names, and CNAME chain traversal.",
                 mapKeyCurrentCount:     "0",
                 mapKeyExpiredCount:     "0",
                 mapKeyCnameCount:       0.0,
-                "providers_found":   0.0,
+                "providers_found":      0.0,
                 mapKeyCtAvailable:      true,
         }
 
         if cached, ok := a.getCTCache(domain); ok {
                 return returnCachedSubdomains(result, cached)
+        }
+
+        if a.CTStore != nil {
+                if dbCached, ok := a.CTStore.Get(ctx, domain); ok && len(dbCached) > 0 {
+                        a.setCTCache(domain, dbCached)
+                        result["ct_source"] = "database"
+                        return returnCachedSubdomains(result, dbCached)
+                }
         }
 
         ct := a.fetchCTEntriesWithFallback(ctx, domain)
@@ -211,23 +225,42 @@ func (a *Analyzer) DiscoverSubdomains(ctx context.Context, domain string) map[st
                 a.enrichSubdomainsV2(ctx, domain, subdomains)
         }
 
-        if len(a.Probes) > 0 && len(subdomains) > 0 {
-                newSANs, nmapEnriched := a.enrichSubdomainsWithNmap(ctx, domain, subdomains)
-                if len(newSANs) > 0 {
-                        subdomains = append(subdomains, newSANs...)
-                        result["nmap_san_discovered"] = len(newSANs)
-                }
-                if nmapEnriched > 0 {
-                        result["nmap_enriched"] = nmapEnriched
-                }
-        }
+        subdomains = a.applyNmapEnrichment(ctx, domain, subdomains, result)
+        subdomains = a.finalizeSubdomains(ctx, domain, subdomains, ct, result)
 
+        return result
+}
+
+func (a *Analyzer) applyNmapEnrichment(ctx context.Context, domain string, subdomains []map[string]any, result map[string]any) []map[string]any {
+        if len(a.Probes) == 0 || len(subdomains) == 0 {
+                return subdomains
+        }
+        newSANs, nmapEnriched := a.enrichSubdomainsWithNmap(ctx, domain, subdomains)
+        if len(newSANs) > 0 {
+                subdomains = append(subdomains, newSANs...)
+                result["nmap_san_discovered"] = len(newSANs)
+        }
+        if nmapEnriched > 0 {
+                result["nmap_enriched"] = nmapEnriched
+        }
+        return subdomains
+}
+
+func (a *Analyzer) finalizeSubdomains(ctx context.Context, domain string, subdomains []map[string]any, ct ctFetchResult, result map[string]any) []map[string]any {
         currentCount, expiredCount := countSubdomainStats(subdomains)
         result[mapKeyCurrentCount] = fmt.Sprintf("%d", currentCount)
         result[mapKeyExpiredCount] = fmt.Sprintf("%d", expiredCount)
 
         subdomains = sortSubdomainsSmartOrder(subdomains)
         a.setCTCache(domain, subdomains)
+
+        if a.CTStore != nil && len(subdomains) > 0 {
+                ctSource := "crt.sh"
+                if ct.fallback {
+                        ctSource = "certspotter"
+                }
+                go a.CTStore.Set(ctx, domain, subdomains, ctSource)
+        }
 
         result[mapKeyUniqueSubdomains] = len(subdomains)
         result["ct_source"] = "live"
@@ -236,8 +269,7 @@ func (a *Analyzer) DiscoverSubdomains(ctx context.Context, domain string) map[st
                 result["ct_failure_reason"] = ct.failureReason
         }
         applySubdomainDisplayCap(result, subdomains, currentCount)
-
-        return result
+        return subdomains
 }
 
 func returnCachedSubdomains(result map[string]any, cached []map[string]any) map[string]any {
@@ -600,11 +632,11 @@ func detectWildcardCerts(ctEntries []ctEntry, domain string) map[string]any {
         sort.Strings(explicitSANs)
 
         result := map[string]any{
-                "present":    true,
-                "pattern":    wildcardPattern,
-                "current":    acc.isCurrent,
+                "present":       true,
+                "pattern":       wildcardPattern,
+                "current":       acc.isCurrent,
                 mapKeyCertCount: acc.certCount,
-                mapKeyIssuers:    acc.issuers,
+                mapKeyIssuers:   acc.issuers,
         }
 
         if len(explicitSANs) > 0 {
@@ -724,11 +756,11 @@ func buildCASummary(entries []ctEntry) []map[string]any {
         for _, name := range caOrder[:maxCAs] {
                 s := caMap[name]
                 entry := map[string]any{
-                        mapKeyName:       s.name,
+                        mapKeyName:      s.name,
                         mapKeyCertCount: s.certCount,
                         mapKeyFirstSeen: s.firstSeen.Format(dateFormatISO),
-                        "last_seen":  s.lastSeen.Format(dateFormatISO),
-                        "active":     s.hasCurrents,
+                        "last_seen":     s.lastSeen.Format(dateFormatISO),
+                        "active":        s.hasCurrents,
                 }
                 summary = append(summary, entry)
         }
@@ -778,12 +810,12 @@ func processSingleCTEntry(entry ctEntry, domain string, now time.Time, subdomain
                         mergeCTSubdomain(existing, isCurrent, issuer)
                 } else {
                         subdomainSet[name] = map[string]any{
-                                mapKeyName:       name,
-                                mapKeySource:     "ct",
+                                mapKeyName:      name,
+                                mapKeySource:    "ct",
                                 mapKeyIsCurrent: isCurrent,
                                 mapKeyCertCount: "1",
                                 mapKeyFirstSeen: entry.NotBefore,
-                                mapKeyIssuers:    []string{issuer},
+                                mapKeyIssuers:   []string{issuer},
                         }
                 }
         }
@@ -915,12 +947,12 @@ func (a *Analyzer) probeCommonSubdomains(ctx context.Context, domain string, sub
                         }
 
                         entry := map[string]any{
-                                mapKeyName:       name,
-                                mapKeySource:     mapKeyDns,
+                                mapKeyName:      name,
+                                mapKeySource:    mapKeyDns,
                                 mapKeyIsCurrent: true,
                                 mapKeyCertCount: "—",
                                 mapKeyFirstSeen: "—",
-                                mapKeyIssuers:    []string{},
+                                mapKeyIssuers:   []string{},
                         }
 
                         if cnameTarget != "" {

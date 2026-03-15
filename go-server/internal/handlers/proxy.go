@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny design
 package handlers
 
 import (
@@ -20,10 +21,14 @@ import (
 const (
         bimiMaxRedirects     = 5
         bimiMaxResponseBytes = 512 * 1024
+        bimiUserAgent        = "DNS-Analyzer/1.0 BIMI-Logo-Fetcher"
+        hdrUserAgent         = "User-Agent"
+        msgInternalError     = "Internal error"
+        ctSVGXML             = "image/svg+xml"
 )
 
 var bimiAllowedContentTypes = map[string]bool{
-        "image/svg+xml": true,
+        ctSVGXML: true,
         "image/png":     true,
         "image/jpeg":    true,
         "image/gif":     true,
@@ -71,10 +76,10 @@ func (h *ProxyHandler) BIMILogo(c *gin.Context) {
         req, err := http.NewRequestWithContext(c.Request.Context(), "GET", safeURL, nil)
         if err != nil {
                 slog.Error("Failed to create BIMI request", "error", err)
-                c.String(http.StatusInternalServerError, "Internal error")
+                c.String(http.StatusInternalServerError, msgInternalError)
                 return
         }
-        req.Header.Set("User-Agent", "DNS-Analyzer/1.0 BIMI-Logo-Fetcher")
+        req.Header.Set(hdrUserAgent, bimiUserAgent)
 
         resp, err := client.Do(req)
         if err != nil {
@@ -82,13 +87,13 @@ func (h *ProxyHandler) BIMILogo(c *gin.Context) {
                 c.String(http.StatusBadGateway, "Failed to fetch logo")
                 return
         }
-        defer resp.Body.Close()
+        defer safeClose(resp.Body, "BIMI response body")
 
         resp, err = h.followRedirects(c, client, resp)
         if err != nil {
                 return
         }
-        defer resp.Body.Close()
+        defer safeClose(resp.Body, "BIMI redirect response body")
 
         body, safeCT, err := validateBIMIResponse(resp)
         if err != nil {
@@ -183,10 +188,10 @@ func (h *ProxyHandler) followRedirects(c *gin.Context, client *http.Client, resp
                 req, err := http.NewRequestWithContext(c.Request.Context(), "GET", validatedRedirect, nil)
                 if err != nil {
                         slog.Error("Failed to create redirect request", "error", err)
-                        c.String(http.StatusInternalServerError, "Internal error")
+                        c.String(http.StatusInternalServerError, msgInternalError)
                         return nil, err
                 }
-                req.Header.Set("User-Agent", "DNS-Analyzer/1.0 BIMI-Logo-Fetcher")
+                req.Header.Set(hdrUserAgent, bimiUserAgent)
                 resp, err = client.Do(req)
                 if err != nil {
                         c.String(http.StatusBadGateway, "Failed to follow redirect")
@@ -218,9 +223,63 @@ func validateBIMIResponse(resp *http.Response) ([]byte, string, error) {
 
         safeCT := strings.TrimSpace(strings.Split(strings.ToLower(contentType), ";")[0])
         if !bimiAllowedContentTypes[safeCT] {
-                safeCT = "image/svg+xml"
+                safeCT = ctSVGXML
         }
         return body, safeCT, nil
+}
+
+var sonarBadgeURLs = map[string]string{
+        "qg-web":   "https://sonarcloud.io/api/project_badges/measure?project=careyjames_dns-tool-web&metric=alert_status",
+        "ai-web":   "https://sonarcloud.io/api/project_badges/ai_code_assurance?project=careyjames_dns-tool-web",
+        "qg-full":  "https://sonarcloud.io/api/project_badges/measure?project=careyjames_dns-tool-full&metric=alert_status",
+        "ai-full":  "https://sonarcloud.io/api/project_badges/ai_code_assurance?project=careyjames_dns-tool-full",
+        "qg-intel": "https://sonarcloud.io/api/project_badges/measure?project=careyjames_dns-tool-intel&metric=alert_status",
+        "ai-intel": "https://sonarcloud.io/api/project_badges/ai_code_assurance?project=careyjames_dns-tool-intel",
+        "qg-cli":   "https://sonarcloud.io/api/project_badges/measure?project=careyjames_dns-tool-cli&metric=alert_status",
+        "ai-cli":   "https://sonarcloud.io/api/project_badges/ai_code_assurance?project=careyjames_dns-tool-cli",
+        "qg-legacy": "https://sonarcloud.io/api/project_badges/measure?project=careyjames_dns-tool&metric=alert_status",
+        "ai-legacy": "https://sonarcloud.io/api/project_badges/ai_code_assurance?project=careyjames_dns-tool",
+}
+
+func (h *ProxyHandler) SonarBadge(c *gin.Context) {
+        key := c.Param("key")
+        badgeURL, ok := sonarBadgeURLs[key]
+        if !ok {
+                c.String(http.StatusNotFound, "Unknown badge")
+                return
+        }
+
+        client := &http.Client{Timeout: 10 * time.Second}
+        req, err := http.NewRequestWithContext(c.Request.Context(), "GET", badgeURL, nil)
+        if err != nil {
+                slog.Error("Failed to create SonarCloud badge request", "key", key, "error", err)
+                c.String(http.StatusInternalServerError, msgInternalError)
+                return
+        }
+        req.Header.Set(hdrUserAgent, "DNS-Tool/1.0 Badge-Proxy")
+
+        resp, err := client.Do(req)
+        if err != nil {
+                slog.Error("Failed to fetch SonarCloud badge", "key", key, "error", err)
+                c.String(http.StatusBadGateway, "Failed to fetch badge")
+                return
+        }
+        defer safeClose(resp.Body, "SonarCloud badge response body")
+
+        if resp.StatusCode != http.StatusOK {
+                c.String(http.StatusBadGateway, "Badge service returned %d", resp.StatusCode)
+                return
+        }
+
+        body, err := io.ReadAll(io.LimitReader(resp.Body, 64*1024))
+        if err != nil {
+                c.String(http.StatusInternalServerError, "Error reading badge")
+                return
+        }
+
+        c.Header("Cache-Control", "public, max-age=300, stale-while-revalidate=60")
+        c.Header("X-Content-Type-Options", "nosniff")
+        c.Data(http.StatusOK, ctSVGXML, body)
 }
 
 type validationError struct {

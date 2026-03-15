@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny plumbing
 package config
 
 import (
@@ -9,7 +10,7 @@ import (
 )
 
 var (
-        Version   = "26.34.25"
+        Version   = "26.37.10"
         GitCommit = "dev"
         BuildTime = "unknown"
 )
@@ -47,6 +48,7 @@ var betaPagesMap = map[string]bool{
         "investigate":  true,
         "email-header": true,
         "ttl-tuner":    true,
+        "topology":     true,
 }
 
 var sectionTuningMap = map[string]string{

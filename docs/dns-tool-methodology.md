@@ -3,7 +3,7 @@
 **Carey James Balboa**
 ORCID: [0009-0000-5237-9065](https://orcid.org/0009-0000-5237-9065)
 
-Version 26.34.25
+Version 26.35.34
 DOI: [10.5281/zenodo.18854899](https://doi.org/10.5281/zenodo.18854899)
 
 *Independent research artifact accompanying the DNS Tool software platform.*
@@ -12,7 +12,7 @@ DOI: [10.5281/zenodo.18854899](https://doi.org/10.5281/zenodo.18854899)
 
 ## Abstract
 
-DNS Tool is an open-source OSINT platform designed to analyze domain security posture using RFC-compliant signals from DNS and email authentication infrastructure. The system collects DNS records, evaluates configuration compliance with relevant RFC standards, and applies a confidence-scored interpretation model to produce structured security intelligence outputs.
+DNS Tool is an open-core OSINT platform designed to analyze domain security posture using RFC-compliant signals from DNS and email authentication infrastructure. The system collects DNS records, evaluates configuration compliance with relevant RFC standards, and applies a confidence-scored interpretation model to produce structured security intelligence outputs.
 
 Unlike traditional scanners that report raw DNS results, DNS Tool emphasizes confidence scoring and reproducibility, enabling analysts to distinguish between verified security signals, ambiguous observations, and unsupported conclusions.
 
@@ -181,6 +181,25 @@ Confidence is calculated based on:
 
 The individual protocol confidence scores are aggregated into an overall domain security posture score, weighted by protocol importance and interdependency relationships.
 
+### 4.4 Epistemic Correction Disclosure
+
+When structural corrections to the confidence model are identified — such as recalibrated scoring weights, reinterpreted evidence thresholds, or corrected RFC compliance mappings — the system records these as Epistemic Disclosure Events (EDEs). Each EDE documents the original assessment, the correction applied, the confidence impact, and the verifiable commit reference. This practice is modeled on scientific corrigenda culture: corrections strengthen rather than undermine analytical credibility, provided they are transparent, traceable, and independently verifiable.
+
+### 4.5 Calibration Validation
+
+The ICAE confidence scoring model is empirically validated through a calibration framework that measures the statistical reliability of predicted confidence levels against observed outcomes.
+
+**Test Corpus**: 129 golden test cases are evaluated across 5 resolver scenarios (Google, Cloudflare, Quad9, authoritative, and mixed-resolver), producing 645 individual predictions per calibration run.
+
+**Calibration Metrics**:
+
+- **Brier Score**: 0.0018 (excellent). The Brier Score measures the mean squared error between predicted confidence probabilities and actual outcomes. Values closer to 0 indicate better calibration; the ICAE score of 0.0018 demonstrates near-perfect probability estimation.
+- **Expected Calibration Error (ECE)**: 0.031 (good). ECE measures the weighted average gap between predicted confidence and observed accuracy across probability bins. An ECE of 0.031 indicates that predicted confidence levels closely match empirical correctness rates.
+
+**Methodology**: The calibration framework employs a shrinkage estimator that blends observed per-bin accuracy with the global base rate, regularized toward conservatism. This approach prevents overconfident predictions in low-sample bins while preserving sensitivity in well-populated confidence ranges.
+
+**Conclusion**: The ICAE confidence model is conservatively calibrated — when the system reports high confidence, findings are correct at or above the stated rate. This conservative bias is an intentional design choice aligned with intelligence community analytic standards (ODNI ICD 203), where understating confidence is preferable to overstating it.
+
 ---
 
 ## 5. Output Products
@@ -229,6 +248,20 @@ DNS Tool is designed for reproducible analysis:
 - The software is version-controlled with semantic versioning
 - This methodology document is versioned alongside the software
 - The software artifact is archived with a persistent DOI
+- The confidence scoring model is empirically calibrated against 129 golden test cases across 5 resolver scenarios (645 predictions), with calibration quality measured via Brier Score and Expected Calibration Error (see Section 4.5)
+
+### 7.1 Epistemic Correction and Integrity Verification
+
+DNS Tool maintains a public Epistemic Disclosure Event (EDE) register that documents all structural corrections to the confidence scoring model. Each EDE entry records the category of correction (e.g., scoring calibration, evidence reinterpretation, standards misattribution), the severity, the specific confidence impact, and a verifiable git commit hash linking to the exact code change.
+
+To ensure the integrity of this correction record, DNS Tool computes SHA-3-512 cryptographic hashes at two levels:
+
+1. **File-level hash**: A SHA-3-512 hash of the complete EDE register file (`integrity_stats.json`), independently verifiable via: `openssl dgst -sha3-512 static/data/integrity_stats.json`
+2. **Per-event hash**: Each individual EDE entry receives its own SHA-3-512 hash computed from its JSON representation, enabling detection of single-entry tampering independently of other entries.
+
+Published EDE entries are governed by a tamper resistance policy that permits amendments only on two explicitly declared grounds: factual error (with verifiable evidence) or dignity of expression (phrasing-only, with all factual fields locked). This framework is tamper-evident rather than tamper-proof — it is designed to make unauthorized modification detectable, not physically impossible. Full policy details, amendment records, and attack vector analysis are published as supplementary documentation on the project's EDE page.
+
+### 7.2 Limitations
 
 DNS Tool operates exclusively on publicly available DNS information. As a result, it cannot evaluate internal email infrastructure, private key security, or server-side enforcement mechanisms. The tool focuses on observable infrastructure posture rather than complete operational security evaluation.
 
@@ -252,6 +285,14 @@ DNS Tool operates exclusively on publicly available DNS information. As a result
 - RFC 8460 — SMTP TLS Reporting (TLS-RPT)
 - ODNI ICD 203 — Analytic Standards (Intelligence Community Directive)
 
+### Companion Artifact
+
+The communication architecture and philosophical foundations underlying the Five Perspectives model, Socratic verification workflow, and narrative architecture are documented in a separate companion paper:
+
+- Balboa, C. J. (2026). *Philosophical Foundations for Security Analysis Communication*. Available at: `docs/philosophical-foundations.md`
+
+That document addresses the philosophy of analysis and human factors dimensions of the platform. This methodology document remains focused on protocol science: RFC compliance, confidence scoring, calibration, and reproducibility. The two artifacts cross-reference but do not modify each other.
+
 ---
 
 ## Citation
@@ -263,7 +304,7 @@ If DNS Tool contributes to research or analysis, please cite:
   author       = {Balboa, Carey James},
   title        = {{DNS Tool}: Domain Security Audit Platform},
   year         = {2026},
-  version      = {26.34.25},
+  version      = {26.35.34},
   doi          = {10.5281/zenodo.18854899},
   url          = {https://dnstool.it-help.tech},
   license      = {BUSL-1.1}
@@ -272,5 +313,5 @@ If DNS Tool contributes to research or analysis, please cite:
 
 ---
 
-DNS Tool v26.34.25 · IT Help San Diego Inc. · Licensed under BUSL-1.1
+DNS Tool v26.35.34 · IT Help San Diego Inc. · Licensed under BUSL-1.1
 DOI: [10.5281/zenodo.18854899](https://doi.org/10.5281/zenodo.18854899) · [dnstool.it-help.tech](https://dnstool.it-help.tech)

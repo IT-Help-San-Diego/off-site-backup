@@ -46,7 +46,7 @@ func TestComputeTrend_Improving(t *testing.T) {
         if dir != "improving" {
                 t.Errorf("expected improving, got %q", dir)
         }
-        if arrow != "fas fa-arrow-trend-up" {
+        if arrow != "arrow-trend-up" {
                 t.Errorf("unexpected arrow %q", arrow)
         }
 }
@@ -62,7 +62,7 @@ func TestComputeTrend_Declining(t *testing.T) {
         if dir != "declining" {
                 t.Errorf("expected declining, got %q", dir)
         }
-        if arrow != "fas fa-arrow-trend-down" {
+        if arrow != "arrow-trend-down" {
                 t.Errorf("unexpected arrow %q", arrow)
         }
 }
@@ -78,7 +78,7 @@ func TestComputeTrend_Stable(t *testing.T) {
         if dir != "stable" {
                 t.Errorf("expected stable, got %q", dir)
         }
-        if arrow != "fas fa-equals" {
+        if arrow != "equals" {
                 t.Errorf("unexpected arrow %q", arrow)
         }
 }
@@ -88,7 +88,7 @@ func TestComputeTrend_Insufficient(t *testing.T) {
         if dir != "insufficient" {
                 t.Errorf("expected insufficient for nil, got %q", dir)
         }
-        if arrow != "fas fa-minus" {
+        if arrow != "minus" {
                 t.Errorf("unexpected arrow %q", arrow)
         }
 

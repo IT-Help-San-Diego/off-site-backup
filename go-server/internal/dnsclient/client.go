@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny science
 package dnsclient
 
 import (
@@ -26,6 +27,9 @@ type ResolverConfig struct {
         DoH  string
 }
 
+// S1313 suppressed: these are well-known public DNS resolver IPs — intentional
+// hardcoded constants for the multi-resolver consensus architecture (RFC-documented services).
+// SECINTENT-003: Hardcoded DNS resolver IPs
 var DefaultResolvers = []ResolverConfig{
         {Name: "Cloudflare", IP: resolverCloudflare, DoH: "https://cloudflare-dns.com/dns-query"},
         {Name: "Google", IP: resolverGoogle, DoH: "https://dns.google/resolve"},
@@ -49,9 +53,9 @@ const (
         resolverCloudflare = "1.1.1.1"
         resolverGoogle     = "8.8.8.8"
 
-        dnsPort            = "53"
-        protoUDP           = "udp"
-        dohTypeRRSIG       = 46
+        dnsPort      = "53"
+        protoUDP     = "udp"
+        dohTypeRRSIG = 46
 
         mapKeyDiscrepancies = "discrepancies"
         mapKeyError         = "error"
@@ -454,7 +458,7 @@ func (c *Client) ValidateResolverConsensus(ctx context.Context, domain string) m
                 "consensus_reached":    true,
                 "resolvers_queried":    len(c.resolvers),
                 "checks_performed":     0,
-                mapKeyDiscrepancies:        []string{},
+                mapKeyDiscrepancies:    []string{},
                 "per_record_consensus": map[string]any{},
         }
 
@@ -485,9 +489,9 @@ func (c *Client) ValidateResolverConsensus(ctx context.Context, domain string) m
                 case cr := <-ch:
                         checksPerformed++
                         perRecord[cr.recordType] = map[string]any{
-                                "consensus":      cr.consensus.Consensus,
-                                "resolver_count": cr.consensus.ResolverCount,
-                                mapKeyDiscrepancies:  cr.consensus.Discrepancies,
+                                "consensus":         cr.consensus.Consensus,
+                                "resolver_count":    cr.consensus.ResolverCount,
+                                mapKeyDiscrepancies: cr.consensus.Discrepancies,
                         }
                         if !cr.consensus.Consensus {
                                 consensusReached = false
@@ -679,7 +683,7 @@ func (c *Client) dohQueryWithTTL(ctx context.Context, domain, recordType string)
                 slog.Debug("DoH query failed", mapKeyDomain, domain, "type", recordType, mapKeyError, err)
                 return RecordWithTTL{}
         }
-        defer resp.Body.Close()
+        defer safeClose(resp.Body, "doh-response")
 
         if resp.StatusCode != http.StatusOK {
                 return RecordWithTTL{}

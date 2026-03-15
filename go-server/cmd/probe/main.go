@@ -1,3 +1,4 @@
+// dns-tool:scrutiny plumbing
 package main
 
 import (
@@ -33,28 +34,27 @@ const (
         errInvalidHostRequired = "invalid request: host required"
         ehloHostname           = "probe.dns-observe.com"
 
-
-        mapKeyCertIssuer = "cert_issuer"
-        mapKeyCertValid = "cert_valid"
-        mapKeyCipher = "cipher"
-        mapKeyElapsedSeconds = "elapsed_seconds"
-        mapKeyError = "error"
-        mapKeyPorts = "ports"
-        mapKeyProbeHost = "probe_host"
-        mapKeyReachable = "reachable"
-        mapKeyStatus = "status"
-        mapKeyTlsVersion = "tls_version"
-        mapKeyVersion = "version"
-        strEhloSRN = "EHLO %s\r\n"
-        strInvalidHostname = "invalid hostname"
+        mapKeyCertIssuer      = "cert_issuer"
+        mapKeyCertValid       = "cert_valid"
+        mapKeyCipher          = "cipher"
+        mapKeyElapsedSeconds  = "elapsed_seconds"
+        mapKeyError           = "error"
+        mapKeyPorts           = "ports"
+        mapKeyProbeHost       = "probe_host"
+        mapKeyReachable       = "reachable"
+        mapKeyStatus          = "status"
+        mapKeyTlsVersion      = "tls_version"
+        mapKeyVersion         = "version"
+        strEhloSRN            = "EHLO %s\r\n"
+        strInvalidHostname    = "invalid hostname"
         strInvalidRequestBody = "invalid request body"
-        strSD = "%s:%d"
-        strStarttlsRN = "STARTTLS\r\n"
-        mapKeyHost      = "host"
-        mapKeyPort      = "port"
-        protocolTCP     = "tcp"
-        smtpBannerOK    = "220"
-        mapKeyScripts   = "scripts"
+        strSD                 = "%s:%d"
+        strStarttlsRN         = "STARTTLS\r\n"
+        mapKeyHost            = "host"
+        mapKeyPort            = "port"
+        protocolTCP           = "tcp"
+        smtpBannerOK          = "220"
+        mapKeyScripts         = "scripts"
 )
 
 var (
@@ -65,6 +65,12 @@ var (
         rateMu    sync.Mutex
         rateCount = make(map[string]int)
 )
+
+func safeClose(c io.Closer, label string) {
+        if err := c.Close(); err != nil {
+                slog.Debug("close error", "label", label, mapKeyError, err)
+        }
+}
 
 func main() {
         probeKey = os.Getenv("PROBE_KEY")
@@ -121,8 +127,7 @@ func main() {
 
 func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
         return func(w http.ResponseWriter, r *http.Request) {
-                key := r.Header.Get("X-Probe-Key")
-                if subtle.ConstantTimeCompare([]byte(key), []byte(probeKey)) != 1 {
+                if key := r.Header.Get("X-Probe-Key"); subtle.ConstantTimeCompare([]byte(key), []byte(probeKey)) != 1 {
                         http.Error(w, `{"error":"unauthorized"}`, http.StatusUnauthorized)
                         return
                 }
@@ -165,11 +170,11 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 
 func handleHealth(w http.ResponseWriter, r *http.Request) {
         writeJSON(w, http.StatusOK, map[string]any{
-                mapKeyStatus:   "ok",
-                mapKeyVersion:  probeVersion,
-                "hostname": hostname,
-                "uptime":   time.Since(startTime).String(),
-                "time":     time.Now().UTC().Format(time.RFC3339),
+                mapKeyStatus:  "ok",
+                mapKeyVersion: probeVersion,
+                "hostname":    hostname,
+                "uptime":      time.Since(startTime).String(),
+                "time":        time.Now().UTC().Format(time.RFC3339),
         })
 }
 
@@ -222,10 +227,10 @@ func handleSMTPProbe(w http.ResponseWriter, r *http.Request) {
 
         writeJSON(w, http.StatusOK, map[string]any{
                 mapKeyProbeHost:      hostname,
-                mapKeyVersion:         probeVersion,
+                mapKeyVersion:        probeVersion,
                 mapKeyElapsedSeconds: time.Since(start).Seconds(),
-                "servers":         servers,
-                "all_ports":       allPorts,
+                "servers":            servers,
+                "all_ports":          allPorts,
         })
 }
 
@@ -250,18 +255,18 @@ func probeAllServers(ctx context.Context, hosts []string) []map[string]any {
 
 func probeSMTPServer(ctx context.Context, host string) map[string]any {
         result := map[string]any{
-                mapKeyHost:                host,
-                mapKeyReachable:           false,
+                mapKeyHost:            host,
+                mapKeyReachable:       false,
                 "starttls":            false,
-                mapKeyTlsVersion:         nil,
-                mapKeyCipher:              nil,
+                mapKeyTlsVersion:      nil,
+                mapKeyCipher:          nil,
                 "cipher_bits":         nil,
-                mapKeyCertValid:          false,
+                mapKeyCertValid:       false,
                 "cert_expiry":         nil,
                 "cert_days_remaining": nil,
-                mapKeyCertIssuer:         nil,
+                mapKeyCertIssuer:      nil,
                 "cert_subject":        nil,
-                mapKeyError:               nil,
+                mapKeyError:           nil,
         }
 
         probeCtx, cancel := context.WithTimeout(ctx, 8*time.Second)
@@ -273,7 +278,7 @@ func probeSMTPServer(ctx context.Context, host string) map[string]any {
                 result[mapKeyError] = classifyError(err)
                 return result
         }
-        defer conn.Close()
+        defer safeClose(conn, "probeSMTPServer conn")
         result[mapKeyReachable] = true
 
         banner, err := readSMTPResponse(conn, smtpReadTimeout)
@@ -304,14 +309,14 @@ func probeSMTPServer(ctx context.Context, host string) map[string]any {
 
         tlsCfg := &tls.Config{
                 ServerName:         host,
-                InsecureSkipVerify: true,
+                InsecureSkipVerify: true, //NOSONAR — S4830/S5527: probe intentionally tests TLS; certificate validation happens separately // SECINTENT-002
         }
         tlsConn := tls.Client(conn, tlsCfg)
         if err := tlsConn.HandshakeContext(probeCtx); err != nil {
                 result[mapKeyError] = fmt.Sprintf("TLS handshake failed: %s", truncate(err.Error(), 80))
                 return result
         }
-        defer tlsConn.Close()
+        defer safeClose(tlsConn, "probeSMTPServer tlsConn")
 
         state := tlsConn.ConnectionState()
         result[mapKeyTlsVersion] = tlsVersionString(state.Version)
@@ -332,7 +337,7 @@ func verifySMTPCert(ctx context.Context, host string, result map[string]any) {
         if err != nil {
                 return
         }
-        defer conn.Close()
+        defer safeClose(conn, "verifySMTPCert conn")
 
         banner, bannerErr := readSMTPResponse(conn, 1*time.Second)
         if bannerErr != nil {
@@ -357,7 +362,7 @@ func verifySMTPCert(ctx context.Context, host string, result map[string]any) {
 
         verifyCfg := &tls.Config{ServerName: host}
         verifyTLS := tls.Client(conn, verifyCfg)
-        defer verifyTLS.Close()
+        defer safeClose(verifyTLS, "verifySMTPCert verifyTLS")
 
         if err := verifyTLS.HandshakeContext(verifyCtx); err != nil {
                 result[mapKeyCertValid] = false
@@ -366,8 +371,7 @@ func verifySMTPCert(ctx context.Context, host string, result map[string]any) {
         }
 
         result[mapKeyCertValid] = true
-        certs := verifyTLS.ConnectionState().PeerCertificates
-        if len(certs) > 0 {
+        if certs := verifyTLS.ConnectionState().PeerCertificates; len(certs) > 0 {
                 leaf := certs[0]
                 result["cert_expiry"] = leaf.NotAfter.Format("2006-01-02")
                 result["cert_days_remaining"] = int(time.Until(leaf.NotAfter).Hours() / 24)
@@ -385,7 +389,7 @@ func probePort(ctx context.Context, host string, port int) map[string]any {
                 mapKeyHost:      host,
                 mapKeyPort:      port,
                 mapKeyReachable: false,
-                "tls":       false,
+                "tls":           false,
                 mapKeyError:     nil,
         }
 
@@ -395,21 +399,22 @@ func probePort(ctx context.Context, host string, port int) map[string]any {
                 result[mapKeyError] = classifyError(err)
                 return result
         }
-        defer conn.Close()
+        defer safeClose(conn, "probePort conn")
         result[mapKeyReachable] = true
 
         if port == 465 {
-                tlsCfg := &tls.Config{
+                tlsConn := tls.Client(conn, &tls.Config{
                         ServerName:         host,
-                        InsecureSkipVerify: true,
-                }
-                tlsConn := tls.Client(conn, tlsCfg)
+                        InsecureSkipVerify: true, //NOSONAR — S4830/S5527: diagnostic probe; cert validation is separate // SECINTENT-002
+                })
                 if err := tlsConn.HandshakeContext(ctx); err == nil {
                         result["tls"] = true
                         state := tlsConn.ConnectionState()
                         result[mapKeyTlsVersion] = tlsVersionString(state.Version)
                 }
-                tlsConn.Close()
+                if err := tlsConn.Close(); err != nil {
+                        slog.Debug("close error", "label", "probePort tlsConn", mapKeyError, err)
+                }
         }
 
         return result
@@ -472,9 +477,9 @@ func handleTestSSL(w http.ResponseWriter, r *http.Request) {
 
         response := map[string]any{
                 mapKeyProbeHost:      hostname,
-                mapKeyVersion:         probeVersion,
-                mapKeyHost:            req.Host,
-                mapKeyPort:            req.Port,
+                mapKeyVersion:        probeVersion,
+                mapKeyHost:           req.Host,
+                mapKeyPort:           req.Port,
                 mapKeyElapsedSeconds: time.Since(start).Seconds(),
         }
 
@@ -530,9 +535,9 @@ func handleDANEVerify(w http.ResponseWriter, r *http.Request) {
 
         response := map[string]any{
                 mapKeyProbeHost:      hostname,
-                mapKeyVersion:         probeVersion,
-                mapKeyHost:            req.Host,
-                mapKeyPort:            req.Port,
+                mapKeyVersion:        probeVersion,
+                mapKeyHost:           req.Host,
+                mapKeyPort:           req.Port,
                 mapKeyElapsedSeconds: 0.0,
         }
 
@@ -580,7 +585,7 @@ func getCertViaSMTP(ctx context.Context, host string) map[string]any {
                 result[mapKeyError] = classifyError(err)
                 return result
         }
-        defer conn.Close()
+        defer safeClose(conn, "getCertViaSMTP conn")
 
         banner, bannerErr := readSMTPResponse(conn, smtpReadTimeout)
         if bannerErr != nil {
@@ -623,7 +628,7 @@ func getCertViaTLS(ctx context.Context, host string, port int) map[string]any {
                 result[mapKeyError] = classifyError(err)
                 return result
         }
-        defer conn.Close()
+        defer safeClose(conn, "getCertViaTLS conn")
 
         return extractCertInfo(conn, host)
 }
@@ -633,10 +638,10 @@ func extractCertInfo(conn net.Conn, host string) map[string]any {
 
         tlsCfg := &tls.Config{
                 ServerName:         host,
-                InsecureSkipVerify: true,
+                InsecureSkipVerify: true, //NOSONAR — S4830/S5527: needs to connect regardless of cert validity to extract cert info // SECINTENT-002
         }
         tlsConn := tls.Client(conn, tlsCfg)
-        defer tlsConn.Close()
+        defer safeClose(tlsConn, "extractCertInfo tlsConn")
 
         if err := tlsConn.Handshake(); err != nil {
                 result[mapKeyError] = fmt.Sprintf("TLS handshake failed: %s", truncate(err.Error(), 100))
@@ -870,10 +875,10 @@ func runNmapScan(ctx context.Context, nmapPath string, req nmapRequest, validScr
 
         response := map[string]any{
                 mapKeyProbeHost:      hostname,
-                mapKeyVersion:         probeVersion,
-                mapKeyHost:            req.Host,
-                mapKeyPorts:           req.Ports,
-                "scripts_run":     validScripts,
+                mapKeyVersion:        probeVersion,
+                mapKeyHost:           req.Host,
+                mapKeyPorts:          req.Ports,
+                "scripts_run":        validScripts,
                 mapKeyElapsedSeconds: time.Since(start).Seconds(),
         }
         if len(rejectedScripts) > 0 {
@@ -895,8 +900,7 @@ func buildNmapErrorResponse(response map[string]any, err error, xmlOutput, stder
         if xmlOutput != "" {
                 response["partial_xml"] = truncate(xmlOutput, 8192)
         }
-        stderrStr := strings.TrimSpace(stderrOutput)
-        if stderrStr != "" {
+        if stderrStr := strings.TrimSpace(stderrOutput); stderrStr != "" {
                 response["stderr"] = truncate(stderrStr, 1024)
         }
 }
@@ -927,7 +931,7 @@ type nmapScriptTableElem struct {
 }
 
 type nmapScriptTable struct {
-        Key   string               `xml:"key,attr"`
+        Key   string                `xml:"key,attr"`
         Elems []nmapScriptTableElem `xml:"elem"`
 }
 
@@ -976,10 +980,10 @@ type nmapRunStats struct {
 }
 
 type nmapRun struct {
-        Scanner  string     `xml:"scanner,attr"`
-        StartStr string     `xml:"startstr,attr"`
-        Version  string     `xml:"version,attr"`
-        Hosts    []nmapHost `xml:"host"`
+        Scanner  string       `xml:"scanner,attr"`
+        StartStr string       `xml:"startstr,attr"`
+        Version  string       `xml:"version,attr"`
+        Hosts    []nmapHost   `xml:"host"`
         RunStats nmapRunStats `xml:"runstats"`
 }
 
@@ -990,10 +994,10 @@ func parseNmapXML(xmlData string) map[string]any {
         }
 
         result := map[string]any{
-                "scanner": run.Scanner,
+                "scanner":     run.Scanner,
                 mapKeyVersion: run.Version,
-                "start":   run.StartStr,
-                "elapsed": run.RunStats.Finished.Elapsed,
+                "start":       run.StartStr,
+                "elapsed":     run.RunStats.Finished.Elapsed,
         }
 
         var hosts []map[string]any
@@ -1031,7 +1035,7 @@ func convertNmapHost(h nmapHost) map[string]any {
 
 func convertNmapPort(p nmapPort) map[string]any {
         port := map[string]any{
-                mapKeyPort:     p.PortID,
+                mapKeyPort: p.PortID,
                 "protocol": p.Protocol,
                 "state":    p.State.State,
                 "service":  p.Service.Name,

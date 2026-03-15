@@ -1,3 +1,7 @@
+// Copyright (c) 2024-2026 IT Help San Diego Inc.
+// Licensed under BUSL-1.1 — See LICENSE for terms.
+
+// dns-tool:scrutiny science
 package unified
 
 import (
@@ -13,10 +17,9 @@ const (
         ThresholdHigh     = 75.0
         ThresholdModerate = 50.0
 
-
-	mapKeyAccuracy = "accuracy"
-	mapKeyCurrency = "currency"
-	mapKeyMaturity = "maturity"
+        mapKeyAccuracy = "accuracy"
+        mapKeyCurrency = "currency"
+        mapKeyMaturity = "maturity"
 )
 
 var maturityCeilings = map[string]float64{
@@ -34,22 +37,22 @@ var levelBootstrapClass = map[string]string{
 }
 
 var levelIcons = map[string]string{
-        LevelHigh:     "fa-shield-alt",
-        LevelModerate: "fa-exclamation-triangle",
-        LevelLow:      "fa-times-circle",
+        LevelHigh:     "shield-alt",
+        LevelModerate: "exclamation-triangle",
+        LevelLow:      "times-circle",
 }
 
 type UnifiedConfidence struct {
-        Level             string  `json:"level"`
-        Score             float64 `json:"score"`
-        AccuracyFactor    float64 `json:"accuracy_factor"`
-        CurrencyFactor    float64 `json:"currency_factor"`
-        MaturityCeiling   float64 `json:"maturity_ceiling"`
-        MaturityLevel     string  `json:"maturity_level"`
-        WeakestLink       string  `json:"weakest_link"`
-        WeakestDetail     string  `json:"weakest_detail"`
-        Explanation       string  `json:"explanation"`
-        ProtocolCount     int     `json:"protocol_count"`
+        Level           string  `json:"level"`
+        Score           float64 `json:"score"`
+        AccuracyFactor  float64 `json:"accuracy_factor"`
+        CurrencyFactor  float64 `json:"currency_factor"`
+        MaturityCeiling float64 `json:"maturity_ceiling"`
+        MaturityLevel   string  `json:"maturity_level"`
+        WeakestLink     string  `json:"weakest_link"`
+        WeakestDetail   string  `json:"weakest_detail"`
+        Explanation     string  `json:"explanation"`
+        ProtocolCount   int     `json:"protocol_count"`
 }
 
 func (uc UnifiedConfidence) BootstrapClass() string {
@@ -63,7 +66,7 @@ func (uc UnifiedConfidence) Icon() string {
         if i, ok := levelIcons[uc.Level]; ok {
                 return i
         }
-        return "fa-question-circle"
+        return "question-circle"
 }
 
 func (uc UnifiedConfidence) ScoreDisplay() string {

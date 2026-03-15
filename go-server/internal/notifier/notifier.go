@@ -1,3 +1,7 @@
+// Copyright (c) 2024-2026 IT Help San Diego Inc.
+// Licensed under BUSL-1.1 — See LICENSE for terms.
+
+// dns-tool:scrutiny plumbing
 package notifier
 
 import (
@@ -7,7 +11,9 @@ import (
         "fmt"
         "io"
         "log/slog"
+        "net"
         "net/http"
+        "net/url"
         "strings"
         "time"
 
@@ -20,8 +26,7 @@ const (
         headerContentType = "Content-Type"
         mimeJSON          = "application/json"
 
-
-        mapKeyDomain = "domain"
+        mapKeyDomain         = "domain"
         mapKeyNotificationId = "notification_id"
 )
 
@@ -31,8 +36,9 @@ type NotifierDB interface {
 }
 
 type Notifier struct {
-        Queries NotifierDB
-        Client  *http.Client
+        Queries    NotifierDB
+        Client     *http.Client
+        AllowLocal bool
 }
 
 func New(queries *dbq.Queries) *Notifier {
@@ -89,78 +95,104 @@ func (n *Notifier) DeliverPending(ctx context.Context, batchSize int32) (int, er
 
         delivered := 0
         for _, notif := range pending {
-                var sendErr error
-                var httpCode int
-                switch notif.EndpointType {
-                case "discord":
-                        httpCode, sendErr = n.sendDiscord(ctx, notif)
-                default:
-                        httpCode, sendErr = n.sendGenericWebhook(ctx, notif)
-                }
-
-                status := "delivered"
-                var respCode *int32
-                var respBody *string
-                if httpCode > 0 {
-                        code := int32(httpCode)
-                        respCode = &code
-                }
-                if sendErr != nil {
-                        status = "failed"
-                        errMsg := sendErr.Error()
-                        respBody = &errMsg
-                        slog.Error("Notification delivery failed",
-                                mapKeyNotificationId, notif.ID,
-                                "endpoint_type", notif.EndpointType,
-                                mapKeyDomain, notif.Domain,
-                                "http_code", httpCode,
-                                "error", sendErr,
-                        )
-                } else {
+                if n.deliverSingle(ctx, notif) {
                         delivered++
-                        slog.Info("Notification delivered",
-                                mapKeyNotificationId, notif.ID,
-                                "endpoint_type", notif.EndpointType,
-                                mapKeyDomain, notif.Domain,
-                                "http_code", httpCode,
-                        )
-                }
-
-                updateErr := n.Queries.UpdateDriftNotificationStatus(ctx, dbq.UpdateDriftNotificationStatusParams{
-                        ID:           notif.ID,
-                        Status:       status,
-                        ResponseCode: respCode,
-                        ResponseBody: respBody,
-                })
-                if updateErr != nil {
-                        slog.Error("Failed to update notification status",
-                                mapKeyNotificationId, notif.ID,
-                                "error", updateErr,
-                        )
                 }
         }
         return delivered, nil
 }
 
-func (n *Notifier) sendDiscord(ctx context.Context, notif dbq.ListPendingNotificationsRow) (int, error) {
-        var fields []discordField
+func (n *Notifier) sendByType(ctx context.Context, notif dbq.ListPendingNotificationsRow) (int, error) {
+        if notif.EndpointType == "discord" {
+                return n.sendDiscord(ctx, notif)
+        }
+        return n.sendGenericWebhook(ctx, notif)
+}
 
+func (n *Notifier) deliverSingle(ctx context.Context, notif dbq.ListPendingNotificationsRow) bool {
+        httpCode, sendErr := n.sendByType(ctx, notif)
+
+        status, respCode, respBody := classifyDeliveryResult(httpCode, sendErr)
+        logDeliveryResult(notif, httpCode, sendErr)
+
+        updateErr := n.Queries.UpdateDriftNotificationStatus(ctx, dbq.UpdateDriftNotificationStatusParams{
+                ID:           notif.ID,
+                Status:       status,
+                ResponseCode: respCode,
+                ResponseBody: respBody,
+        })
+        if updateErr != nil {
+                slog.Error("Failed to update notification status",
+                        mapKeyNotificationId, notif.ID,
+                        "error", updateErr,
+                )
+        }
+        return sendErr == nil
+}
+
+func classifyDeliveryResult(httpCode int, sendErr error) (string, *int32, *string) {
+        status := "delivered"
+        var respCode *int32
+        var respBody *string
+        if httpCode > 0 {
+                code := int32(httpCode)
+                respCode = &code
+        }
+        if sendErr != nil {
+                status = "failed"
+                errMsg := sendErr.Error()
+                respBody = &errMsg
+        }
+        return status, respCode, respBody
+}
+
+func logDeliveryResult(notif dbq.ListPendingNotificationsRow, httpCode int, sendErr error) {
+        if sendErr != nil {
+                slog.Error("Notification delivery failed",
+                        mapKeyNotificationId, notif.ID,
+                        "endpoint_type", notif.EndpointType,
+                        mapKeyDomain, notif.Domain,
+                        "http_code", httpCode,
+                        "error", sendErr,
+                )
+                return
+        }
+        slog.Info("Notification delivered",
+                mapKeyNotificationId, notif.ID,
+                "endpoint_type", notif.EndpointType,
+                mapKeyDomain, notif.Domain,
+                "http_code", httpCode,
+        )
+}
+
+func parseDiffFields(raw []byte) []discordField {
         var diffFields []struct {
                 Field string `json:"field"`
                 Old   string `json:"old"`
                 New   string `json:"new"`
         }
-        if len(notif.DiffSummary) > 0 {
-                if json.Unmarshal(notif.DiffSummary, &diffFields) == nil {
-                        for _, df := range diffFields {
-                                fields = append(fields, discordField{
-                                        Name:   df.Field,
-                                        Value:  fmt.Sprintf("`%s` → `%s`", df.Old, df.New),
-                                        Inline: true,
-                                })
-                        }
+        if len(raw) == 0 || json.Unmarshal(raw, &diffFields) != nil {
+                return nil
+        }
+        fields := make([]discordField, 0, len(diffFields))
+        for _, df := range diffFields {
+                fields = append(fields, discordField{
+                        Name:   df.Field,
+                        Value:  fmt.Sprintf("`%s` → `%s`", df.Old, df.New),
+                        Inline: true,
+                })
+        }
+        return fields
+}
+
+func (n *Notifier) sendDiscord(ctx context.Context, notif dbq.ListPendingNotificationsRow) (int, error) {
+        if !n.AllowLocal {
+                if err := isSSRFSafe(notif.Url); err != nil {
+                        return 0, fmt.Errorf("SSRF check failed for Discord webhook: %w", err)
                 }
         }
+
+        fields := parseDiffFields(notif.DiffSummary)
 
         payload := discordPayload{
                 Username: "DNS Tool Drift Engine",
@@ -190,7 +222,7 @@ func (n *Notifier) sendDiscord(ctx context.Context, notif dbq.ListPendingNotific
         if err != nil {
                 return 0, fmt.Errorf("sending Discord webhook: %w", err)
         }
-        defer resp.Body.Close()
+        defer safeClose(resp.Body, "discord-webhook-response")
 
         if resp.StatusCode < 200 || resp.StatusCode >= 300 {
                 respBody, readErr := io.ReadAll(io.LimitReader(resp.Body, maxResponseBody))
@@ -203,11 +235,17 @@ func (n *Notifier) sendDiscord(ctx context.Context, notif dbq.ListPendingNotific
 }
 
 func (n *Notifier) sendGenericWebhook(ctx context.Context, notif dbq.ListPendingNotificationsRow) (int, error) {
+        if !n.AllowLocal {
+                if err := isSSRFSafe(notif.Url); err != nil {
+                        return 0, fmt.Errorf("SSRF check failed for webhook: %w", err)
+                }
+        }
+
         payload := map[string]any{
-                "event":     "drift_detected",
-                mapKeyDomain:    notif.Domain,
-                "severity":  notif.Severity,
-                "timestamp": time.Now().UTC().Format(time.RFC3339),
+                "event":      "drift_detected",
+                mapKeyDomain: notif.Domain,
+                "severity":   notif.Severity,
+                "timestamp":  time.Now().UTC().Format(time.RFC3339),
         }
 
         if len(notif.DiffSummary) > 0 {
@@ -233,7 +271,7 @@ func (n *Notifier) sendGenericWebhook(ctx context.Context, notif dbq.ListPending
         if err != nil {
                 return 0, fmt.Errorf("sending webhook: %w", err)
         }
-        defer resp.Body.Close()
+        defer safeClose(resp.Body, "generic-webhook-response")
 
         if resp.StatusCode < 200 || resp.StatusCode >= 300 {
                 respBody, readErr := io.ReadAll(io.LimitReader(resp.Body, maxResponseBody))
@@ -278,7 +316,7 @@ func (n *Notifier) SendTestDiscord(ctx context.Context, webhookURL string) error
         if err != nil {
                 return fmt.Errorf("sending test webhook: %w", err)
         }
-        defer resp.Body.Close()
+        defer safeClose(resp.Body, "test-discord-response")
 
         if resp.StatusCode < 200 || resp.StatusCode >= 300 {
                 respBody, readErr := io.ReadAll(io.LimitReader(resp.Body, maxResponseBody))
@@ -288,6 +326,40 @@ func (n *Notifier) SendTestDiscord(ctx context.Context, webhookURL string) error
                 return fmt.Errorf("Discord returned %d: %s", resp.StatusCode, string(respBody))
         }
         return nil
+}
+
+func isSSRFSafe(rawURL string) error {
+        u, err := url.Parse(rawURL)
+        if err != nil {
+                return fmt.Errorf("invalid URL: %w", err)
+        }
+        if u.Scheme != "https" && u.Scheme != "http" {
+                return fmt.Errorf("unsupported scheme: %s", u.Scheme)
+        }
+        host := u.Hostname()
+        if host == "" {
+                return fmt.Errorf("empty hostname")
+        }
+        ips, err := net.LookupHost(host)
+        if err != nil {
+                return fmt.Errorf("DNS lookup failed for %s: %w", host, err)
+        }
+        for _, ipStr := range ips {
+                ip := net.ParseIP(ipStr)
+                if ip == nil {
+                        continue
+                }
+                if ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() {
+                        return fmt.Errorf("private/loopback IP blocked: %s resolves to %s", host, ipStr)
+                }
+        }
+        return nil
+}
+
+func safeClose(c io.Closer, label string) {
+        if err := c.Close(); err != nil {
+                slog.Debug("close error", "resource", label, "error", err)
+        }
 }
 
 var missionCriticalDomains = []string{

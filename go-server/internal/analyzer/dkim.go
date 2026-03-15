@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny science
 package analyzer
 
 import (
@@ -12,7 +13,11 @@ import (
         "sync"
 )
 
-const domainkeySuffix = "._domainkey"
+const (
+        domainkeySuffix              = "._domainkey"
+        ancillaryServicesLikelyFmt   = "The %s SPF include likely supports ancillary services "
+        ancillaryServicesDescription = "(e.g., calendar invitations, shared documents) rather than primary mailbox hosting."
+)
 
 const (
         providerMicrosoft365    = "Microsoft 365"
@@ -76,51 +81,51 @@ const (
         selFM2         = "fm2._domainkey"
         selFM3         = "fm3._domainkey"
 
-        selZoho        = "zoho._domainkey"
-        selZohoMail    = "zohomail._domainkey"
-        selZmail       = "zmail._domainkey"
-        selSquare      = "square._domainkey"
-        selSquareup    = "squareup._domainkey"
-        selSQ          = "sq._domainkey"
+        selZoho     = "zoho._domainkey"
+        selZohoMail = "zohomail._domainkey"
+        selZmail    = "zmail._domainkey"
+        selSquare   = "square._domainkey"
+        selSquareup = "squareup._domainkey"
+        selSQ       = "sq._domainkey"
 
-        selDKIM1       = "dkim1._domainkey"
-        selDKIM2       = "dkim2._domainkey"
-        selDKIM3       = "dkim3._domainkey"
-        selKey1        = "key1._domainkey"
-        selKey2        = "key2._domainkey"
-        selSig2        = "sig2._domainkey"
-        selS3          = "s3._domainkey"
-        selK3          = "k3._domainkey"
-        selSelector3   = "selector3._domainkey"
-        selBrevo       = "brevo._domainkey"
-        selMTA         = "mta._domainkey"
-        selMTA1        = "mta1._domainkey"
-        selMTA2        = "mta2._domainkey"
-        selSendgrid2   = "sendgrid2._domainkey"
-        selSmtpapi     = "smtpapi._domainkey"
-        selEM          = "em._domainkey"
-        selBarracuda   = "barracuda._domainkey"
-        selHornet      = "hornet._domainkey"
-        selCiscoDKIM   = "cisco._domainkey"
-        selTurbo       = "turbo-smtp._domainkey"
-        selFreshdesk   = "freshdesk._domainkey"
-        selHubspot     = "hubspot._domainkey"
-        selHS1         = "hs1._domainkey"
-        selHS2         = "hs2._domainkey"
-        selSalesforce  = "salesforce._domainkey"
-        selSF1         = "sf1._domainkey"
-        selSF2         = "sf2._domainkey"
-        selMandrill2   = "mandrill2._domainkey"
-        selKlaviyo     = "klaviyo._domainkey"
-        selIntercom    = "intercom._domainkey"
-        selCustomerio  = "customerio._domainkey"
-        selConstContact = "ctct1._domainkey"
-        selConstContact2 = "ctct2._domainkey"
+        selDKIM1          = "dkim1._domainkey"
+        selDKIM2          = "dkim2._domainkey"
+        selDKIM3          = "dkim3._domainkey"
+        selKey1           = "key1._domainkey"
+        selKey2           = "key2._domainkey"
+        selSig2           = "sig2._domainkey"
+        selS3             = "s3._domainkey"
+        selK3             = "k3._domainkey"
+        selSelector3      = "selector3._domainkey"
+        selBrevo          = "brevo._domainkey"
+        selMTA            = "mta._domainkey"
+        selMTA1           = "mta1._domainkey"
+        selMTA2           = "mta2._domainkey"
+        selSendgrid2      = "sendgrid2._domainkey"
+        selSmtpapi        = "smtpapi._domainkey"
+        selEM             = "em._domainkey"
+        selBarracuda      = "barracuda._domainkey"
+        selHornet         = "hornet._domainkey"
+        selCiscoDKIM      = "cisco._domainkey"
+        selTurbo          = "turbo-smtp._domainkey"
+        selFreshdesk      = "freshdesk._domainkey"
+        selHubspot        = "hubspot._domainkey"
+        selHS1            = "hs1._domainkey"
+        selHS2            = "hs2._domainkey"
+        selSalesforce     = "salesforce._domainkey"
+        selSF1            = "sf1._domainkey"
+        selSF2            = "sf2._domainkey"
+        selMandrill2      = "mandrill2._domainkey"
+        selKlaviyo        = "klaviyo._domainkey"
+        selIntercom       = "intercom._domainkey"
+        selCustomerio     = "customerio._domainkey"
+        selConstContact   = "ctct1._domainkey"
+        selConstContact2  = "ctct2._domainkey"
         selActiveCampaign = "dk._domainkey"
-        selMailchimp2    = "mc._domainkey"
-        selMailerLite    = "ml._domainkey"
-        selDrip          = "drip._domainkey"
-        selEverlyticKey2 = "everlytickey2._domainkey"
+        selMailchimp2     = "mc._domainkey"
+        selMailerLite     = "ml._domainkey"
+        selDrip           = "drip._domainkey"
+        selEverlyticKey2  = "everlytickey2._domainkey"
 
         providerSquareOnline    = "Square Online"
         providerCustomerIO      = "Customer.io"
@@ -173,37 +178,37 @@ var defaultDKIMSelectors = []string{
 }
 
 var selectorProviderMap = map[string]string{
-        selSelector1: providerMicrosoft365,
-        selSelector2: providerMicrosoft365,
-        selGoogle:    providerGoogleWS,
-        selGoogle2048: providerGoogleWS,
-        selK1:        providerMailChimp,
-        selK2:        providerMailChimp,
-        "k3._domainkey": providerMailChimp,
-        selMailchimp: providerMailChimp,
-        selMandrill:  "MailChimp (Mandrill)",
-        selS1:        providerSendGrid,
-        selS2:        providerSendGrid,
-        selSendgrid:  providerSendGrid,
-        selMailjet:   providerMailjet,
-        selAmazonSES: providerAmazonSES,
-        selPostmark:  providerPostmark,
-        selSparkpost: providerSparkPost,
-        selMailgun:   providerMailgun,
-        selSendinblue: providerBrevo,
-        selMimecast:  providerMimecast,
-        selProofpoint: providerProofpoint,
-        selEverlytic:     strEverlytic,
-        selEverlyticKey2: strEverlytic,
-        selZendesk1:  providerZendesk,
-        selZendesk2:  providerZendesk,
-        selCM:        "Campaign Monitor",
-        selZoho:      providerZohoMail,
-        selZohoMail:  providerZohoMail,
-        selZmail:     providerZohoMail,
-        selSquare:    providerSquareOnline,
-        selSquareup:  providerSquareOnline,
-        selSQ:        providerSquareOnline,
+        selSelector1:      providerMicrosoft365,
+        selSelector2:      providerMicrosoft365,
+        selGoogle:         providerGoogleWS,
+        selGoogle2048:     providerGoogleWS,
+        selK1:             providerMailChimp,
+        selK2:             providerMailChimp,
+        "k3._domainkey":   providerMailChimp,
+        selMailchimp:      providerMailChimp,
+        selMandrill:       "MailChimp (Mandrill)",
+        selS1:             providerSendGrid,
+        selS2:             providerSendGrid,
+        selSendgrid:       providerSendGrid,
+        selMailjet:        providerMailjet,
+        selAmazonSES:      providerAmazonSES,
+        selPostmark:       providerPostmark,
+        selSparkpost:      providerSparkPost,
+        selMailgun:        providerMailgun,
+        selSendinblue:     providerBrevo,
+        selMimecast:       providerMimecast,
+        selProofpoint:     providerProofpoint,
+        selEverlytic:      strEverlytic,
+        selEverlyticKey2:  strEverlytic,
+        selZendesk1:       providerZendesk,
+        selZendesk2:       providerZendesk,
+        selCM:             "Campaign Monitor",
+        selZoho:           providerZohoMail,
+        selZohoMail:       providerZohoMail,
+        selZmail:          providerZohoMail,
+        selSquare:         providerSquareOnline,
+        selSquareup:       providerSquareOnline,
+        selSQ:             providerSquareOnline,
         selBrevo:          providerBrevo,
         selSendgrid2:      providerSendGrid,
         selSmtpapi:        providerSendGrid,
@@ -299,17 +304,17 @@ var primaryProviderSelectors = map[string][]string{
         providerPostmark:        {selPostmark},
         providerSparkPost:       {selSparkpost},
         providerZendesk:         {selZendesk1, selZendesk2},
-        strHubspot:               {selHubspot, selHS1, selHS2},
-        strSalesforce:            {selSalesforce, selSF1, selSF2},
-        strKlaviyo:               {selKlaviyo},
-        strIntercom:              {selIntercom},
+        strHubspot:              {selHubspot, selHS1, selHS2},
+        strSalesforce:           {selSalesforce, selSF1, selSF2},
+        strKlaviyo:              {selKlaviyo},
+        strIntercom:             {selIntercom},
         providerCustomerIO:      {selCustomerio},
         providerConstantContact: {selConstContact, selConstContact2},
-        strActivecampaign:        {selActiveCampaign},
-        strMailerlite:            {selMailerLite},
+        strActivecampaign:       {selActiveCampaign},
+        strMailerlite:           {selMailerLite},
         providerDrip:            {selDrip},
-        strFreshdesk:             {selFreshdesk},
-        strEverlytic:             {selEverlytic, selEverlyticKey2},
+        strFreshdesk:            {selFreshdesk},
+        strEverlytic:            {selEverlytic, selEverlyticKey2},
 }
 
 var spfMailboxProviders = map[string]string{
@@ -325,29 +330,29 @@ var spfMailboxProviders = map[string]string{
 }
 
 var spfAncillarySenders = map[string]string{
-        "servers.mcsv.net":  providerMailChimp,
-        "spf.mandrillapp":   providerMailChimp,
-        "sendgrid.net":      providerSendGrid,
-        "amazonses.com":     providerAmazonSES,
-        "mailgun.org":       providerMailgun,
-        "spf.sparkpostmail": providerSparkPost,
-        "mail.zendesk.com":  providerZendesk,
-        "spf.brevo.com":     providerBrevo,
-        "spf.sendinblue":    providerBrevo,
-        "spf.mailjet":       providerMailjet,
-        "spf.postmarkapp":   providerPostmark,
-        "spf.mtasv.net":     providerPostmark,
-        "spf.freshdesk":     strFreshdesk,
-        "hostedrt.com":      "Best Practical RT",
-        "hubspot.net":       strHubspot,
-        "spf.salesforce.com": strSalesforce,
-        "spf1.klaviyo.com":  strKlaviyo,
-        "intercom.io":       strIntercom,
-        "spf.customerio":    providerCustomerIO,
+        "servers.mcsv.net":    providerMailChimp,
+        "spf.mandrillapp":     providerMailChimp,
+        "sendgrid.net":        providerSendGrid,
+        "amazonses.com":       providerAmazonSES,
+        "mailgun.org":         providerMailgun,
+        "spf.sparkpostmail":   providerSparkPost,
+        "mail.zendesk.com":    providerZendesk,
+        "spf.brevo.com":       providerBrevo,
+        "spf.sendinblue":      providerBrevo,
+        "spf.mailjet":         providerMailjet,
+        "spf.postmarkapp":     providerPostmark,
+        "spf.mtasv.net":       providerPostmark,
+        "spf.freshdesk":       strFreshdesk,
+        "hostedrt.com":        "Best Practical RT",
+        "hubspot.net":         strHubspot,
+        "spf.salesforce.com":  strSalesforce,
+        "spf1.klaviyo.com":    strKlaviyo,
+        "intercom.io":         strIntercom,
+        "spf.customerio":      providerCustomerIO,
         "spf.constantcontact": providerConstantContact,
-        "emsd1.com":         strActivecampaign,
-        "spf.mailerlite":    strMailerlite,
-        "getdrip.com":       providerDrip,
+        "emsd1.com":           strActivecampaign,
+        "spf.mailerlite":      strMailerlite,
+        "getdrip.com":         providerDrip,
 }
 
 var ambiguousSelectors = map[string]bool{
@@ -442,52 +447,10 @@ func detectPrimaryMailProvider(mxRecords []string, spfRecord string) ProviderRes
 
         mxProvider := detectMXProvider(mxRecords)
         spfProviders := detectAllSPFMailboxProviders(spfRecord)
-        spfMailbox := ""
-        ancillaryNote := ""
 
-        if mxProvider != "" && len(spfProviders) > 0 {
-                var ancillaryProviders []string
-                mxMatchedInSPF := false
-                for _, sp := range spfProviders {
-                        if sp == mxProvider {
-                                mxMatchedInSPF = true
-                        } else {
-                                ancillaryProviders = append(ancillaryProviders, sp)
-                        }
-                }
-                if mxMatchedInSPF {
-                        spfMailbox = mxProvider
-                        if len(ancillaryProviders) > 0 {
-                                ancillaryNote = fmt.Sprintf(
-                                        "SPF authorizes %s alongside primary mail provider %s. "+
-                                                "The %s SPF include likely supports ancillary services "+
-                                                "(e.g., calendar invitations, shared documents) rather than primary mailbox hosting.",
-                                        strings.Join(ancillaryProviders, ", "), mxProvider, strings.Join(ancillaryProviders, ", "))
-                        }
-                } else if securityGateways[mxProvider] {
-                        spfMailbox = spfProviders[0]
-                } else {
-                        ancillaryNote = fmt.Sprintf(
-                                "SPF authorizes %s servers, but MX records point to %s. "+
-                                        "The %s SPF include likely supports ancillary services "+
-                                        "(e.g., calendar invitations, shared documents) rather than primary mailbox hosting.",
-                                spfProviders[0], mxProvider, spfProviders[0])
-                }
-        } else if len(spfProviders) > 0 {
-                spfMailbox = spfProviders[0]
-        }
+        spfMailbox, ancillaryNote := reconcileSPFWithMX(mxProvider, spfProviders)
 
-        if spfMailbox != "" && mxProvider == "" && len(mxRecords) > 0 {
-                ancillaryNote = fmt.Sprintf(
-                        "SPF authorizes %s servers, but MX records point to self-hosted infrastructure. "+
-                                "The %s SPF include likely supports ancillary services "+
-                                "(e.g., calendar invitations, shared documents) rather than primary mailbox hosting.",
-                        spfMailbox, spfMailbox)
-                spfMailbox = ""
-                if detectSPFAncillaryProvider(spfRecord) == "" {
-                        mxProvider = "Self-hosted"
-                }
-        }
+        spfMailbox, mxProvider, ancillaryNote = handleSelfHostedMX(spfMailbox, mxProvider, mxRecords, spfRecord, ancillaryNote)
 
         if spfMailbox == "" && mxProvider == "" {
                 ancillary := detectSPFAncillaryProvider(spfRecord)
@@ -497,10 +460,66 @@ func detectPrimaryMailProvider(mxRecords []string, spfRecord string) ProviderRes
         }
 
         primary, gateway := resolveProviderWithGateway(mxProvider, spfMailbox)
-
         mxLegacyNote := detectGoogleLegacyMX(mxRecords, mxProvider)
 
         return ProviderResolution{Primary: primary, Gateway: gateway, SPFAncillaryNote: ancillaryNote, MXLegacyNote: mxLegacyNote}
+}
+
+func reconcileSPFWithMX(mxProvider string, spfProviders []string) (string, string) {
+        if mxProvider == "" || len(spfProviders) == 0 {
+                if len(spfProviders) > 0 {
+                        return spfProviders[0], ""
+                }
+                return "", ""
+        }
+
+        var ancillaryProviders []string
+        mxMatchedInSPF := false
+        for _, sp := range spfProviders {
+                if sp == mxProvider {
+                        mxMatchedInSPF = true
+                } else {
+                        ancillaryProviders = append(ancillaryProviders, sp)
+                }
+        }
+
+        if mxMatchedInSPF {
+                note := ""
+                if len(ancillaryProviders) > 0 {
+                        note = fmt.Sprintf(
+                                "SPF authorizes %s alongside primary mail provider %s. "+
+                                        ancillaryServicesLikelyFmt+
+                                        ancillaryServicesDescription,
+                                strings.Join(ancillaryProviders, ", "), mxProvider, strings.Join(ancillaryProviders, ", "))
+                }
+                return mxProvider, note
+        }
+
+        if securityGateways[mxProvider] {
+                return spfProviders[0], ""
+        }
+
+        note := fmt.Sprintf(
+                "SPF authorizes %s servers, but MX records point to %s. "+
+                        ancillaryServicesLikelyFmt+
+                        ancillaryServicesDescription,
+                spfProviders[0], mxProvider, spfProviders[0])
+        return "", note
+}
+
+func handleSelfHostedMX(spfMailbox, mxProvider string, mxRecords []string, spfRecord, ancillaryNote string) (string, string, string) {
+        if spfMailbox == "" || mxProvider != "" || len(mxRecords) == 0 {
+                return spfMailbox, mxProvider, ancillaryNote
+        }
+        ancillaryNote = fmt.Sprintf(
+                "SPF authorizes %s servers, but MX records point to self-hosted infrastructure. "+
+                        ancillaryServicesLikelyFmt+
+                        ancillaryServicesDescription,
+                spfMailbox, spfMailbox)
+        if detectSPFAncillaryProvider(spfRecord) == "" {
+                mxProvider = "Self-hosted"
+        }
+        return "", mxProvider, ancillaryNote
 }
 
 func detectGoogleLegacyMX(mxRecords []string, mxProvider string) string {
@@ -598,11 +617,11 @@ func analyzePublicKey(record string) (keyBits interface{}, revoked bool, issues 
 
 func analyzeDKIMKey(record string) map[string]any {
         keyInfo := map[string]any{
-                "key_type":  "rsa",
-                mapKeyKeyBits:  nil,
-                mapKeyRevoked:   false,
-                "test_mode": false,
-                mapKeyIssues:    []string{},
+                "key_type":    "rsa",
+                mapKeyKeyBits: nil,
+                mapKeyRevoked: false,
+                "test_mode":   false,
+                mapKeyIssues:  []string{},
         }
 
         keyType := "rsa"
@@ -867,10 +886,10 @@ func processDKIMSelector(ctx context.Context, dns interface {
         keyInfoList, localIssues, localStrengths := analyzeRecordKeys(records)
 
         selectorInfo := map[string]any{
-                "records":   records,
-                "key_info":  keyInfoList,
-                mapKeyProvider:  provider,
-                "user_hint": isCustomSelector(selectorName, customSelectors),
+                "records":      records,
+                "key_info":     keyInfoList,
+                mapKeyProvider: provider,
+                "user_hint":    isCustomSelector(selectorName, customSelectors),
         }
 
         return &dkimScanResult{
@@ -940,15 +959,15 @@ func reclassifyAmbiguousSelectors(foundSelectors map[string]map[string]any, fina
 }
 
 var dkimNSProviders = map[string]string{
-        "ondmarc.com":      "Red Sift OnDMARC",
-        "easydmarc.com":    "EasyDMARC",
-        "valimail.com":     "Valimail",
-        "dmarcian.com":     "dmarcian",
-        "powerdmarc.com":   "PowerDMARC",
-        "agari.com":        "Agari (Fortra)",
-        "socketlabs.com":   "SocketLabs",
-        "proofpoint.com":   "Proofpoint",
-        "mimecast.com":     "Mimecast",
+        "ondmarc.com":    "Red Sift OnDMARC",
+        "easydmarc.com":  "EasyDMARC",
+        "valimail.com":   "Valimail",
+        "dmarcian.com":   "dmarcian",
+        "powerdmarc.com": "PowerDMARC",
+        "agari.com":      "Agari (Fortra)",
+        "socketlabs.com": "SocketLabs",
+        "proofpoint.com": "Proofpoint",
+        "mimecast.com":   "Mimecast",
 }
 
 type DKIMDelegation struct {
@@ -1067,26 +1086,26 @@ func (a *Analyzer) AnalyzeDKIM(ctx context.Context, domain string, mxRecords, cu
         var delegationMap map[string]any
         if dkimDelegation.Detected {
                 delegationMap = map[string]any{
-                        "detected":    true,
-                        "nameservers": dkimDelegation.Nameservers,
-                        mapKeyProvider:    dkimDelegation.Provider,
+                        "detected":     true,
+                        "nameservers":  dkimDelegation.Nameservers,
+                        mapKeyProvider: dkimDelegation.Provider,
                 }
         }
 
         return map[string]any{
-                "status":              status,
-                "message":             message,
-                "selectors":           selectorMap,
-                "key_issues":          keyIssues,
-                "key_strengths":       uniqueStrings(keyStrengths),
-                "primary_provider":    res.Primary,
-                "security_gateway":    res.GatewayOrNil(),
-                "primary_has_dkim":    primaryHasDKIM,
-                "third_party_only":    thirdPartyOnly,
-                "primary_dkim_note":   primaryDKIMNote,
-                "found_providers":     sortedProviders,
-                "spf_ancillary_note":  res.SPFAncillaryNote,
-                "mx_legacy_note":      res.MXLegacyNote,
+                "status":               status,
+                "message":              message,
+                "selectors":            selectorMap,
+                "key_issues":           keyIssues,
+                "key_strengths":        uniqueStrings(keyStrengths),
+                "primary_provider":     res.Primary,
+                "security_gateway":     res.GatewayOrNil(),
+                "primary_has_dkim":     primaryHasDKIM,
+                "third_party_only":     thirdPartyOnly,
+                "primary_dkim_note":    primaryDKIMNote,
+                "found_providers":      sortedProviders,
+                "spf_ancillary_note":   res.SPFAncillaryNote,
+                "mx_legacy_note":       res.MXLegacyNote,
                 "domainkey_delegation": delegationMap,
         }
 }

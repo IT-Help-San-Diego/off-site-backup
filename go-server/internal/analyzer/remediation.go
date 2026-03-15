@@ -1,12 +1,15 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
 // Remediation engine — generates actionable security fixes from scan results.
+// dns-tool:scrutiny science
 package analyzer
 
 import (
         "fmt"
         "sort"
         "strings"
+
+        "dnstool/go-server/internal/citation"
 )
 
 const (
@@ -20,38 +23,92 @@ const (
         colorMedium   = "info"
         colorLow      = "secondary"
 
-        rfcDMARCPolicy    = "RFC 7489 §6.3"
-        rfcDMARCPolicyURL = "https://datatracker.ietf.org/doc/html/rfc7489#section-6.3"
-
         dkimRecordExampleGeneric = "selector1._domainkey.%s TXT \"v=DKIM1; k=rsa; p=<public_key>\""
 
         tlsrptDescDefault = "TLS-RPT (TLS Reporting) sends you reports about TLS connection failures when other servers try to deliver mail to your domain."
         tlsrptDescDANE    = "Your domain has DNSSEC + DANE — the strongest email transport security available."
         tlsrptDescMTASTS  = "Your domain has MTA-STS configured for transport encryption."
 
-        dmarcHostPrefix   = "_dmarc."
-        hostHelpDMARC     = "(DMARC policy record)"
-        hostHelpRootDom   = "(root of domain)"
-        rfcSPF            = "RFC 7208"
-        rfcSPFURL         = "https://datatracker.ietf.org/doc/html/rfc7208"
-        rfcDKIMSign       = "RFC 6376"
-        rfcDKIMSignURL    = "https://datatracker.ietf.org/doc/html/rfc6376"
+        dmarcHostPrefix = "_dmarc."
+        hostHelpDMARC   = "(DMARC policy record)"
+        hostHelpRootDom = "(root of domain)"
 
-        sectionDMARC      = "DMARC"
-        sectionSPF        = "SPF"
-        sectionDNSSEC     = "DNSSEC"
-        sectionDKIM       = "DKIM"
-        sectionDANE       = "DANE"
-        policyReject      = "reject"
-        spfHardFailValue  = "v=spf1 -all"
+        sectionDMARC     = "DMARC"
+        sectionSPF       = "SPF"
+        sectionDNSSEC    = "DNSSEC"
+        sectionDKIM      = "DKIM"
+        sectionDANE      = "DANE"
+        policyReject     = "reject"
+        spfHardFailValue = "v=spf1 -all"
 
-        rfcDMARC7489URL   = "https://datatracker.ietf.org/doc/html/rfc7489"
+        mapKeyRFCURL = "rfc_url"
+        mapKeyRFC    = "rfc"
 
-        mapKeyRFCURL      = "rfc_url"
-        mapKeyRFC         = "rfc"
-
-        dnsTypeTXT        = "TXT"
+        dnsTypeTXT = "TXT"
 )
+
+var (
+        remSPF            string
+        remSPFURL         string
+        remDKIMSign       string
+        remDKIMSignURL    string
+        remDMARCPolicy    string
+        remDMARCPolicyURL string
+        remDMARC7489      string
+        remDMARC7489URL   string
+
+        remSPF51Label     string
+        remSPF51URL       string
+        remSPF464Label    string
+        remSPF464URL      string
+        remDMARC71Label   string
+        remDMARC71URL     string
+        remDKIM8301Label  string
+        remDKIM8301URL    string
+        remCAA8659Label   string
+        remCAA8659URL     string
+        remMTASTS8461Label string
+        remMTASTS8461URL  string
+        remTLSRPT8460Label string
+        remTLSRPT8460URL  string
+        remDNSSEC4035Label string
+        remDNSSEC4035URL  string
+        remDNSSEC8624Label string
+        remDNSSEC8624URL  string
+        remDANE7672Label  string
+        remDANE7672URL    string
+        remDANE267221Label string
+        remDANE267221URL  string
+        remBIMI9495Label  string
+        remBIMI9495URL    string
+        remNullMX7505Label string
+        remNullMX7505URL  string
+)
+
+func init() {
+        reg := citation.Global()
+        remSPF, remSPFURL = reg.ResolveRFC("rfc:7208")
+        remDKIMSign, remDKIMSignURL = reg.ResolveRFC("rfc:6376")
+        remDMARCPolicy, remDMARCPolicyURL = reg.ResolveRFC("rfc:7489§6.3")
+        remDMARC7489, remDMARC7489URL = reg.ResolveRFC("rfc:7489")
+        remSPF51Label, remSPF51URL = reg.ResolveRFC("rfc:7208§5.1")
+        remSPF464Label, remSPF464URL = reg.ResolveRFC("rfc:7208§4.6.4")
+        remDMARC71Label, remDMARC71URL = reg.ResolveRFC("rfc:7489§7.1")
+        remDKIM8301Label, remDKIM8301URL = reg.ResolveRFC("rfc:8301")
+        remCAA8659Label, remCAA8659URL = reg.ResolveRFC("rfc:8659")
+        remMTASTS8461Label, remMTASTS8461URL = reg.ResolveRFC("rfc:8461")
+        remTLSRPT8460Label, remTLSRPT8460URL = reg.ResolveRFC("rfc:8460")
+        remDNSSEC4035Label, remDNSSEC4035URL = reg.ResolveRFC("rfc:4035")
+        remDNSSEC8624Label, remDNSSEC8624URL = reg.ResolveRFC("rfc:8624§3.1")
+        remDANE7672Label, remDANE7672URL = reg.ResolveRFC("rfc:7672")
+        remDANE267221Label, remDANE267221URL = reg.ResolveRFC("rfc:7672§2.1")
+        remBIMI9495Label, remBIMI9495URL = reg.ResolveRFC("rfc:9495")
+        remNullMX7505Label, remNullMX7505URL = reg.ResolveRFC("rfc:7505")
+}
+
+func CitationReg() *citation.Registry {
+        return citation.Global()
+}
 
 type severityLevel struct {
         Name  string
@@ -226,8 +283,8 @@ func fixToMap(f fix) map[string]any {
                 "fix":            f.Description,
                 "severity_label": f.SeverityLevel.Name,
                 "severity_color": f.SeverityLevel.Color,
-                mapKeyRFC:            f.RFC,
-                mapKeyRFCURL:        f.RFCURL,
+                mapKeyRFC:        f.RFC,
+                mapKeyRFCURL:     f.RFCURL,
                 "rfc_title":      f.RFC,
                 "rfc_obsolete":   false,
                 "section":        f.Section,
@@ -303,8 +360,8 @@ func appendSPFFixes(fixes []fix, ps protocolState, ds DKIMState, results map[str
                         DNSValue:      value,
                         DNSPurpose:    "SPF tells receiving servers which IPs may send mail for your domain.",
                         DNSHostHelp:   hostHelpRootDom,
-                        RFC:           rfcSPF,
-                        RFCURL:        rfcSPFURL,
+                        RFC:           remSPF,
+                        RFCURL:        remSPFURL,
                         SeverityLevel: sevCritical,
                         Section:       sectionSPF,
                 })
@@ -319,8 +376,8 @@ func appendSPFFixes(fixes []fix, ps protocolState, ds DKIMState, results map[str
                         DNSValue:      "v=spf1 [your includes] ~all",
                         DNSPurpose:    "The +all qualifier is dangerous — it authorizes the entire internet to send as your domain.",
                         DNSHostHelp:   hostHelpRootDom,
-                        RFC:           "RFC 7208 §5.1",
-                        RFCURL:        "https://datatracker.ietf.org/doc/html/rfc7208#section-5.1",
+                        RFC:           remSPF51Label,
+                        RFCURL:        remSPF51URL,
                         SeverityLevel: sevCritical,
                         Section:       sectionSPF,
                 })
@@ -329,8 +386,8 @@ func appendSPFFixes(fixes []fix, ps protocolState, ds DKIMState, results map[str
                 fixes = append(fixes, fix{
                         Title:         "Upgrade SPF from ?all",
                         Description:   "Your SPF record uses ?all (neutral) which provides no protection. Upgrade to ~all (soft fail) for proper SPF enforcement.",
-                        RFC:           "RFC 7208 §5.1",
-                        RFCURL:        "https://datatracker.ietf.org/doc/html/rfc7208#section-5.1",
+                        RFC:           remSPF51Label,
+                        RFCURL:        remSPF51URL,
                         SeverityLevel: sevHigh,
                         Section:       sectionSPF,
                 })
@@ -345,8 +402,8 @@ func appendSPFLookupFix(fixes []fix, ps protocolState) []fix {
                 fixes = append(fixes, fix{
                         Title:         "Reduce SPF Lookup Count",
                         Description:   fmt.Sprintf("Your SPF record uses %d DNS lookups, exceeding the RFC limit of 10. Some receivers may ignore your SPF policy.", ps.spfLookupCount),
-                        RFC:           "RFC 7208 §4.6.4",
-                        RFCURL:        "https://datatracker.ietf.org/doc/html/rfc7208#section-4.6.4",
+                        RFC:           remSPF464Label,
+                        RFCURL:        remSPF464URL,
                         SeverityLevel: sevMedium,
                         Section:       sectionSPF,
                 })
@@ -368,8 +425,8 @@ func appendDMARCFixes(fixes []fix, ps protocolState, results map[string]any, dom
                         DNSValue:      "v=DMARC1; p=none; rua=mailto:dmarc-reports@" + domain,
                         DNSPurpose:    "DMARC tells receivers how to handle mail that fails SPF/DKIM checks.",
                         DNSHostHelp:   hostHelpDMARC,
-                        RFC:           rfcDMARCPolicy,
-                        RFCURL:        rfcDMARCPolicyURL,
+                        RFC:           remDMARCPolicy,
+                        RFCURL:        remDMARCPolicyURL,
                         SeverityLevel: sevCritical,
                         Section:       sectionDMARC,
                 })
@@ -384,8 +441,8 @@ func appendDMARCFixes(fixes []fix, ps protocolState, results map[string]any, dom
                         DNSValue:      "v=DMARC1; p=quarantine; rua=mailto:dmarc-reports@" + domain,
                         DNSPurpose:    "A quarantine or reject policy instructs receivers to take action on failing mail.",
                         DNSHostHelp:   hostHelpDMARC,
-                        RFC:           rfcDMARCPolicy,
-                        RFCURL:        rfcDMARCPolicyURL,
+                        RFC:           remDMARCPolicy,
+                        RFCURL:        remDMARCPolicyURL,
                         SeverityLevel: sevHigh,
                         Section:       sectionDMARC,
                 })
@@ -399,8 +456,8 @@ func appendDMARCFixes(fixes []fix, ps protocolState, results map[string]any, dom
                         DNSValue:      "v=DMARC1; p=reject; rua=mailto:dmarc-reports@" + domain,
                         DNSPurpose:    "A reject policy provides the strongest protection against domain spoofing.",
                         DNSHostHelp:   "(update existing DMARC record)",
-                        RFC:           rfcDMARCPolicy,
-                        RFCURL:        rfcDMARCPolicyURL,
+                        RFC:           remDMARCPolicy,
+                        RFCURL:        remDMARCPolicyURL,
                         SeverityLevel: sevMedium,
                         Section:       sectionDMARC,
                 })
@@ -409,8 +466,8 @@ func appendDMARCFixes(fixes []fix, ps protocolState, results map[string]any, dom
                 fixes = append(fixes, fix{
                         Title:         "Increase DMARC Coverage",
                         Description:   fmt.Sprintf("Your DMARC policy only applies to %d%% of mail. Increase pct to 100 for full protection.", ps.dmarcPct),
-                        RFC:           rfcDMARCPolicy,
-                        RFCURL:        rfcDMARCPolicyURL,
+                        RFC:           remDMARCPolicy,
+                        RFCURL:        remDMARCPolicyURL,
                         SeverityLevel: sevMedium,
                         Section:       sectionDMARC,
                 })
@@ -424,8 +481,8 @@ func appendDMARCFixes(fixes []fix, ps protocolState, results map[string]any, dom
                         DNSValue:      "rua=mailto:dmarc-reports@" + domain,
                         DNSPurpose:    "Aggregate reports show who is sending mail as your domain and whether it passes authentication.",
                         DNSHostHelp:   "(add to existing DMARC record)",
-                        RFC:           "RFC 7489 §7.1",
-                        RFCURL:        "https://datatracker.ietf.org/doc/html/rfc7489#section-7.1",
+                        RFC:           remDMARC71Label,
+                        RFCURL:        remDMARC71URL,
                         SeverityLevel: sevMedium,
                         Section:       sectionDMARC,
                 })
@@ -447,8 +504,8 @@ func appendDKIMFixes(fixes []fix, ps protocolState, ds DKIMState, results map[st
                         DNSValue:      "v=DKIM1; k=rsa; p=<public_key>",
                         DNSPurpose:    "DKIM lets receivers verify that messages were authorized by the domain owner and not altered in transit.",
                         DNSHostHelp:   "(DKIM selector record — your provider supplies the exact value)",
-                        RFC:           rfcDKIMSign,
-                        RFCURL:        rfcDKIMSignURL,
+                        RFC:           remDKIMSign,
+                        RFCURL:        remDKIMSignURL,
                         SeverityLevel: sevHigh,
                         Section:       sectionDKIM,
                 })
@@ -457,8 +514,8 @@ func appendDKIMFixes(fixes []fix, ps protocolState, ds DKIMState, results map[st
                 fixes = append(fixes, fix{
                         Title:         "Add Primary Domain DKIM",
                         Description:   "DKIM records were found for third-party services but not for your primary mail platform. Configure DKIM for your main sending domain.",
-                        RFC:           rfcDKIMSign,
-                        RFCURL:        rfcDKIMSignURL,
+                        RFC:           remDKIMSign,
+                        RFCURL:        remDKIMSignURL,
                         SeverityLevel: sevMedium,
                         Section:       sectionDKIM,
                 })
@@ -470,8 +527,8 @@ func weakKeysFix(domain string) fix {
         return fix{
                 Title:         "Upgrade DKIM Key Strength",
                 Description:   "One or more DKIM keys use 1024-bit RSA which is considered weak. Upgrade to 2048-bit RSA keys.",
-                RFC:           "RFC 8301",
-                RFCURL:        "https://datatracker.ietf.org/doc/html/rfc8301",
+                RFC:           remDKIM8301Label,
+                RFCURL:        remDKIM8301URL,
                 SeverityLevel: sevMedium,
                 Section:       sectionDKIM,
         }
@@ -487,8 +544,8 @@ func appendCAAFixes(fixes []fix, ps protocolState, domain string) []fix {
                         DNSValue:      "0 issue \"letsencrypt.org\"",
                         DNSPurpose:    "CAA constrains which CAs can issue certificates for this domain.",
                         DNSHostHelp:   "(root of domain — adjust CA to match your provider)",
-                        RFC:           "RFC 8659",
-                        RFCURL:        "https://datatracker.ietf.org/doc/html/rfc8659",
+                        RFC:           remCAA8659Label,
+                        RFCURL:        remCAA8659URL,
                         SeverityLevel: sevLow,
                         Section:       "CAA",
                 })
@@ -506,8 +563,8 @@ func appendMTASTSFixes(fixes []fix, ps protocolState, domain string) []fix {
                         DNSValue:      "v=STSv1; id=" + domain,
                         DNSPurpose:    "MTA-STS tells sending servers to require TLS when delivering mail to your domain.",
                         DNSHostHelp:   "(MTA-STS policy record)",
-                        RFC:           "RFC 8461",
-                        RFCURL:        "https://datatracker.ietf.org/doc/html/rfc8461",
+                        RFC:           remMTASTS8461Label,
+                        RFCURL:        remMTASTS8461URL,
                         SeverityLevel: sevLow,
                         Section:       "MTA-STS",
                 })
@@ -531,8 +588,8 @@ func appendTLSRPTFixes(fixes []fix, ps protocolState, domain string) []fix {
                         DNSValue:      "v=TLSRPTv1; rua=mailto:tls-reports@" + domain,
                         DNSPurpose:    "TLS-RPT sends you reports about TLS connection failures to your mail servers.",
                         DNSHostHelp:   "(SMTP TLS reporting record)",
-                        RFC:           "RFC 8460",
-                        RFCURL:        "https://datatracker.ietf.org/doc/html/rfc8460",
+                        RFC:           remTLSRPT8460Label,
+                        RFCURL:        remTLSRPT8460URL,
                         SeverityLevel: sevLow,
                         Section:       "TLS-RPT",
                 })
@@ -545,18 +602,18 @@ func appendDNSSECFixes(fixes []fix, ps protocolState) []fix {
                 fixes = append(fixes, fix{
                         Title:         "Fix Broken DNSSEC",
                         Description:   "DNSSEC validation is failing for this domain. This can cause resolvers to reject all DNS responses, making your domain unreachable.",
-                        RFC:           "RFC 4035",
-                        RFCURL:        "https://datatracker.ietf.org/doc/html/rfc4035",
+                        RFC:           remDNSSEC4035Label,
+                        RFCURL:        remDNSSEC4035URL,
                         SeverityLevel: sevCritical,
                         Section:       sectionDNSSEC,
                 })
         }
         if !ps.dnssecOK && !ps.dnssecBroken {
                 fixes = append(fixes, fix{
-                        Title:       "Enable DNSSEC",
-                        Description: "DNSSEC is not enabled for this domain. DNSSEC provides cryptographic authentication of DNS responses, preventing cache poisoning and DNS spoofing attacks.",
-                        RFC:         "RFC 4035",
-                        RFCURL:      "https://datatracker.ietf.org/doc/html/rfc4035",
+                        Title:         "Enable DNSSEC",
+                        Description:   "DNSSEC is not enabled for this domain. DNSSEC provides cryptographic authentication of DNS responses, preventing cache poisoning and DNS spoofing attacks.",
+                        RFC:           remDNSSEC4035Label,
+                        RFCURL:        remDNSSEC4035URL,
                         SeverityLevel: sevMedium,
                         Section:       sectionDNSSEC,
                 })
@@ -565,8 +622,8 @@ func appendDNSSECFixes(fixes []fix, ps protocolState) []fix {
                 fixes = append(fixes, fix{
                         Title:         "Migrate From Deprecated DNSSEC Algorithm",
                         Description:   "This domain uses a DNSSEC signing algorithm classified as MUST NOT use per RFC 8624. Deprecated algorithms (RSAMD5, DSA, ECC-GOST) have known cryptographic weaknesses. Re-sign the zone with ECDSAP256SHA256 (algorithm 13) or Ed25519 (algorithm 15).",
-                        RFC:           "RFC 8624 §3.1",
-                        RFCURL:        "https://datatracker.ietf.org/doc/html/rfc8624#section-3.1",
+                        RFC:           remDNSSEC8624Label,
+                        RFCURL:        remDNSSEC8624URL,
                         SeverityLevel: sevHigh,
                         Section:       sectionDNSSEC,
                 })
@@ -575,8 +632,8 @@ func appendDNSSECFixes(fixes []fix, ps protocolState) []fix {
                 fixes = append(fixes, fix{
                         Title:         "Upgrade From Legacy DNSSEC Algorithm",
                         Description:   "This domain uses RSA/SHA-1 (algorithm 5 or 7) which is NOT RECOMMENDED per RFC 8624. While still operational, plan migration to ECDSAP256SHA256 (algorithm 13) or Ed25519 (algorithm 15) for improved security and smaller signatures.",
-                        RFC:           "RFC 8624 §3.1",
-                        RFCURL:        "https://datatracker.ietf.org/doc/html/rfc8624#section-3.1",
+                        RFC:           remDNSSEC8624Label,
+                        RFCURL:        remDNSSEC8624URL,
                         SeverityLevel: sevMedium,
                         Section:       sectionDNSSEC,
                 })
@@ -589,8 +646,8 @@ func appendDANEFixes(fixes []fix, ps protocolState, results map[string]any, doma
                 fixes = append(fixes, fix{
                         Title:         "DANE Requires DNSSEC",
                         Description:   "DANE/TLSA records are present but DNSSEC is not enabled. DANE cannot function without DNSSEC validation.",
-                        RFC:           "RFC 7672 §2.1",
-                        RFCURL:        "https://datatracker.ietf.org/doc/html/rfc7672#section-2.1",
+                        RFC:           remDANE267221Label,
+                        RFCURL:        remDANE267221URL,
                         SeverityLevel: sevHigh,
                         Section:       sectionDANE,
                 })
@@ -599,15 +656,15 @@ func appendDANEFixes(fixes []fix, ps protocolState, results map[string]any, doma
                 mxHost := extractFirstMXHost(results)
                 tlsaHost := "_25._tcp." + mxHost
                 fixes = append(fixes, fix{
-                        Title:       "Add DANE/TLSA Records",
-                        Description: "DNSSEC is active — adding TLSA records enables DANE, which cryptographically binds your mail server certificates to DNS and prevents certificate-based MITM attacks.",
-                        DNSHost:     tlsaHost,
-                        DNSType:     "TLSA",
-                        DNSValue:    "3 1 1 <certificate-sha256-hash>",
-                        DNSPurpose:  "TLSA pins your mail server's TLS certificate in DNS, verified via DNSSEC.",
-                        DNSHostHelp: "(TLSA record for primary MX — generate hash from your server certificate)",
-                        RFC:         "RFC 7672",
-                        RFCURL:      "https://datatracker.ietf.org/doc/html/rfc7672",
+                        Title:         "Add DANE/TLSA Records",
+                        Description:   "DNSSEC is active — adding TLSA records enables DANE, which cryptographically binds your mail server certificates to DNS and prevents certificate-based MITM attacks.",
+                        DNSHost:       tlsaHost,
+                        DNSType:       "TLSA",
+                        DNSValue:      "3 1 1 <certificate-sha256-hash>",
+                        DNSPurpose:    "TLSA pins your mail server's TLS certificate in DNS, verified via DNSSEC.",
+                        DNSHostHelp:   "(TLSA record for primary MX — generate hash from your server certificate)",
+                        RFC:           remDANE7672Label,
+                        RFCURL:        remDANE7672URL,
                         SeverityLevel: sevLow,
                         Section:       sectionDANE,
                 })
@@ -668,8 +725,8 @@ func appendNoMailHardeningFixes(fixes []fix, ps protocolState, domain string) []
                         DNSType:       dnsTypeTXT,
                         DNSValue:      spfHardFailValue,
                         DNSPurpose:    "Explicitly declares no servers are authorized to send email from this null MX domain.",
-                        RFC:           rfcSPF,
-                        RFCURL:        rfcSPFURL,
+                        RFC:           remSPF,
+                        RFCURL:        remSPFURL,
                         Section:       sectionSPF,
                 })
         }
@@ -682,8 +739,8 @@ func appendNoMailHardeningFixes(fixes []fix, ps protocolState, domain string) []
                         DNSType:       dnsTypeTXT,
                         DNSValue:      "v=DMARC1; p=reject; sp=reject; adkim=s; aspf=s;",
                         DNSPurpose:    "Instructs receiving servers to reject all email from this null MX domain — no legitimate mail is expected.",
-                        RFC:           rfcDMARC7489,
-                        RFCURL:        rfcDMARC7489URL,
+                        RFC:           remDMARC7489,
+                        RFCURL:        remDMARC7489URL,
                         Section:       sectionDMARC,
                 })
         }
@@ -700,8 +757,8 @@ func appendProbableNoMailFixes(fixes []fix, ps protocolState, domain string) []f
                         DNSType:       dnsTypeTXT,
                         DNSValue:      spfHardFailValue,
                         DNSPurpose:    "Explicitly declares no servers are authorized to send email from this domain.",
-                        RFC:           rfcSPF,
-                        RFCURL:        rfcSPFURL,
+                        RFC:           remSPF,
+                        RFCURL:        remSPFURL,
                         Section:       sectionSPF,
                 })
         }
@@ -714,8 +771,8 @@ func appendProbableNoMailFixes(fixes []fix, ps protocolState, domain string) []f
                         DNSType:       dnsTypeTXT,
                         DNSValue:      "v=DMARC1; p=reject; sp=reject; adkim=s; aspf=s;",
                         DNSPurpose:    "Instructs receiving servers to reject all email from this domain — no legitimate mail is expected.",
-                        RFC:           rfcDMARC7489,
-                        RFCURL:        rfcDMARC7489URL,
+                        RFC:           remDMARC7489,
+                        RFCURL:        remDMARC7489URL,
                         Section:       sectionDMARC,
                 })
         }
@@ -732,8 +789,8 @@ func appendBIMIFixes(fixes []fix, ps protocolState, domain string) []fix {
                         DNSValue:      "v=BIMI1; l=https://" + domain + "/brand/logo.svg",
                         DNSPurpose:    "BIMI displays your verified brand logo next to your emails in supporting mail clients.",
                         DNSHostHelp:   "(BIMI default record)",
-                        RFC:           "RFC 9495",
-                        RFCURL:        "https://datatracker.ietf.org/doc/html/rfc9495",
+                        RFC:           remBIMI9495Label,
+                        RFCURL:        remBIMI9495URL,
                         SeverityLevel: sevLow,
                         Section:       "BIMI",
                 })
@@ -849,15 +906,15 @@ func buildNoMailSignals(mf mailFlags) (map[string]any, int) {
         signals := map[string]any{}
         count := 0
         defs := []noMailSignalDef{
-                {key: "null_mx", present: mf.hasNullMX, rfc: "RFC 7505", rfcURL: "https://datatracker.ietf.org/doc/html/rfc7505", label: "Null MX", description: "Null MX record published", missingRisk: "Domain may receive unwanted mail"},
-                {key: "spf_deny", present: mf.spfDenyAll, rfc: rfcSPF, rfcURL: rfcSPFURL, label: "SPF -all", description: "SPF hard fail configured", missingRisk: "Unauthorized senders not explicitly rejected"},
-                {key: "dmarc_reject", present: mf.dmarcReject, rfc: rfcDMARC7489, rfcURL: rfcDMARC7489URL, label: "DMARC reject", description: "DMARC reject policy active", missingRisk: "Spoofed mail may be delivered"},
+                {key: "null_mx", present: mf.hasNullMX, rfc: remNullMX7505Label, rfcURL: remNullMX7505URL, label: "Null MX", description: "Null MX record published", missingRisk: "Domain may receive unwanted mail"},
+                {key: "spf_deny", present: mf.spfDenyAll, rfc: remSPF, rfcURL: remSPFURL, label: "SPF -all", description: "SPF hard fail configured", missingRisk: "Unauthorized senders not explicitly rejected"},
+                {key: "dmarc_reject", present: mf.dmarcReject, rfc: remDMARC7489, rfcURL: remDMARC7489URL, label: "DMARC reject", description: "DMARC reject policy active", missingRisk: "Spoofed mail may be delivered"},
         }
         for _, d := range defs {
                 signals[d.key] = map[string]any{
                         "present":      d.present,
-                        mapKeyRFC:          d.rfc,
-                        mapKeyRFCURL:      d.rfcURL,
+                        mapKeyRFC:      d.rfc,
+                        mapKeyRFCURL:   d.rfcURL,
                         "label":        d.label,
                         "description":  d.description,
                         "missing_risk": d.missingRisk,
@@ -872,18 +929,18 @@ func buildNoMailSignals(mf mailFlags) (map[string]any, int) {
 func buildMissingSteps(mf mailFlags) []map[string]any {
         var steps []map[string]any
         defs := []missingStepDef{
-                {missing: !mf.hasSPF, control: "SPF Record", rfc: rfcSPF, rfcURL: rfcSPFURL, action: "Publish an SPF record", risk: "No sender authorization"},
-                {missing: !mf.hasDMARC, control: "DMARC Policy", rfc: rfcDMARC7489, rfcURL: rfcDMARC7489URL, action: "Publish a DMARC record", risk: "No spoofing protection policy"},
-                {missing: !mf.hasDKIM, control: "DKIM Signing", rfc: rfcDKIMSign, rfcURL: rfcDKIMSignURL, action: "Configure DKIM signing", risk: "Messages cannot be cryptographically verified"},
+                {missing: !mf.hasSPF, control: "SPF Record", rfc: remSPF, rfcURL: remSPFURL, action: "Publish an SPF record", risk: "No sender authorization"},
+                {missing: !mf.hasDMARC, control: "DMARC Policy", rfc: remDMARC7489, rfcURL: remDMARC7489URL, action: "Publish a DMARC record", risk: "No spoofing protection policy"},
+                {missing: !mf.hasDKIM, control: "DKIM Signing", rfc: remDKIMSign, rfcURL: remDKIMSignURL, action: "Configure DKIM signing", risk: "Messages cannot be cryptographically verified"},
         }
         for _, d := range defs {
                 if d.missing {
                         steps = append(steps, map[string]any{
-                                "control": d.control,
-                                mapKeyRFC:     d.rfc,
+                                "control":    d.control,
+                                mapKeyRFC:    d.rfc,
                                 mapKeyRFCURL: d.rfcURL,
-                                "action":  d.action,
-                                "risk":    d.risk,
+                                "action":     d.action,
+                                "risk":       d.risk,
                         })
                 }
         }
@@ -897,7 +954,7 @@ func classifyMailPosture(mf mailFlags, presentCount int, domain string, ps proto
                                 classification: "no_mail_verified",
                                 label:          "No-Mail Domain — Fully Hardened",
                                 color:          "success",
-                                icon:           "fas fa-shield-alt",
+                                icon:           "shield-alt",
                                 summary:        "This domain declares it does not send or receive email and has all three RFC-recommended controls in place: Null MX (RFC 7505), SPF -all (RFC 7208), and DMARC reject (RFC 7489).",
                                 isNoMail:       true,
                         }
@@ -906,7 +963,7 @@ func classifyMailPosture(mf mailFlags, presentCount int, domain string, ps proto
                         classification: "no_mail_partial",
                         label:          "No-Mail Domain — Incomplete Hardening",
                         color:          colorHigh,
-                        icon:           "fas fa-exclamation-triangle",
+                        icon:           "exclamation-triangle",
                         summary:        "This domain publishes a Null MX record (RFC 7505) declaring it does not accept email, but is missing additional hardening controls needed to fully prevent spoofing.",
                         isNoMail:       true,
                 }
@@ -916,7 +973,7 @@ func classifyMailPosture(mf mailFlags, presentCount int, domain string, ps proto
                         classification: "no_mail_intent",
                         label:          "Probable No-Mail Domain — Needs Formal Declaration",
                         color:          "info",
-                        icon:           "fas fa-info-circle",
+                        icon:           "info-circle",
                         summary:        "This domain has no MX records and an SPF -all policy, which suggests it is intended to be a no-mail domain. However, it is missing the formal Null MX record (RFC 7505) that explicitly declares this intent. Adding the standard no-mail DNS records would make this intention unambiguous to all mail servers.",
                         isNoMail:       true,
                 }
@@ -926,7 +983,7 @@ func classifyMailPosture(mf mailFlags, presentCount int, domain string, ps proto
                         classification: "protected",
                         label:          "Strongly Protected",
                         color:          "success",
-                        icon:           "fas fa-shield-alt",
+                        icon:           "shield-alt",
                         summary:        "SPF, DKIM, and DMARC reject policy observed — strong anti-spoofing controls detected.",
                 }
         }
@@ -935,7 +992,7 @@ func classifyMailPosture(mf mailFlags, presentCount int, domain string, ps proto
                         classification: "partial",
                         label:          "Moderately Protected",
                         color:          colorHigh,
-                        icon:           "fas fa-exclamation-triangle",
+                        icon:           "exclamation-triangle",
                         summary:        "Core email authentication controls observed but DMARC enforcement could be strengthened.",
                 }
         }
@@ -944,7 +1001,7 @@ func classifyMailPosture(mf mailFlags, presentCount int, domain string, ps proto
                         classification: "minimal",
                         label:          "Limited Protection",
                         color:          colorHigh,
-                        icon:           "fas fa-exclamation-circle",
+                        icon:           "exclamation-circle",
                         summary:        "Some email authentication controls observed but critical components are missing.",
                 }
         }
@@ -952,7 +1009,7 @@ func classifyMailPosture(mf mailFlags, presentCount int, domain string, ps proto
                 classification: "unprotected",
                 label:          "Unprotected",
                 color:          "danger",
-                icon:           "fas fa-times-circle",
+                icon:           "times-circle",
                 summary:        "No email authentication controls observed — this domain appears vulnerable to spoofing.",
         }
 }

@@ -3,6 +3,7 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
 // Stub implementations. See github.com/careyjames/dns-tool-intel for the full version.
+// dns-tool:scrutiny science
 package analyzer
 
 import (
@@ -23,10 +24,8 @@ const (
         nameNamecheap       = "Namecheap"
         nameAmazonRoute53   = "Amazon Route 53"
 
-
-	mapKeyLabel = "label"
-	mapKeyLevel = "level"
-	mapKeyMethod = "method"
+        mapKeyLevel  = "level"
+        mapKeyMethod = "method"
 )
 
 var enterpriseProviders = map[string]providerInfo{}

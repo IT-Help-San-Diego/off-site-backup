@@ -610,11 +610,11 @@ func TestMapGetMap(t *testing.T) {
 
 func TestMapGetSlice(t *testing.T) {
         m := map[string]interface{}{
-                "iface":  []interface{}{"a", "b"},
-                "str":    []string{"x", "y"},
-                "maps":   []map[string]interface{}{{"k": "v"}},
-                "int":    42,
-                "nil":    nil,
+                "iface": []interface{}{"a", "b"},
+                "str":   []string{"x", "y"},
+                "maps":  []map[string]interface{}{{"k": "v"}},
+                "int":   42,
+                "nil":   nil,
         }
         got := mapGetSlice("iface", m)
         if len(got) != 2 {
@@ -949,13 +949,13 @@ func TestSectionStatusIcon(t *testing.T) {
         tests := []struct {
                 input, want string
         }{
-                {"beta", "fa-flask"},
-                {"active development", "fa-code"},
-                {"maintenance", "fa-wrench"},
-                {"experimental", "fa-microscope"},
-                {"deprecated", "fa-archive"},
-                {"accuracy tuning", "fa-wrench"},
-                {"unknown", "fa-wrench"},
+                {"beta", "flask"},
+                {"active development", "code"},
+                {"maintenance", "wrench"},
+                {"experimental", "microscope"},
+                {"deprecated", "archive"},
+                {"accuracy tuning", "wrench"},
+                {"unknown", "wrench"},
         }
         for _, tt := range tests {
                 got := sectionStatusIcon(tt.input)

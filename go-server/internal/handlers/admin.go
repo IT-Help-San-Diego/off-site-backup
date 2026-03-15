@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny design
 package handlers
 
 import (
@@ -31,17 +32,18 @@ const (
         opsMiroSync         = "miro-sync"
         opsFullPipeline     = "full-pipeline"
 
+        errDeleteUserData  = "Failed to delete user data"
 
-        mapKeyAdmin = "admin"
-        mapKeyCspNonce = "csp_nonce"
-        mapKeyCsrfToken = "csrf_token"
-        mapKeyError = "error"
-        mapKeyUserId = "user_id"
-        strActivepage = "ActivePage"
-        strAppversion = "AppVersion"
-        strBetapages = "BetaPages"
-        strCspnonce = "CspNonce"
-        strCsrftoken = "CsrfToken"
+        mapKeyAdmin        = "admin"
+        mapKeyCspNonce     = "csp_nonce"
+        mapKeyCsrfToken    = "csrf_token"
+        mapKeyError        = "error"
+        mapKeyUserId       = "user_id"
+        strActivepage      = "ActivePage"
+        strAppversion      = "AppVersion"
+        strBetapages       = "BetaPages"
+        strCspnonce        = "CspNonce"
+        strCsrftoken       = "CsrfToken"
         strMaintenancenote = "MaintenanceNote"
 )
 
@@ -128,12 +130,12 @@ func (h *AdminHandler) Dashboard(c *gin.Context) {
         }
 
         data := gin.H{
-                strAppversion:             h.Config.AppVersion,
-                strMaintenancenote:        h.Config.MaintenanceNote,
-                strBetapages:              h.Config.BetaPages,
-                strCspnonce:               nonce,
-                strCsrftoken:              csrfToken,
-                strActivepage:             mapKeyAdmin,
+                strAppversion:            h.Config.AppVersion,
+                strMaintenancenote:       h.Config.MaintenanceNote,
+                strBetapages:             h.Config.BetaPages,
+                strCspnonce:              nonce,
+                strCsrftoken:             csrfToken,
+                strActivepage:            mapKeyAdmin,
                 "Users":                  users,
                 "RecentAnalyses":         recentAnalyses,
                 "Stats":                  stats,
@@ -162,7 +164,7 @@ func (h *AdminHandler) fetchUsers(ctx context.Context) []AdminUser {
                 slog.Error("Admin: failed to fetch users", mapKeyError, err)
                 return nil
         }
-        defer rows.Close()
+        defer func() { rows.Close() }()
 
         var users []AdminUser
         for rows.Next() {
@@ -194,7 +196,7 @@ func (h *AdminHandler) fetchRecentAnalyses(ctx context.Context) []AdminAnalysis 
                 slog.Error("Admin: failed to fetch analyses", mapKeyError, err)
                 return nil
         }
-        defer rows.Close()
+        defer func() { rows.Close() }()
 
         var analyses []AdminAnalysis
         for rows.Next() {
@@ -254,7 +256,7 @@ func (h *AdminHandler) fetchICAERuns(ctx context.Context) []AdminICAERun {
                 slog.Error("Admin: failed to fetch ICAE runs", mapKeyError, err)
                 return nil
         }
-        defer rows.Close()
+        defer func() { rows.Close() }()
 
         var runs []AdminICAERun
         for rows.Next() {
@@ -285,7 +287,7 @@ func (h *AdminHandler) fetchScannerAlerts(ctx context.Context) []AdminScannerAle
                 slog.Error("Admin: failed to fetch scanner alerts", mapKeyError, err)
                 return nil
         }
-        defer rows.Close()
+        defer func() { rows.Close() }()
 
         var alerts []AdminScannerAlert
         for rows.Next() {
@@ -338,17 +340,17 @@ func (h *AdminHandler) DeleteUser(c *gin.Context) {
 
         if _, err = tx.Exec(ctx, `DELETE FROM sessions WHERE user_id = $1`, userID); err != nil {
                 slog.Error("Admin: failed to delete sessions", mapKeyError, err, mapKeyUserId, userID)
-                c.String(http.StatusInternalServerError, "Failed to delete user data")
+                c.String(http.StatusInternalServerError, errDeleteUserData)
                 return
         }
         if _, err = tx.Exec(ctx, `DELETE FROM user_analyses WHERE user_id = $1`, userID); err != nil {
                 slog.Error("Admin: failed to delete user analyses", mapKeyError, err, mapKeyUserId, userID)
-                c.String(http.StatusInternalServerError, "Failed to delete user data")
+                c.String(http.StatusInternalServerError, errDeleteUserData)
                 return
         }
         if _, err = tx.Exec(ctx, `DELETE FROM zone_imports WHERE user_id = $1`, userID); err != nil {
                 slog.Error("Admin: failed to delete zone imports", mapKeyError, err, mapKeyUserId, userID)
-                c.String(http.StatusInternalServerError, "Failed to delete user data")
+                c.String(http.StatusInternalServerError, errDeleteUserData)
                 return
         }
         _, err = tx.Exec(ctx, `DELETE FROM users WHERE id = $1`, userID)
@@ -425,56 +427,56 @@ var opsWhitelist = map[string]opsTask{
         opsCSSCohesion: {
                 ID:      opsCSSCohesion,
                 Label:   "CSS Cohesion Audit",
-                Icon:    "fa-palette",
+                Icon:    "palette",
                 Command: cmdNode,
                 Args:    []string{"scripts/audit-css-cohesion.js"},
         },
         opsFeatureInventory: {
                 ID:      opsFeatureInventory,
                 Label:   "Feature Inventory",
-                Icon:    "fa-boxes-stacked",
+                Icon:    "boxes-stacked",
                 Command: cmdNode,
                 Args:    []string{"scripts/feature-inventory.js"},
         },
         opsScientificColors: {
                 ID:      opsScientificColors,
                 Label:   "Scientific Color Validation",
-                Icon:    "fa-flask",
+                Icon:    "flask",
                 Command: cmdNode,
                 Args:    []string{"scripts/validate-scientific-colors.js"},
         },
         opsRenderDiagrams: {
                 ID:      opsRenderDiagrams,
                 Label:   "Render Mermaid Diagrams",
-                Icon:    "fa-diagram-project",
+                Icon:    "diagram-project",
                 Command: "bash",
                 Args:    []string{"scripts/render-diagrams.sh"},
         },
         opsFigmaBundle: {
                 ID:      opsFigmaBundle,
                 Label:   "Figma Asset Bundle",
-                Icon:    "fa-box-archive",
+                Icon:    "box-archive",
                 Command: cmdNode,
                 Args:    []string{"scripts/figma-asset-bundle.mjs"},
         },
         opsFigmaVerify: {
                 ID:      opsFigmaVerify,
                 Label:   "Figma Verification",
-                Icon:    "fa-magnifying-glass-chart",
+                Icon:    "magnifying-glass-chart",
                 Command: cmdNode,
                 Args:    []string{"scripts/figma-verify.mjs"},
         },
         opsMiroSync: {
                 ID:      opsMiroSync,
                 Label:   "Sync Diagrams to Miro",
-                Icon:    "fa-arrow-up-from-bracket",
+                Icon:    "arrow-up-from-bracket",
                 Command: cmdNode,
                 Args:    []string{"scripts/sync-mermaid-miro.mjs"},
         },
         opsFullPipeline: {
                 ID:      opsFullPipeline,
                 Label:   "Full Pipeline Sync",
-                Icon:    "fa-rotate",
+                Icon:    "rotate",
                 Command: cmdNode,
                 Args:    []string{"scripts/sync-pipeline.mjs"},
         },
@@ -527,8 +529,8 @@ func (h *AdminHandler) RunOperation(c *gin.Context) {
                 strMaintenancenote: h.Config.MaintenanceNote,
                 strBetapages:       h.Config.BetaPages,
                 strCspnonce:        nonce,
-                strCsrftoken:      csrfToken,
-                strActivepage:     mapKeyAdmin,
+                strCsrftoken:       csrfToken,
+                strActivepage:      mapKeyAdmin,
                 "OpResult": gin.H{
                         "Task":    task,
                         "Success": success,
@@ -549,9 +551,9 @@ func (h *AdminHandler) OperationsPage(c *gin.Context) {
                 strMaintenancenote: h.Config.MaintenanceNote,
                 strBetapages:       h.Config.BetaPages,
                 strCspnonce:        nonce,
-                strCsrftoken:      csrfToken,
-                strActivepage:     mapKeyAdmin,
-                "OpsTasks":       opsTaskList(),
+                strCsrftoken:       csrfToken,
+                strActivepage:      mapKeyAdmin,
+                "OpsTasks":         opsTaskList(),
         }
         mergeAuthData(c, h.Config, data)
         c.HTML(http.StatusOK, "admin_ops.html", data)

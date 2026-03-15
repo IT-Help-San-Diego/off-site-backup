@@ -1,8 +1,10 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny design
 package handlers
 
 import (
+        "encoding/hex"
         "encoding/json"
         "log/slog"
         "net/http"
@@ -16,34 +18,61 @@ import (
         "dnstool/go-server/internal/dbq"
 
         "github.com/gin-gonic/gin"
+        "golang.org/x/crypto/sha3"
 )
 
+type EDEAmendment struct {
+        Ground        string `json:"ground"`
+        Date          string `json:"date"`
+        FieldChanged  string `json:"field_changed"`
+        OriginalValue string `json:"original_value"`
+        CorrectedTo   string `json:"corrected_to"`
+        Evidence      string `json:"evidence"`
+        Justification string `json:"justification"`
+}
+
 type IntegrityEvent struct {
-        ID               string   `json:"id"`
-        Date             string   `json:"date"`
-        Category         string   `json:"category"`
-        Severity         string   `json:"severity"`
-        Title            string   `json:"title"`
-        Status           string   `json:"status"`
-        ProtocolsAffected []string `json:"protocols_affected"`
-        ConfidenceImpact string   `json:"confidence_impact"`
-        Resolution       string   `json:"resolution"`
-        BayesianNote     string   `json:"bayesian_note"`
+        ID                  string         `json:"id"`
+        Date                string         `json:"date"`
+        Commit              string         `json:"commit"`
+        Category            string         `json:"category"`
+        Severity            string         `json:"severity"`
+        Title               string         `json:"title"`
+        Status              string         `json:"status"`
+        Attribution         string         `json:"attribution"`
+        ProtocolsAffected   []string       `json:"protocols_affected"`
+        ConfidenceImpact    string         `json:"confidence_impact"`
+        Resolution          string         `json:"resolution"`
+        BayesianNote        string         `json:"bayesian_note"`
+        CorrectionAction    string         `json:"correction_action"`
+        PreventionRule      string         `json:"prevention_rule"`
+        AuthoritativeSource string         `json:"authoritative_source"`
+        Amendments          []EDEAmendment `json:"amendments,omitempty"`
+        EventHash           string         `json:"-"`
 }
 
 type IntegritySummary struct {
-        TotalEvents             int      `json:"total_events"`
-        Open                    int      `json:"open"`
-        Closed                  int      `json:"closed"`
-        LastEventDate           string   `json:"last_event_date"`
-        ConfidenceRecalibrations int     `json:"confidence_recalibrations"`
-        ProtocolsAffected       []string `json:"protocols_affected"`
+        TotalEvents              int      `json:"total_events"`
+        Open                     int      `json:"open"`
+        Closed                   int      `json:"closed"`
+        LastEventDate            string   `json:"last_event_date"`
+        ConfidenceRecalibrations int      `json:"confidence_recalibrations"`
+        ProtocolsAffected        []string `json:"protocols_affected"`
+}
+
+type TamperResistancePolicy struct {
+        Enabled       bool   `json:"enabled"`
+        Effective     string `json:"effective"`
+        Standard      string `json:"standard"`
+        AmendmentRule string `json:"amendment_rule"`
 }
 
 type IntegrityData struct {
-        Summary  IntegritySummary  `json:"summary"`
-        Events   []IntegrityEvent  `json:"events"`
-        Taxonomy map[string]string `json:"taxonomy"`
+        Summary               IntegritySummary       `json:"summary"`
+        Events                []IntegrityEvent       `json:"events"`
+        Taxonomy              map[string]string      `json:"taxonomy"`
+        TamperResistancePolicy TamperResistancePolicy `json:"tamper_resistance_policy"`
+        SHA3Hash              string                 `json:"-"`
 }
 
 var (
@@ -73,14 +102,42 @@ func loadIntegrityData() IntegrityData {
                 slog.Warn("Stats: failed to read integrity_stats.json", mapKeyError, err)
                 return IntegrityData{}
         }
+        hash := sha3.Sum512(data)
+        hashHex := hex.EncodeToString(hash[:])
+
         var f IntegrityData
         if err := json.Unmarshal(data, &f); err != nil {
                 slog.Warn("Stats: failed to parse integrity_stats.json", mapKeyError, err)
                 return IntegrityData{}
         }
+        f.SHA3Hash = hashHex
+        for i := range f.Events {
+                redactDignityAmendments(&f.Events[i])
+                hashEvent(&f.Events[i])
+        }
+        for i, j := 0, len(f.Events)-1; i < j; i, j = i+1, j-1 {
+                f.Events[i], f.Events[j] = f.Events[j], f.Events[i]
+        }
         integrityCache = f
         integrityCacheTime = time.Now()
         return f
+}
+
+func redactDignityAmendments(event *IntegrityEvent) {
+        for j := range event.Amendments {
+                if event.Amendments[j].Ground == "DIGNITY_OF_EXPRESSION" &&
+                        event.Amendments[j].OriginalValue != "[REDACTED — DIGNITY_OF_EXPRESSION]" {
+                        event.Amendments[j].OriginalValue = "[REDACTED — DIGNITY_OF_EXPRESSION]"
+                }
+        }
+}
+
+func hashEvent(event *IntegrityEvent) {
+        eventJSON, err := json.Marshal(event)
+        if err == nil {
+                eh := sha3.Sum512(eventJSON)
+                event.EventHash = hex.EncodeToString(eh[:])
+        }
 }
 
 type StatsHandler struct {
@@ -102,11 +159,11 @@ func (h *StatsHandler) Stats(c *gin.Context) {
                 errData := gin.H{
                         "AppVersion":      h.Config.AppVersion,
                         "MaintenanceNote": h.Config.MaintenanceNote,
-                        "BetaPages":      h.Config.BetaPages,
-                        "CspNonce":       nonce,
-                        "CsrfToken":     csrfToken,
-                        "ActivePage":     "stats",
-                        "FlashMessages":  []FlashMessage{{Category: "danger", Message: "Failed to fetch stats"}},
+                        "BetaPages":       h.Config.BetaPages,
+                        "CspNonce":        nonce,
+                        "CsrfToken":       csrfToken,
+                        "ActivePage":      "stats",
+                        "FlashMessages":   []FlashMessage{{Category: "danger", Message: "Failed to fetch stats"}},
                 }
                 mergeAuthData(c, h.Config, errData)
                 c.HTML(http.StatusInternalServerError, "stats.html", errData)
@@ -172,9 +229,9 @@ func (h *StatsHandler) Stats(c *gin.Context) {
         data := gin.H{
                 "AppVersion":         h.Config.AppVersion,
                 "MaintenanceNote":    h.Config.MaintenanceNote,
-                "BetaPages":         h.Config.BetaPages,
+                "BetaPages":          h.Config.BetaPages,
                 "CspNonce":           nonce,
-                "CsrfToken":         csrfToken,
+                "CsrfToken":          csrfToken,
                 "ActivePage":         "stats",
                 "TotalAnalyses":      totalAnalyses,
                 "SuccessfulAnalyses": successfulAnalyses,

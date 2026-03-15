@@ -379,7 +379,7 @@ func TestDimensionTuningHint(t *testing.T) {
         if hint == "" || icon == "" {
                 t.Error("score 73 (adequate) should return a tuning hint")
         }
-        if icon != "fas fa-info-circle text-info" {
+        if icon != "info-circle text-info" {
                 t.Errorf("score 73 expected info icon, got %q", icon)
         }
 
@@ -387,7 +387,7 @@ func TestDimensionTuningHint(t *testing.T) {
         if hint == "" || icon == "" {
                 t.Error("score 40 (degraded) should return a tuning hint")
         }
-        if icon != "fas fa-exclamation-triangle text-warning" {
+        if icon != "exclamation-triangle text-warning" {
                 t.Errorf("score 40 expected warning icon, got %q", icon)
         }
 
@@ -395,7 +395,7 @@ func TestDimensionTuningHint(t *testing.T) {
         if hint == "" || icon == "" {
                 t.Error("score 85 (good) should return a tuning hint")
         }
-        if icon != "fas fa-lightbulb text-success" {
+        if icon != "lightbulb text-success" {
                 t.Errorf("score 85 expected lightbulb icon, got %q", icon)
         }
 
@@ -433,8 +433,8 @@ func TestEvaluateTTLRelevance_FindingsGenerated(t *testing.T) {
                         if f.Severity != "high" {
                                 t.Errorf("MX finding severity = %q, want 'high' (ratio < 0.1)", f.Severity)
                         }
-                        if f.Standard != "NIST SP 800-53 SI-18" {
-                                t.Errorf("MX finding standard = %q, want 'NIST SP 800-53 SI-18'", f.Standard)
+                        if f.Standard != "NIST SP 800-53 SI-7" {
+                                t.Errorf("MX finding standard = %q, want 'NIST SP 800-53 SI-7'", f.Standard)
                         }
                         if f.Recommendation == "" {
                                 t.Error("MX finding recommendation is empty")
@@ -736,12 +736,12 @@ func TestTTLComplianceDetails_AllBranches(t *testing.T) {
         }
 
         got = ttlComplianceDetails(4, 5)
-        if got != "1 resolver TTL exceeds its authoritative value — possible caching violation" {
+        if got != "1 resolver TTL exceeds its authoritative value — possible serve-stale (RFC 8767), timing skew, or cache misconfiguration" {
                 t.Errorf("1 violation: got %q", got)
         }
 
         got = ttlComplianceDetails(3, 5)
-        if got != "2 of 5 resolver TTLs exceed authoritative values — possible caching violations" {
+        if got != "2 of 5 resolver TTLs exceed authoritative values — possible serve-stale (RFC 8767), timing skew, or cache misconfiguration" {
                 t.Errorf("2 violations: got %q", got)
         }
 }

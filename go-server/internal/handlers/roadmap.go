@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny design
 package handlers
 
 import (
@@ -11,18 +12,20 @@ import (
 )
 
 const (
-        roadmapDateFeb2026    = "Feb 2026"
-        roadmapDateMar2026    = "Mar 2026"
-        roadmapVersionV2620   = "v26.20.0+"
-        roadmapTypeFeature    = "Feature"
+        roadmapDateFeb2026  = "Feb 2026"
+        roadmapDateMar2026  = "Mar 2026"
+        roadmapVersionV2620 = "v26.20.0+"
+        roadmapTypeFeature  = "Feature"
 
         priorityLow  = "Low"
         priorityHigh = "High"
-        strMedium = "Medium"
-        strQuality = "Quality"
-        strV262594 = "v26.25.94"
-        strV262602 = "v26.26.02"
-        strV262605 = "v26.26.05"
+        strMedium    = "Medium"
+        strQuality   = "Quality"
+        strV262594   = "v26.25.94"
+        strV262602   = "v26.26.02"
+        strV262605   = "v26.26.05"
+        strV262707   = "v26.27.07"
+        strV262836   = "v26.28.36"
 )
 
 type RoadmapItem struct {
@@ -101,11 +104,11 @@ func (h *RoadmapHandler) Roadmap(c *gin.Context) {
                 {Title: "Covert Environment Icons & Accent Gray Hierarchy", Version: "v26.26.12", Date: roadmapDateFeb2026, Type: roadmapTypeFeature},
                 {Title: "SonarCloud Deep Sweep — String Constants & Regex Hardening", Version: "v26.26.12", Date: roadmapDateFeb2026, Type: strQuality},
                 {Title: "SonarCloud Hotspot & Vulnerability Review — Full Audit Trail", Version: "v26.26.15", Date: roadmapDateFeb2026, Type: strQuality},
-                {Title: "Zone Health — Context-Aware Policy & Security Signals", Version: "v26.27.07", Date: roadmapDateFeb2026, Type: roadmapTypeFeature},
-                {Title: "Zone Health Golden Rules (9 Tests, 15 Sub-Tests)", Version: "v26.27.07", Date: roadmapDateFeb2026, Type: strQuality},
+                {Title: "Zone Health — Context-Aware Policy & Security Signals", Version: strV262707, Date: roadmapDateFeb2026, Type: roadmapTypeFeature},
+                {Title: "Zone Health Golden Rules (9 Tests, 15 Sub-Tests)", Version: strV262707, Date: roadmapDateFeb2026, Type: strQuality},
                 {Title: "Zone File Upload — Auth-Aware Size Limits (1 MB/2 MB)", Version: "v26.27.08", Date: roadmapDateFeb2026, Type: roadmapTypeFeature},
                 {Title: "Golden Rules Export (JSON + Markdown for External Audit)", Version: "v26.27.08", Date: roadmapDateFeb2026, Type: roadmapTypeFeature},
-                {Title: "PWA Hardening (Offline Page, Page Cache, Splash Screens)", Version: "v26.27.07", Date: roadmapDateFeb2026, Type: roadmapTypeFeature},
+                {Title: "PWA Hardening (Offline Page, Page Cache, Splash Screens)", Version: strV262707, Date: roadmapDateFeb2026, Type: roadmapTypeFeature},
                 {Title: "Owl of Athena Logo (AI-Generated Original)", Version: roadmapVersionV2620, Date: roadmapDateFeb2026, Type: roadmapTypeFeature},
                 {Title: "TTL Tuner (Beta)", Version: "v26.25.86–88", Date: roadmapDateFeb2026, Type: roadmapTypeFeature},
                 {Title: "Six-Agent Security & Performance Audit", Version: "v26.25.88", Date: roadmapDateFeb2026, Type: strQuality},
@@ -118,9 +121,9 @@ func (h *RoadmapHandler) Roadmap(c *gin.Context) {
                 {Title: "Mobile Homepage Scroll Fix + Navbar Dropdown Refinement", Version: "v26.27.01", Date: roadmapDateFeb2026, Type: roadmapTypeFeature},
                 {Title: "TTL Tuner Mobile Responsive Table", Version: "v26.27.02", Date: roadmapDateFeb2026, Type: roadmapTypeFeature},
                 {Title: "SonarCloud Quality Gate Fixes (Unchecked Error Returns)", Version: "v26.27.02", Date: roadmapDateFeb2026, Type: strQuality},
-                {Title: "RFC Compliance vs Operational Security Pattern (SPF/DKIM/DMARC)", Version: "v26.28.36", Date: roadmapDateMar2026, Type: roadmapTypeFeature},
-                {Title: "CVE Context in Email Security Panels (CVE-2024-7208/7209/49040)", Version: "v26.28.36", Date: roadmapDateMar2026, Type: roadmapTypeFeature},
-                {Title: "DMARCbis Forward-Looking Notes (Standards Track, pct→t, np=)", Version: "v26.28.36", Date: roadmapDateMar2026, Type: roadmapTypeFeature},
+                {Title: "RFC Compliance vs Operational Security Pattern (SPF/DKIM/DMARC)", Version: strV262836, Date: roadmapDateMar2026, Type: roadmapTypeFeature},
+                {Title: "CVE Context in Email Security Panels (CVE-2024-7208/7209/49040)", Version: strV262836, Date: roadmapDateMar2026, Type: roadmapTypeFeature},
+                {Title: "DMARCbis Forward-Looking Notes (Standards Track, pct→t, np=)", Version: strV262836, Date: roadmapDateMar2026, Type: roadmapTypeFeature},
                 {Title: "DANE Context Deadline Fix", Version: "v26.28.34", Date: roadmapDateFeb2026, Type: roadmapTypeFeature},
                 {Title: "DNS Intelligence Upgrade (EDNS0 + DO Bit, AD Flag Tracking)", Version: "v26.28.35", Date: roadmapDateFeb2026, Type: roadmapTypeFeature},
                 {Title: "Topology Text & Container Sizing", Version: "v26.28.37", Date: roadmapDateMar2026, Type: roadmapTypeFeature},

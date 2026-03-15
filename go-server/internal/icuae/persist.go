@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny science
 package icuae
 
 import (
@@ -7,21 +8,21 @@ import (
         "fmt"
         "log/slog"
         "math"
+        "time"
 
         "dnstool/go-server/internal/dbq"
 )
 
 const (
-        iconWarning        = "fas fa-exclamation-triangle text-warning"
-        iconInfo           = "fas fa-info-circle text-info"
-        iconSuccess        = "fas fa-lightbulb text-success"
-        iconTrendMinus     = "fas fa-minus"
-        iconTrendEquals    = "fas fa-equals"
-        iconTrendUp        = "fas fa-arrow-trend-up"
-        iconTrendDown      = "fas fa-arrow-trend-down"
+        iconWarning     = "exclamation-triangle text-warning"
+        iconInfo        = "info-circle text-info"
+        iconSuccess     = "lightbulb text-success"
+        iconTrendMinus  = "minus"
+        iconTrendEquals = "equals"
+        iconTrendUp     = "arrow-trend-up"
+        iconTrendDown   = "arrow-trend-down"
 
-
-	mapKeyError = "error"
+        mapKeyError = "error"
 )
 
 type DBTX interface {
@@ -34,16 +35,13 @@ type DBTX interface {
 }
 
 func RecordScanResult(ctx context.Context, queries DBTX, domain string, report CurrencyReport, appVersion string) {
-        domainPtr := &domain
-        versionPtr := &appVersion
-
         row, err := queries.ICuAEInsertScanScore(ctx, dbq.ICuAEInsertScanScoreParams{
-                Domain:        domainPtr,
+                Domain:        domain,
                 OverallScore:  float32(report.OverallScore),
                 OverallGrade:  report.OverallGrade,
                 ResolverCount: int32(report.ResolverCount),
                 RecordCount:   int32(report.RecordCount),
-                AppVersion:    versionPtr,
+                AppVersion:    appVersion,
         })
         if err != nil {
                 slog.Warn("ICuAE: failed to record scan score", "domain", domain, mapKeyError, err)
@@ -56,7 +54,7 @@ func RecordScanResult(ctx context.Context, queries DBTX, domain string, report C
                         Dimension:            dim.Dimension,
                         Score:                float32(dim.Score),
                         Grade:                dim.Grade,
-                        RecordTypesEvaluated: int32(dim.RecordTypes),
+                        RecordTypesEvaluated: dim.RecordTypesList(),
                 }); err != nil {
                         slog.Warn("ICuAE: failed to record dimension score", "dimension", dim.Dimension, mapKeyError, err)
                 }
@@ -64,21 +62,21 @@ func RecordScanResult(ctx context.Context, queries DBTX, domain string, report C
 }
 
 type RuntimeMetrics struct {
-        TotalScans       int
-        AvgScore         float64
-        AvgScoreDisplay  string
-        AvgGrade         string
-        AvgGradeDisplay  string
-        AvgGradeClass    string
-        StddevScore      float64
-        StabilityGrade   string
-        StabilityLabel   string
-        LastEvaluatedAt  string
-        TrendDirection   string
-        TrendArrow       string
-        GradeDist        []GradeDistItem
-        DimensionStats   []DimensionStat
-        HasData          bool
+        TotalScans      int
+        AvgScore        float64
+        AvgScoreDisplay string
+        AvgGrade        string
+        AvgGradeDisplay string
+        AvgGradeClass   string
+        StddevScore     float64
+        StabilityGrade  string
+        StabilityLabel  string
+        LastEvaluatedAt string
+        TrendDirection  string
+        TrendArrow      string
+        GradeDist       []GradeDistItem
+        DimensionStats  []DimensionStat
+        HasData         bool
 }
 
 type GradeDistItem struct {
@@ -159,8 +157,8 @@ func LoadRuntimeMetrics(ctx context.Context, queries DBTX) *RuntimeMetrics {
                 HasData:         true,
         }
 
-        if stats.LastEvaluatedAt.Valid {
-                m.LastEvaluatedAt = stats.LastEvaluatedAt.Time.Format("2006-01-02 15:04 UTC")
+        if t, ok := stats.LastEvaluatedAt.(time.Time); ok {
+                m.LastEvaluatedAt = t.Format("2006-01-02 15:04 UTC")
         }
 
         m.StabilityGrade, m.StabilityLabel = computeStability(float64(stats.StddevScore))

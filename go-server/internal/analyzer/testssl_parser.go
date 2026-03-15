@@ -1,3 +1,7 @@
+// Copyright (c) 2024-2026 IT Help San Diego Inc.
+// Licensed under BUSL-1.1 — See LICENSE for terms.
+
+// dns-tool:scrutiny science
 package analyzer
 
 import (
@@ -19,12 +23,12 @@ type TestSSLFinding struct {
 }
 
 type TestSSLResult struct {
-        Protocols      []TestSSLFinding `json:"protocols"`
-        Ciphers        []TestSSLFinding `json:"ciphers"`
+        Protocols       []TestSSLFinding `json:"protocols"`
+        Ciphers         []TestSSLFinding `json:"ciphers"`
         Vulnerabilities []TestSSLFinding `json:"vulnerabilities"`
-        CertInfo       []TestSSLFinding `json:"cert_info"`
-        HSTS           *TestSSLFinding  `json:"hsts,omitempty"`
-        OCSP           *TestSSLFinding  `json:"ocsp,omitempty"`
+        CertInfo        []TestSSLFinding `json:"cert_info"`
+        HSTS            *TestSSLFinding  `json:"hsts,omitempty"`
+        OCSP            *TestSSLFinding  `json:"ocsp,omitempty"`
 
         TLS13Supported bool     `json:"tls13_supported"`
         TLS12Supported bool     `json:"tls12_supported"`

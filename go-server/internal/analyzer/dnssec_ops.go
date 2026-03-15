@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny science
 package analyzer
 
 import (
@@ -346,7 +347,7 @@ func (a *Analyzer) queryNSECTyped(ctx context.Context, domain string) []*dns.NSE
         msg := dns.NewMsg(fqdn, dns.TypeNSEC)
         msg.RecursionDesired = true
 
-        resolverAddr := net.JoinHostPort("1.1.1.1", "53")
+        resolverAddr := net.JoinHostPort("1.1.1.1", "53") // S1313: Cloudflare public DNS — intentional for DNSSEC validation
         client := &dns.Client{
                 Transport: &dns.Transport{
                         Dialer: &net.Dialer{
@@ -384,7 +385,7 @@ func (a *Analyzer) queryNSEC3Typed(ctx context.Context, domain string) []*dns.NS
         msg.UDPSize = 4096
         msg.Security = true
 
-        resolverAddr := net.JoinHostPort("1.1.1.1", "53")
+        resolverAddr := net.JoinHostPort("1.1.1.1", "53") // S1313: Cloudflare public DNS — intentional for DNSSEC validation
         client := &dns.Client{
                 Transport: &dns.Transport{
                         Dialer: &net.Dialer{
@@ -449,7 +450,7 @@ func (a *Analyzer) AnalyzeDNSSECOps(ctx context.Context, domain string) map[stri
                 "signatures":          sigMaps,
                 "denial_of_existence": doeMaps,
                 "rollover_readiness":  rolloverMap,
-                mapKeyIssues:              issues,
+                mapKeyIssues:          issues,
                 "ksk_algorithms":      kskAlgs,
                 "zsk_algorithms":      zskAlgs,
                 "key_count":           len(keys),
@@ -463,8 +464,8 @@ func dnssecKeysToMaps(keys []DNSSECKeyInfo) []map[string]any {
                 result[i] = map[string]any{
                         mapKeyFlags:      k.Flags,
                         "protocol":       k.Protocol,
-                        mapKeyAlgorithm:      k.Algorithm,
-                        mapKeyKeyTag:        k.KeyTag,
+                        mapKeyAlgorithm:  k.Algorithm,
+                        mapKeyKeyTag:     k.KeyTag,
                         "key_role":       k.KeyRole,
                         "algorithm_name": k.AlgName,
                         "key_size":       k.KeySize,
@@ -477,16 +478,16 @@ func rrsigInfosToMaps(sigs []RRSIGInfo) []map[string]any {
         result := make([]map[string]any, len(sigs))
         for i, s := range sigs {
                 result[i] = map[string]any{
-                        "type_covered": s.TypeCovered,
-                        mapKeyAlgorithm:    s.Algorithm,
-                        "labels":       s.Labels,
-                        "ttl":          s.OriginalTTL,
-                        "expiration":   s.Expiration.Format(time.RFC3339),
-                        "inception":    s.Inception.Format(time.RFC3339),
-                        mapKeyKeyTag:      s.KeyTag,
-                        "signer":       s.SignerName,
-                        mapKeyExpired:  s.Expired,
-                        "expiring_soon": s.ExpiringSoon,
+                        "type_covered":   s.TypeCovered,
+                        mapKeyAlgorithm:  s.Algorithm,
+                        "labels":         s.Labels,
+                        "ttl":            s.OriginalTTL,
+                        "expiration":     s.Expiration.Format(time.RFC3339),
+                        "inception":      s.Inception.Format(time.RFC3339),
+                        mapKeyKeyTag:     s.KeyTag,
+                        "signer":         s.SignerName,
+                        mapKeyExpired:    s.Expired,
+                        "expiring_soon":  s.ExpiringSoon,
                         "time_to_expiry": s.TimeToExpiry.String(),
                 }
         }
@@ -512,10 +513,10 @@ func denialToMap(d DenialOfExistence) map[string]any {
 
 func rolloverToMap(r RolloverReadiness) map[string]any {
         return map[string]any{
-                "multiple_ksks": r.MultipleKSKs,
-                mapKeyHasCDS:    r.HasCDS,
+                "multiple_ksks":  r.MultipleKSKs,
+                mapKeyHasCDS:     r.HasCDS,
                 mapKeyHasCDNSKEY: r.HasCDNSKEY,
-                "automation":    r.AutomationLevel,
-                "readiness":     r.ReadinessLevel,
+                "automation":     r.AutomationLevel,
+                "readiness":      r.ReadinessLevel,
         }
 }

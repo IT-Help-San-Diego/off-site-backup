@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny science
 package analyzer
 
 import (
@@ -19,28 +20,28 @@ const (
         protocolMTASTS = "MTA-STS"
         protocolTLSRPT = "TLS-RPT"
 
-
         mapKeyAiCrawlerGovernance = "ai_crawler_governance"
-        mapKeyAiLlmsTxt = "ai_llms_txt"
-        mapKeyAnswer = "answer"
-        mapKeyBrandImpersonation = "brand_impersonation"
-        mapKeyColor = "color"
-        mapKeyDanger = "danger"
-        mapKeyDnsTampering = "dns_tampering"
-        mapKeyEmailSpoofing = "email_spoofing"
-        mapKeySecondary = "secondary"
-        mapKeyTransport = "transport"
-        strBasic = "Basic"
-        strExposed = "Exposed"
-        strLikely = "Likely"
-        strPartially = "Partially"
-        strPossible = "Possible"
-        strProtected = "Protected"
-        strUnlikely = "Unlikely"
-        mapKeyIcon = "icon"
-        answerYes  = "Yes"
-        statusNone = "none"
-        statusInfoPosture = "info"
+        mapKeyAiLlmsTxt           = "ai_llms_txt"
+        mapKeyAnswer              = "answer"
+        mapKeyBrandImpersonation  = "brand_impersonation"
+        mapKeyColor               = "color"
+        mapKeyDanger              = "danger"
+        mapKeyDnsTampering        = "dns_tampering"
+        mapKeyEmailSpoofing       = "email_spoofing"
+        mapKeySecondary           = "secondary"
+        mapKeyTransport           = "transport"
+        strBasic                  = "Basic"
+        strExposed                = "Exposed"
+        strLikely                 = "Likely"
+        strPartially              = "Partially"
+        strPossible               = "Possible"
+        strProtected              = "Protected"
+        strUnlikely               = "Unlikely"
+        mapKeyIcon                = "icon"
+        mapKeyLabel               = "label"
+        answerYes                 = "Yes"
+        statusNone                = "none"
+        statusInfoPosture         = "info"
 )
 
 type protocolState struct {
@@ -760,12 +761,12 @@ func (a *Analyzer) CalculatePosture(results map[string]any) map[string]any {
         return map[string]any{
                 "score":                      score,
                 "grade":                      grade,
-                mapKeyLabel:                      label,
+                mapKeyLabel:                  label,
                 "state":                      state,
-                mapKeyIcon:                       icon,
-                mapKeyColor:                      color,
+                mapKeyIcon:                   icon,
+                mapKeyColor:                  color,
                 "message":                    message,
-                mapKeyIssues:                     acc.issues,
+                mapKeyIssues:                 acc.issues,
                 "critical_issues":            criticalIssues,
                 "recommendations":            acc.recommendations,
                 "monitoring":                 acc.monitoring,

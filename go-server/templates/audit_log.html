@@ -11,7 +11,12 @@
     <meta property="og:title" content="Accountability Log - DNS Tool">
     <meta property="og:description" content="Cryptographic accountability log — every analysis SHA-3-512 posture hash, timestamped for tamper-evident verification.">
     <meta property="og:image" content="https://dnstool.it-help.tech/static/images/og-image.png">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="DNS Tool - Accountability Log">
+    <meta property="og:site_name" content="DNS Tool">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Accountability Log - DNS Tool">
     <meta name="twitter:description" content="Cryptographic accountability log — every analysis SHA-3-512 posture hash, timestamped for tamper-evident verification.">
     <meta name="twitter:image" content="https://dnstool.it-help.tech/static/images/og-image.png">
@@ -24,7 +29,7 @@
     <main class="container py-5 u-max-w-900">
 
         <div class="mb-4">
-            <a href="/confidence" class="text-info text-decoration-none small"><i class="fas fa-arrow-left me-1"></i>Back to Intelligence Confidence Levels</a>
+            <a href="/confidence" class="text-info text-decoration-none small">{{icon "arrow-left" "me-1"}}Back to Intelligence Confidence Levels</a>
         </div>
 
         <div class="mb-5">
@@ -89,7 +94,7 @@
 
         <div class="mt-5 pt-3 border-top border-secondary">
             <p class="text-muted small mb-0">
-                <i class="fas fa-lock me-1"></i>
+                {{icon "lock" "me-1"}}
                 Hashes are computed using SHA-3-512 (Keccak, NIST FIPS 202) over a canonical JSON serialization of all protocol findings at analysis time.
                 The serialization is deterministic &mdash; identical inputs always produce identical hashes. Any post-analysis modification
                 to stored results would produce a different hash, detectable by the <a href="/confidence" class="text-info">Hash Integrity Audit</a>.

@@ -3,9 +3,12 @@
 
 // ip_investigation.go — Framework only (types, constants, utilities). Always compiled.
 // Intelligence functions live in ip_investigation_oss.go / ip_investigation_intel.go.
+// dns-tool:scrutiny science
 package analyzer
 
 import (
+	"io"
+	"log/slog"
 	"net"
 	"regexp"
 	"strings"
@@ -80,6 +83,15 @@ func extractMXHost(mx string) string {
 }
 
 func mapGetStr(m map[string]any, key string) string {
-	v, _ := m[key].(string)
+	v, ok := m[key].(string)
+	if !ok {
+		return ""
+	}
 	return v
+}
+
+func safeClose(c io.Closer, label string) {
+	if err := c.Close(); err != nil {
+		slog.Debug("close error", "resource", label, "error", err)
+	}
 }

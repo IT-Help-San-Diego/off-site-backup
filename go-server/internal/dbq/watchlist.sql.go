@@ -232,6 +232,45 @@ func (q *Queries) ListEnabledEndpointsByUser(ctx context.Context, userID int32) 
 	return items, nil
 }
 
+const listEndpointsForWatchedDomain = `-- name: ListEndpointsForWatchedDomain :many
+SELECT e.id AS endpoint_id, e.endpoint_type, e.url, e.secret
+FROM domain_watchlist w
+JOIN notification_endpoints e ON e.user_id = w.user_id AND e.enabled = TRUE
+WHERE w.domain = $1 AND w.enabled = TRUE
+`
+
+type ListEndpointsForWatchedDomainRow struct {
+	EndpointID   int32   `db:"endpoint_id" json:"endpoint_id"`
+	EndpointType string  `db:"endpoint_type" json:"endpoint_type"`
+	Url          string  `db:"url" json:"url"`
+	Secret       *string `db:"secret" json:"secret"`
+}
+
+func (q *Queries) ListEndpointsForWatchedDomain(ctx context.Context, domain string) ([]ListEndpointsForWatchedDomainRow, error) {
+	rows, err := q.db.Query(ctx, listEndpointsForWatchedDomain, domain)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListEndpointsForWatchedDomainRow{}
+	for rows.Next() {
+		var i ListEndpointsForWatchedDomainRow
+		if err := rows.Scan(
+			&i.EndpointID,
+			&i.EndpointType,
+			&i.Url,
+			&i.Secret,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listNotificationEndpointsByUser = `-- name: ListNotificationEndpointsByUser :many
 SELECT id, user_id, endpoint_type, url, secret, enabled, created_at FROM notification_endpoints
 WHERE user_id = $1
@@ -271,7 +310,7 @@ SELECT n.id, n.drift_event_id, n.endpoint_id, n.status,
        e.url, e.secret, e.endpoint_type,
        d.domain, d.diff_summary, d.severity
 FROM drift_notifications n
-JOIN notification_endpoints e ON n.endpoint_id = e.id
+JOIN notification_endpoints e ON n.endpoint_id = e.id AND e.enabled = TRUE
 JOIN drift_events d ON n.drift_event_id = d.id
 WHERE n.status = 'pending'
 ORDER BY n.created_at ASC

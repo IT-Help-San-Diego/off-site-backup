@@ -1,3 +1,7 @@
+// Copyright (c) 2024-2026 IT Help San Diego Inc.
+// Licensed under BUSL-1.1 — See LICENSE for terms.
+
+// dns-tool:scrutiny science
 package ai_surface
 
 import (
@@ -9,8 +13,13 @@ import (
         "net/http"
         "regexp"
         "strings"
-
 )
+
+func safeClose(c io.Closer, label string) {
+        if err := c.Close(); err != nil {
+                slog.Debug("close error", "resource", label, "error", err)
+        }
+}
 
 type HTTPClient interface {
         Get(ctx context.Context, rawURL string) (*http.Response, error)
@@ -19,28 +28,28 @@ type HTTPClient interface {
 
 const (
         mapKeyAllowsAiCrawlers = "allows_ai_crawlers"
-        mapKeyArtifactCount = "artifact_count"
+        mapKeyArtifactCount    = "artifact_count"
         mapKeyBlocksAiCrawlers = "blocks_ai_crawlers"
-        mapKeyContentUsage = "content_usage"
-        mapKeyDetail = "detail"
-        mapKeyEvidence = "evidence"
-        mapKeyFound = "found"
-        mapKeyHttps = "https"
-        mapKeyIocCount = "ioc_count"
-        mapKeyMessage = "message"
-        mapKeyStatus = "status"
-        mapKeySuccess = "success"
-        mapKeyWarning = "warning"
-        strObserved = "Observed"
-        mapKeyUrl           = "url"
-        mapKeyRaw           = "raw"
-        mapKeyLLMSTxt       = "llms_txt"
-        mapKeyRobotsTxt     = "robots_txt"
-        mapKeyPoisoning     = "poisoning"
-        mapKeyHiddenPrompts = "hidden_prompts"
-        mapKeyHttp          = "http"
-        mapKeyType          = "type"
-        mapKeyInfo          = "info"
+        mapKeyContentUsage     = "content_usage"
+        mapKeyDetail           = "detail"
+        mapKeyEvidence         = "evidence"
+        mapKeyFound            = "found"
+        mapKeyHttps            = "https"
+        mapKeyIocCount         = "ioc_count"
+        mapKeyMessage          = "message"
+        mapKeyStatus           = "status"
+        mapKeySuccess          = "success"
+        mapKeyWarning          = "warning"
+        strObserved            = "Observed"
+        mapKeyUrl              = "url"
+        mapKeyRaw              = "raw"
+        mapKeyLLMSTxt          = "llms_txt"
+        mapKeyRobotsTxt        = "robots_txt"
+        mapKeyPoisoning        = "poisoning"
+        mapKeyHiddenPrompts    = "hidden_prompts"
+        mapKeyHttp             = "http"
+        mapKeyType             = "type"
+        mapKeyInfo             = "info"
 )
 
 var hiddenPatternRegexes = []struct {
@@ -95,9 +104,9 @@ func (s *Scanner) Scan(ctx context.Context, domain string) map[string]any {
         results := map[string]any{
                 mapKeyLLMSTxt:       llmsResult,
                 mapKeyRobotsTxt:     robotsResult,
-                mapKeyPoisoning:      poisoningResult,
+                mapKeyPoisoning:     poisoningResult,
                 mapKeyHiddenPrompts: hiddenResult,
-                mapKeyEvidence:       convertEvidenceSlice(evidence),
+                mapKeyEvidence:      convertEvidenceSlice(evidence),
         }
 
         summary := buildSummary(results, evidence)
@@ -123,7 +132,7 @@ func (s *Scanner) tryFetchLLMSTxt(ctx context.Context, u string) (string, bool) 
         if err != nil {
                 return "", false
         }
-        defer resp.Body.Close()
+        defer safeClose(resp.Body, "tryFetchLLMSTxt")
 
         if resp.StatusCode != http.StatusOK {
                 return "", false
@@ -139,7 +148,7 @@ func (s *Scanner) tryFetchLLMSTxt(ctx context.Context, u string) (string, bool) 
         return string(body), true
 }
 
-func (s *Scanner) fetchLLMSTxt(ctx context.Context, domain string, evidence *[]Evidence) (found bool, url string, fields map[string]any) {
+func (s *Scanner) fetchLLMSTxt(ctx context.Context, domain string, evidence *[]Evidence) (found bool, url string, fields map[string]any, rawContent string) {
         for _, u := range llmsTxtURLCandidates(domain) {
                 content, ok := s.tryFetchLLMSTxt(ctx, u)
                 if !ok {
@@ -153,9 +162,9 @@ func (s *Scanner) fetchLLMSTxt(ctx context.Context, domain string, evidence *[]E
                         Confidence: strObserved,
                 })
                 slog.Info("AI Surface: llms.txt found", "domain", domain, mapKeyUrl, u)
-                return true, u, parseLLMSTxtFields(content)
+                return true, u, parseLLMSTxtFields(content), content
         }
-        return false, "", nil
+        return false, "", nil, ""
 }
 
 func llmsFullTxtURLCandidates(domain string) []string {
@@ -168,27 +177,31 @@ func llmsFullTxtURLCandidates(domain string) []string {
         return urls
 }
 
-func (s *Scanner) tryFetchLLMSFullTxt(ctx context.Context, u string) bool {
+func (s *Scanner) tryFetchLLMSFullTxt(ctx context.Context, u string) (string, bool) {
         resp, err := s.HTTP.Get(ctx, u)
         if err != nil {
-                return false
+                return "", false
         }
-        defer resp.Body.Close()
+        defer safeClose(resp.Body, "tryFetchLLMSFullTxt")
 
         if resp.StatusCode != http.StatusOK {
-                return false
+                return "", false
         }
 
-        body, err := s.HTTP.ReadBody(resp, 1024)
+        body, err := s.HTTP.ReadBody(resp, 256*1024)
         if err != nil {
-                return false
+                return "", false
         }
-        return len(body) > 10
+        if len(body) <= 10 {
+                return "", false
+        }
+        return string(body), true
 }
 
-func (s *Scanner) fetchLLMSFullTxt(ctx context.Context, domain string, evidence *[]Evidence) (found bool, fullURL string) {
+func (s *Scanner) fetchLLMSFullTxt(ctx context.Context, domain string, evidence *[]Evidence) (found bool, fullURL string, rawContent string) {
         for _, u := range llmsFullTxtURLCandidates(domain) {
-                if !s.tryFetchLLMSFullTxt(ctx, u) {
+                content, ok := s.tryFetchLLMSFullTxt(ctx, u)
+                if !ok {
                         continue
                 }
                 *evidence = append(*evidence, Evidence{
@@ -198,30 +211,34 @@ func (s *Scanner) fetchLLMSFullTxt(ctx context.Context, domain string, evidence 
                         Severity:   mapKeyInfo,
                         Confidence: strObserved,
                 })
-                return true, u
+                return true, u, content
         }
-        return false, ""
+        return false, "", ""
 }
 
 func (s *Scanner) checkLLMSTxt(ctx context.Context, domain string, evidence *[]Evidence) map[string]any {
         result := map[string]any{
-                mapKeyFound:      false,
-                "full_found": false,
-                mapKeyUrl:        nil,
-                "full_url":   nil,
-                "fields":     map[string]any{},
-                mapKeyEvidence:   []map[string]any{},
+                mapKeyFound:    false,
+                "full_found":   false,
+                mapKeyUrl:      nil,
+                "full_url":     nil,
+                "fields":       map[string]any{},
+                "content":      "",
+                "full_content": "",
+                mapKeyEvidence: []map[string]any{},
         }
 
-        if found, url, fields := s.fetchLLMSTxt(ctx, domain, evidence); found {
+        if found, url, fields, rawContent := s.fetchLLMSTxt(ctx, domain, evidence); found {
                 result[mapKeyFound] = true
                 result[mapKeyUrl] = url
                 result["fields"] = fields
+                result["content"] = rawContent
         }
 
-        if found, fullURL := s.fetchLLMSFullTxt(ctx, domain, evidence); found {
+        if found, fullURL, rawContent := s.fetchLLMSFullTxt(ctx, domain, evidence); found {
                 result["full_found"] = true
                 result["full_url"] = fullURL
+                result["full_content"] = rawContent
         }
 
         return result
@@ -253,7 +270,7 @@ func (s *Scanner) fetchRobotsTxtContent(ctx context.Context, domain string) (con
                 if err != nil {
                         continue
                 }
-                defer resp.Body.Close()
+                defer safeClose(resp.Body, "fetchRobotsTxtContent")
 
                 if resp.StatusCode != http.StatusOK {
                         continue
@@ -311,15 +328,15 @@ func addContentUsageEvidence(evidence *[]Evidence, url string, contentUsage map[
 
 func (s *Scanner) checkRobotsTxt(ctx context.Context, domain string, evidence *[]Evidence) map[string]any {
         result := map[string]any{
-                mapKeyFound:              false,
-                mapKeyUrl:                nil,
+                mapKeyFound:            false,
+                mapKeyUrl:              nil,
                 mapKeyBlocksAiCrawlers: false,
                 mapKeyAllowsAiCrawlers: false,
-                "blocked_crawlers":   []string{},
-                "allowed_crawlers":   []string{},
-                "directives":         []map[string]any{},
-                mapKeyContentUsage:      map[string]any{},
-                mapKeyEvidence:           []map[string]any{},
+                "blocked_crawlers":     []string{},
+                "allowed_crawlers":     []string{},
+                "directives":           []map[string]any{},
+                mapKeyContentUsage:     map[string]any{},
+                mapKeyEvidence:         []map[string]any{},
         }
 
         content, url, ok := s.fetchRobotsTxtContent(ctx, domain)
@@ -349,8 +366,8 @@ func (s *Scanner) checkRobotsTxt(ctx context.Context, domain string, evidence *[
 
 func parseContentUsageDirectives(content string) map[string]any {
         result := map[string]any{
-                mapKeyFound:      false,
-                mapKeyRaw:        "",
+                mapKeyFound:  false,
+                mapKeyRaw:    "",
                 "ai_denied":  false,
                 "parameters": map[string]string{},
         }
@@ -528,7 +545,7 @@ func (s *Scanner) fetchHomepageBody(ctx context.Context, domain string) (body, u
                 if err != nil {
                         continue
                 }
-                defer resp.Body.Close()
+                defer safeClose(resp.Body, "fetchHomepageBody")
 
                 if resp.StatusCode != http.StatusOK {
                         continue
@@ -557,11 +574,11 @@ func addPoisoningEvidence(evidence *[]Evidence, url string, iocs []map[string]an
 
 func (s *Scanner) checkPoisoning(ctx context.Context, domain string, evidence *[]Evidence) map[string]any {
         result := map[string]any{
-                mapKeyStatus:    mapKeySuccess,
-                mapKeyMessage:   "No AI recommendation poisoning indicators found",
+                mapKeyStatus:   mapKeySuccess,
+                mapKeyMessage:  "No AI recommendation poisoning indicators found",
                 mapKeyIocCount: 0,
-                "iocs":      []map[string]any{},
-                mapKeyEvidence:  []map[string]any{},
+                "iocs":         []map[string]any{},
+                mapKeyEvidence: []map[string]any{},
         }
 
         body, url, ok := s.fetchHomepageBody(ctx, domain)
@@ -611,7 +628,7 @@ func findKeywordsInRegion(nearby, method string, seen map[string]bool) []map[str
                 }
                 seen[key] = true
                 artifacts = append(artifacts, map[string]any{
-                        "method": method,
+                        "method":     method,
                         mapKeyDetail: fmt.Sprintf("Hidden element with prompt keyword '%s' detected near %s pattern", kw, method),
                 })
         }
@@ -641,7 +658,7 @@ func (s *Scanner) fetchHomepageBodyRaw(ctx context.Context, domain string) (body
                 if err != nil {
                         continue
                 }
-                defer resp.Body.Close()
+                defer safeClose(resp.Body, "fetchHomepageBodyRaw")
 
                 if resp.StatusCode != http.StatusOK {
                         continue
@@ -670,11 +687,11 @@ func addHiddenPromptEvidence(evidence *[]Evidence, url string, artifacts []map[s
 
 func (s *Scanner) checkHiddenPrompts(ctx context.Context, domain string, evidence *[]Evidence) map[string]any {
         result := map[string]any{
-                mapKeyStatus:         mapKeySuccess,
-                mapKeyMessage:        "No hidden prompt-like artifacts detected",
+                mapKeyStatus:        mapKeySuccess,
+                mapKeyMessage:       "No hidden prompt-like artifacts detected",
                 mapKeyArtifactCount: 0,
-                "artifacts":      []map[string]any{},
-                mapKeyEvidence:       []map[string]any{},
+                "artifacts":         []map[string]any{},
+                mapKeyEvidence:      []map[string]any{},
         }
 
         body, url, ok := s.fetchHomepageBodyRaw(ctx, domain)
@@ -700,9 +717,9 @@ func convertEvidenceSlice(evidence []Evidence) []map[string]any {
         result := make([]map[string]any, 0, len(evidence))
         for _, e := range evidence {
                 result = append(result, map[string]any{
-                        mapKeyType:       e.Type,
+                        mapKeyType:   e.Type,
                         "source":     e.Source,
-                        mapKeyDetail:     e.Detail,
+                        mapKeyDetail: e.Detail,
                         "severity":   e.Severity,
                         "confidence": e.Confidence,
                 })
@@ -751,8 +768,8 @@ func buildSummary(results map[string]any, evidence []Evidence) map[string]any {
         }
 
         return map[string]any{
-                mapKeyStatus:            status,
-                mapKeyMessage:           message,
+                mapKeyStatus:        status,
+                mapKeyMessage:       message,
                 "has_llms_txt":      hasLLMS,
                 "blocks_ai":         blocksAI,
                 "allows_ai":         allowsAI,

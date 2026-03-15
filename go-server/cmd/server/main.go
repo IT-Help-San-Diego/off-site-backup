@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny plumbing
 package main
 
 import (
@@ -7,6 +8,7 @@ import (
         "fmt"
         "html/template"
         "log/slog"
+        "mime"
         "net/http"
         "os"
         "os/exec"
@@ -18,11 +20,15 @@ import (
         "time"
 
         "dnstool/go-server/internal/analyzer"
+        "dnstool/go-server/internal/citation"
         "dnstool/go-server/internal/config"
+        "dnstool/go-server/internal/entitlements"
         "dnstool/go-server/internal/db"
+        "dnstool/go-server/internal/dbq"
         "dnstool/go-server/internal/dnsclient"
         "dnstool/go-server/internal/handlers"
         "dnstool/go-server/internal/middleware"
+        "dnstool/go-server/internal/notifier"
         "dnstool/go-server/internal/scanner"
         tmplFuncs "dnstool/go-server/internal/templates"
 
@@ -35,6 +41,39 @@ const (
 )
 
 const headerCacheControl = "Cache-Control"
+
+var staticMIME = map[string]string{
+        ".mp4":   "video/mp4",
+        ".webm":  "video/webm",
+        ".ogg":   "video/ogg",
+        ".m4a":   "audio/mp4",
+        ".css":   "text/css; charset=utf-8",
+        ".js":    "application/javascript",
+        ".json":  "application/json",
+        ".html":  "text/html; charset=utf-8",
+        ".xml":   "application/xml",
+        ".svg":   "image/svg+xml",
+        ".png":   "image/png",
+        ".jpg":   "image/jpeg",
+        ".jpeg":  "image/jpeg",
+        ".gif":   "image/gif",
+        ".webp":  "image/webp",
+        ".avif":  "image/avif",
+        ".ico":   "image/x-icon",
+        ".woff":  "font/woff",
+        ".woff2": "font/woff2",
+        ".ttf":   "font/ttf",
+        ".pdf":   "application/pdf",
+        ".txt":   "text/plain; charset=utf-8",
+        ".map":   "application/json",
+        ".zip":   "application/zip",
+}
+
+func init() {
+        for ext, ct := range staticMIME {
+                _ = mime.AddExtensionType(ext, ct)
+        }
+}
 
 func main() {
         slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
@@ -178,8 +217,20 @@ func main() {
         router.HEAD("/apple-touch-icon.png", appleTouchHandler)
         router.GET("/apple-touch-icon-precomposed.png", appleTouchHandler)
         router.HEAD("/apple-touch-icon-precomposed.png", appleTouchHandler)
+        imagesHandler := func(c *gin.Context) {
+                fp := c.Param("filepath")
+                if fp == "" || strings.Contains(fp, "..") {
+                        c.Status(http.StatusNotFound)
+                        return
+                }
+                c.Header(headerCacheControl, "public, max-age=86400")
+                c.File(filepath.Join(staticDir, "images", fp))
+        }
+        router.GET("/images/*filepath", imagesHandler)
+        router.HEAD("/images/*filepath", imagesHandler)
 
-        dnsAnalyzer := analyzer.New()
+        ctStore := analyzer.NewPgCTStore(database.Queries)
+        dnsAnalyzer := analyzer.New(analyzer.WithCTStore(ctStore))
         dnsAnalyzer.SMTPProbeMode = cfg.SMTPProbeMode
         dnsAnalyzer.ProbeAPIURL = cfg.ProbeAPIURL
         dnsAnalyzer.ProbeAPIKey = cfg.ProbeAPIKey
@@ -233,23 +284,24 @@ func main() {
 
         router.GET("/analyze", analysisHandler.Analyze)
         router.POST("/analyze", middleware.AnalyzeRateLimit(rateLimiter), analysisHandler.Analyze)
+        router.GET("/api/scan/progress/:token", handlers.ScanProgressHandler(analysisHandler.ProgressStore))
 
         router.GET("/history", historyHandler.History)
 
         dossierHandler := handlers.NewDossierHandler(database, cfg)
-        router.GET("/dossier", dossierHandler.Dossier)
+        router.GET("/dossier", middleware.RequireFeature(entitlements.FeatureDossier), dossierHandler.Dossier)
 
         driftHandler := handlers.NewDriftHandler(database, cfg)
         router.GET("/drift", driftHandler.Timeline)
 
         watchlistHandler := handlers.NewWatchlistHandler(database, cfg)
-        router.GET("/watchlist", watchlistHandler.Watchlist)
-        router.POST("/watchlist/add", middleware.RequireAuth(), watchlistHandler.AddDomain)
-        router.POST("/watchlist/:id/delete", middleware.RequireAuth(), watchlistHandler.RemoveDomain)
-        router.POST("/watchlist/:id/toggle", middleware.RequireAuth(), watchlistHandler.ToggleDomain)
-        router.POST("/watchlist/endpoint/add", middleware.RequireAuth(), watchlistHandler.AddEndpoint)
-        router.POST("/watchlist/endpoint/:id/delete", middleware.RequireAuth(), watchlistHandler.RemoveEndpoint)
-        router.POST("/watchlist/endpoint/:id/toggle", middleware.RequireAuth(), watchlistHandler.ToggleEndpoint)
+        router.GET("/watchlist", middleware.RequireFeature(entitlements.FeatureWatchlist), watchlistHandler.Watchlist)
+        router.POST("/watchlist/add", middleware.RequireFeature(entitlements.FeatureWatchlist), watchlistHandler.AddDomain)
+        router.POST("/watchlist/:id/delete", middleware.RequireFeature(entitlements.FeatureWatchlist), watchlistHandler.RemoveDomain)
+        router.POST("/watchlist/:id/toggle", middleware.RequireFeature(entitlements.FeatureWatchlist), watchlistHandler.ToggleDomain)
+        router.POST("/watchlist/endpoint/add", middleware.RequireFeature(entitlements.FeatureWatchlist), watchlistHandler.AddEndpoint)
+        router.POST("/watchlist/endpoint/:id/delete", middleware.RequireFeature(entitlements.FeatureWatchlist), watchlistHandler.RemoveEndpoint)
+        router.POST("/watchlist/endpoint/:id/toggle", middleware.RequireFeature(entitlements.FeatureWatchlist), watchlistHandler.ToggleEndpoint)
         router.POST("/watchlist/webhook/test", middleware.RequireAdmin(), watchlistHandler.TestWebhook)
 
         router.GET("/analysis/:id", analysisHandler.ViewAnalysis)
@@ -280,6 +332,10 @@ func main() {
         analyticsHandler := handlers.NewAnalyticsHandler(database, cfg)
         router.GET("/ops/analytics", middleware.RequireAdmin(), analyticsHandler.Dashboard)
 
+        telemetryHandler := handlers.NewTelemetryHandler(database, cfg)
+        router.GET("/ops/telemetry", middleware.RequireAdmin(), telemetryHandler.Dashboard)
+        router.GET("/api/telemetry/verify/:id", middleware.RequireAdmin(), telemetryHandler.VerifyHash)
+
         router.GET("/snapshot/:domain", snapshotHandler.Snapshot)
 
         router.GET("/export/json", middleware.RequireAdmin(), exportHandler.ExportJSON)
@@ -292,6 +348,7 @@ func main() {
         router.GET("/api/health", middleware.RequireAdmin(), healthHandler.HealthCheck)
 
         router.GET("/proxy/bimi-logo", proxyHandler.BIMILogo)
+        router.GET("/proxy/sonar-badge/:key", proxyHandler.SonarBadge)
 
         toolkitHandler := handlers.NewToolkitHandler(cfg)
         router.GET("/toolkit", toolkitHandler.ToolkitPage)
@@ -302,6 +359,10 @@ func main() {
         router.GET("/ttl-tuner", ttlTunerHandler.TTLTunerPage)
         router.GET("/ttl-tuner/analyze", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/ttl-tuner") })
         router.POST("/ttl-tuner/analyze", middleware.AnalyzeRateLimit(rateLimiter), ttlTunerHandler.AnalyzeTTL)
+
+        remediationHandler := handlers.NewRemediationHandler(database, cfg)
+        router.GET("/remediation", remediationHandler.RemediationPage)
+        router.POST("/remediation", remediationHandler.RemediationSubmit)
 
         investigateHandler := handlers.NewInvestigateHandler(cfg, dnsAnalyzer)
         router.GET("/investigate", investigateHandler.InvestigatePage)
@@ -314,8 +375,17 @@ func main() {
         sourcesHandler := handlers.NewSourcesHandler(cfg)
         router.GET("/sources", sourcesHandler.Sources)
 
+        citationReg := citation.Global()
+        citationHandler := handlers.NewCitationHandler(cfg, citationReg, database)
+        router.GET("/api/authorities", citationHandler.Authorities)
+        router.GET("/cite/software", citationHandler.SoftwareCitation)
+        router.GET("/analysis/:id/cite", citationHandler.AnalysisCitation)
+
         architectureHandler := handlers.NewArchitectureHandler(cfg)
         router.GET("/architecture", architectureHandler.Architecture)
+
+        signatureHandler := handlers.NewSignatureHandler(cfg)
+        router.GET("/signature", signatureHandler.SignaturePage)
 
         topologyHandler := handlers.NewTopologyHandler(cfg)
         router.GET("/topology", topologyHandler.Topology)
@@ -342,8 +412,13 @@ func main() {
         approachHandler := handlers.NewApproachHandler(cfg)
         router.GET("/approach", approachHandler.Approach)
 
+        edeHandler := handlers.NewEDEHandler(cfg)
+        router.GET("/ede", edeHandler.EDE)
+
         router.GET("/methodology", staticHandler.MethodologyPDF)
         router.GET("/docs/dns-tool-methodology.pdf", staticHandler.MethodologyPDF)
+        router.GET("/foundations", staticHandler.FoundationsPDF)
+        router.GET("/docs/philosophical-foundations.pdf", staticHandler.FoundationsPDF)
 
         videoHandler := handlers.NewVideoHandler(cfg)
         router.GET("/video/forgotten-domain", videoHandler.ForgottenDomain)
@@ -361,10 +436,11 @@ func main() {
         router.GET("/badge", badgeHandler.Badge)
         router.GET("/badge/shields", badgeHandler.BadgeShieldsIO)
         router.GET("/badge/embed", badgeHandler.BadgeEmbed)
+        router.GET("/badge/animated", badgeHandler.BadgeAnimated)
 
         zoneHandler := handlers.NewZoneHandler(database, cfg)
-        router.GET("/zone", middleware.RequireAuth(), zoneHandler.UploadForm)
-        router.POST("/zone/upload", middleware.RequireAuth(), zoneHandler.ProcessUpload)
+        router.GET("/zone", middleware.RequireFeature(entitlements.FeatureZoneUpload), zoneHandler.UploadForm)
+        router.POST("/zone/upload", middleware.RequireFeature(entitlements.FeatureZoneUpload), zoneHandler.ProcessUpload)
 
         authHandler := handlers.NewAuthHandler(cfg, database.Pool)
         if cfg.GoogleClientID != "" {
@@ -406,6 +482,12 @@ func main() {
         defer syncCancel()
         startScheduledSync(syncCtx)
 
+        ctEnrichment := analyzer.NewCTEnrichmentJob(database.Queries, ctStore)
+        ctEnrichment.Start(syncCtx)
+
+        driftNotifier := notifier.New(dbq.New(database.Pool))
+        startNotificationDelivery(syncCtx, driftNotifier)
+
         quit := make(chan os.Signal, 1)
         signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
@@ -442,13 +524,16 @@ func findTemplatesDir() string {
         return "templates"
 }
 
+var cacheableExts = map[string]bool{
+        ".css": true, ".js": true, ".woff": true, ".woff2": true, ".ttf": true,
+        ".png": true, ".ico": true, ".svg": true, ".jpg": true, ".jpeg": true,
+        ".gif": true, ".webp": true, ".avif": true,
+        ".mp4": true, ".webm": true, ".ogg": true, ".m4a": true,
+        ".pdf": true, ".zip": true, ".map": true,
+}
+
 func isStaticAsset(fp string) bool {
-        for _, ext := range []string{".css", ".js", ".woff2", ".woff", ".png", ".ico", ".svg", ".jpg", ".webp", ".avif"} {
-                if strings.HasSuffix(fp, ext) {
-                        return true
-                }
-        }
-        return false
+        return cacheableExts[filepath.Ext(fp)]
 }
 
 func findStaticDir() string {
@@ -488,6 +573,30 @@ func startScheduledSync(ctx context.Context) {
                                 runNotionSync()
                         case <-ctx.Done():
                                 slog.Info("Scheduled sync shutting down")
+                                return
+                        }
+                }
+        }()
+}
+
+func startNotificationDelivery(ctx context.Context, n *notifier.Notifier) {
+        go func() {
+                const interval = 30 * time.Second
+                const batchSize int32 = 50
+                slog.Info("Notification delivery loop started", "interval", interval, "batch_size", batchSize)
+                ticker := time.NewTicker(interval)
+                defer ticker.Stop()
+                for {
+                        select {
+                        case <-ticker.C:
+                                delivered, err := n.DeliverPending(ctx, batchSize)
+                                if err != nil {
+                                        slog.Error("Notification delivery error", mapKeyError, err)
+                                } else if delivered > 0 {
+                                        slog.Info("Notifications delivered", "count", delivered)
+                                }
+                        case <-ctx.Done():
+                                slog.Info("Notification delivery loop shutting down")
                                 return
                         }
                 }

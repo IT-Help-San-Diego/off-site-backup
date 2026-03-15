@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny science
 package analyzer
 
 import (
@@ -13,17 +14,17 @@ import (
 
 const (
 	mapKeyHasOpenpgpkey = "has_openpgpkey"
-	mapKeyHasSmimea = "has_smimea"
+	mapKeyHasSmimea     = "has_smimea"
 )
 
 func (a *Analyzer) AnalyzeSMIMEA(ctx context.Context, domain string) map[string]any {
 	result := map[string]any{
-		"status":         "success",
-		mapKeyHasSmimea:     false,
-		mapKeyHasOpenpgpkey: false,
-		"smimea_records": []map[string]any{},
+		"status":             "success",
+		mapKeyHasSmimea:      false,
+		mapKeyHasOpenpgpkey:  false,
+		"smimea_records":     []map[string]any{},
 		"openpgpkey_records": []map[string]any{},
-		"issues":         []string{},
+		"issues":             []string{},
 	}
 
 	smimeaRecords := a.querySMIMEA(ctx, domain)
@@ -91,11 +92,11 @@ func parseSMIMEARecords(records []*dns.SMIMEA) []map[string]any {
 	var parsed []map[string]any
 	for _, r := range records {
 		parsed = append(parsed, map[string]any{
-			"usage":        r.Usage,
-			"selector":     r.Selector,
+			"usage":         r.Usage,
+			"selector":      r.Selector,
 			"matching_type": r.MatchingType,
-			"raw":          r.String(),
-			"confidence":   ConfidenceObservedMap(MethodDNSRecord),
+			"raw":           r.String(),
+			"confidence":    ConfidenceObservedMap(MethodDNSRecord),
 		})
 	}
 	return parsed

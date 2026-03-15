@@ -169,11 +169,11 @@ func TestProfileSuggestion_CategoryIcon(t *testing.T) {
                 category string
                 want     string
         }{
-                {"resolver", "fa-server"},
-                {"retry", "fa-arrows-rotate"},
-                {"timeout", "fa-clock"},
-                {"priority", "fa-cogs"},
-                {"unknown", "fa-cogs"},
+                {"resolver", "server"},
+                {"retry", "arrows-rotate"},
+                {"timeout", "clock"},
+                {"priority", "cogs"},
+                {"unknown", "cogs"},
         }
         for _, tt := range tests {
                 s := ProfileSuggestion{Category: tt.category}

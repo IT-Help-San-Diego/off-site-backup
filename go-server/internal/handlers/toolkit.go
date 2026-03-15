@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny design
 package handlers
 
 import (
@@ -18,7 +19,7 @@ import (
 )
 
 const (
-	mapKeyToolkit = "toolkit"
+        mapKeyToolkit = "toolkit"
 )
 
 const tplToolkit = "toolkit.html"
@@ -41,7 +42,7 @@ func (h *ToolkitHandler) ToolkitPage(c *gin.Context) {
                 strCspnonce:        nonce,
                 strCsrftoken:       csrfToken,
                 strActivepage:      mapKeyToolkit,
-                "ProbeLocations":  h.Config.Probes,
+                "ProbeLocations":   h.Config.Probes,
         }
         mergeAuthData(c, h.Config, data)
         c.HTML(http.StatusOK, tplToolkit, data)
@@ -62,9 +63,9 @@ func (h *ToolkitHandler) MyIP(c *gin.Context) {
                 strCspnonce:        nonce,
                 strCsrftoken:       csrfToken,
                 strActivepage:      mapKeyToolkit,
-                "ClientIP":        clientIP,
-                "Platform":        platform,
-                "ShowMyIP":        true,
+                "ClientIP":         clientIP,
+                "Platform":         platform,
+                "ShowMyIP":         true,
         }
         mergeAuthData(c, h.Config, data)
         c.HTML(http.StatusOK, tplToolkit, data)
@@ -89,11 +90,11 @@ func (h *ToolkitHandler) PortCheck(c *gin.Context) {
                 strCspnonce:        nonce,
                 strCsrftoken:       csrfToken,
                 strActivepage:      mapKeyToolkit,
-                "TargetHost":      targetHost,
-                "TargetPort":      targetPort,
-                "ShowPortCheck":   true,
-                "ProbeLocations":  h.Config.Probes,
-                "SelectedProbe":   selectedProbeID,
+                "TargetHost":       targetHost,
+                "TargetPort":       targetPort,
+                "ShowPortCheck":    true,
+                "ProbeLocations":   h.Config.Probes,
+                "SelectedProbe":    selectedProbeID,
         }
 
         if targetHost == "" {
@@ -147,7 +148,7 @@ func (h *ToolkitHandler) executeProbeRequest(probe probeConfig, targetHost, targ
         if err != nil {
                 return nil, "Could not connect to the probe service. It may be temporarily unavailable."
         }
-        defer resp.Body.Close()
+        defer safeClose(resp.Body, "probe-response")
 
         body, err := io.ReadAll(resp.Body)
         if err != nil {

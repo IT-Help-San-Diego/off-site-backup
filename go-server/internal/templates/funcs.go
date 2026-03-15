@@ -1,3 +1,7 @@
+// Copyright (c) 2024-2026 IT Help San Diego Inc.
+// Licensed under BUSL-1.1 — See LICENSE for terms.
+
+// dns-tool:scrutiny plumbing
 package templates
 
 import (
@@ -16,6 +20,8 @@ import (
         "sync"
         "time"
 
+        "dnstool/go-server/internal/icons"
+
         "golang.org/x/text/cases"
         "golang.org/x/text/language"
 )
@@ -26,7 +32,6 @@ func InitSRI(staticDir string) {
         assets := []string{
                 "css/foundation.min.css",
                 "css/custom.min.css",
-                "css/fontawesome-subset.min.css",
                 "css/print.min.css",
                 "js/main.min.js",
                 "js/foundation.min.js",
@@ -53,7 +58,7 @@ func staticSRI(path string) template.HTMLAttr {
 }
 
 const (
-        mapKeyDanger = "danger"
+        mapKeyDanger  = "danger"
         mapKeySuccess = "success"
         mapKeyWarning = "warning"
 )
@@ -68,7 +73,15 @@ func FuncMap() template.FuncMap {
         mergeFuncs(m, sliceFuncs())
         mergeFuncs(m, comparisonFuncs())
         mergeFuncs(m, displayFuncs())
+        mergeFuncs(m, iconFuncs())
         return m
+}
+
+func iconFuncs() template.FuncMap {
+        return template.FuncMap{
+                "icon":     icons.Icon,
+                "iconJSON": icons.IconSVGJSON,
+        }
 }
 
 func mergeFuncs(dst, src template.FuncMap) {
@@ -661,25 +674,25 @@ func comparisonFuncs() template.FuncMap {
 }
 
 const bgDanger = "bg-danger"
-const iconWrench = "fa-wrench"
+const iconWrench = "wrench"
 
 var statusBadgeClassMap = map[string]string{
-        mapKeySuccess:  "bg-success",
-        mapKeyWarning:  "bg-warning",
-        "info":     "bg-info",
-        mapKeyDanger:   bgDanger,
-        "error":    bgDanger,
-        "critical": bgDanger,
+        mapKeySuccess: "bg-success",
+        mapKeyWarning: "bg-warning",
+        "info":        "bg-info",
+        mapKeyDanger:  bgDanger,
+        "error":       bgDanger,
+        "critical":    bgDanger,
 }
 
 var statusColorMap = map[string]string{
-        mapKeySuccess:  mapKeySuccess,
-        mapKeyWarning:  mapKeyWarning,
-        "partial":  mapKeyWarning,
-        "error":    mapKeyDanger,
-        mapKeyDanger:   mapKeyDanger,
-        "critical": mapKeyDanger,
-        "info":     "info",
+        mapKeySuccess: mapKeySuccess,
+        mapKeyWarning: mapKeyWarning,
+        "partial":     mapKeyWarning,
+        "error":       mapKeyDanger,
+        mapKeyDanger:  mapKeyDanger,
+        "critical":    mapKeyDanger,
+        "info":        "info",
 }
 
 func statusBadgeClass(status string) string {
@@ -711,7 +724,14 @@ func staticURL(path string) string {
 }
 
 func staticVersionURL(path, version string) string {
-        return "/static/" + path + "?v=" + version
+        u := "/static/" + path + "?v=" + version
+        if v, ok := sriCache.Load(path); ok {
+                sri := v.(string)
+                if len(sri) > 12 {
+                        u += "&h=" + sri[len(sri)-8:]
+                }
+        }
+        return u
 }
 
 func toJSON(v interface{}) string {
@@ -774,11 +794,11 @@ var sectionStatusCSSMap = map[string]string{
 }
 
 var sectionStatusIconMap = map[string]string{
-        "beta":               "fa-flask",
-        "active development": "fa-code",
+        "beta":               "flask",
+        "active development": "code",
         "maintenance":        iconWrench,
-        "experimental":       "fa-microscope",
-        "deprecated":         "fa-archive",
+        "experimental":       "microscope",
+        "deprecated":         "archive",
         "accuracy tuning":    iconWrench,
 }
 

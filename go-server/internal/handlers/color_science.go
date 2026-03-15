@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny design
 package handlers
 
 import (
@@ -23,7 +24,7 @@ func (h *ColorScienceHandler) ColorScience(c *gin.Context) {
 	data := gin.H{
 		"AppVersion":      h.Config.AppVersion,
 		"MaintenanceNote": h.Config.MaintenanceNote,
-		"BetaPages":        h.Config.BetaPages,
+		"BetaPages":       h.Config.BetaPages,
 		"CspNonce":        nonce,
 		"ActivePage":      "color-science",
 	}

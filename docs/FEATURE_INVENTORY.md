@@ -1,6 +1,6 @@
 # DNS Tool — Feature Overview
 
-**Last Updated:** March 3, 2026 (v26.33.65)
+**Last Updated:** March 9, 2026 (v26.35.20)
 **Implementation:** Go/Gin
 
 ---
@@ -46,7 +46,7 @@ The tool performs RFC-compliant parsing and validation of these protocols:
 - CVSS-aligned security posture assessment
 - Mail posture classification
 - RFC-aligned remediation engine with priority fixes
-- ICuAE — Intelligence Currency Audit Engine: 29 deterministic test cases across 5 dimensions (Currentness, TTL Compliance, Completeness, Source Credibility, TTL Relevance), five-tier grading system aligned with ICD 203, NIST SP 800-53 SI-18, and ISO/IEC 25012
+- ICuAE — Intelligence Currency Audit Engine: 29 deterministic test cases across 5 dimensions (Currentness, TTL Compliance, Completeness, Source Credibility, TTL Relevance), five-tier grading system aligned with ICD 203, NIST SP 800-53 SI-7, and ISO/IEC 25012
 
 ## Detection and Intelligence
 
@@ -75,12 +75,12 @@ The tool performs RFC-compliant parsing and validation of these protocols:
 - IP Intelligence (reverse lookups, ASN attribution, geolocation)
 - Five intelligence products: Engineer's DNS Intelligence Report (comprehensive technical detail), Executive's DNS Intelligence Brief (concise board-ready summary with security scorecard), Recon Report (adversarial perspective), Domain Dossier, and Domain Comparison
 - Configurable TLP classification (default: TLP:AMBER, with TLP:RED, TLP:AMBER+STRICT, TLP:GREEN and TLP:CLEAR options) aligned with CISA Cyber Hygiene practice and FIRST TLP v2.0
-- Covert Recon Mode — adversarial dark theme with scotopic vision-optimized red-spectrum (#cc2020) palette, producing the Recon Report intelligence product
+- Covert Recon Mode — adversarial dark theme with scotopic vision-optimized red-spectrum (#cc2020) palette, producing the Recon Report intelligence product; Focus Mode button (Fullscreen API with `webkit` fallback) hides browser chrome for full scotopic immersion (`fa-expand`/`fa-compress` icon swap on `fullscreenchange`/`webkitfullscreenchange`); dynamic `meta[name="theme-color"]` updates per covert environment (submarine `#0a0404`, tactical `#1a0808`, basement `#140606`); iPhone graceful degradation (Focus button hidden via `d-none` when `fullscreenEnabled` is `false`); audio permissions fix (Morse easter egg `.play().catch()` prevents `NotAllowedError` on autoplay-restricted browsers); DTIC/MIL-STD citations upgraded to three authoritative sources: [AD0639176](https://apps.dtic.mil/sti/citations/tr/AD0639176), [MIL-STD-3009 (ADA148883)](https://apps.dtic.mil/sti/tr/pdf/ADA148883.pdf), [MIL-STD-1472G](https://cvgstrategy.com/wp-content/uploads/2023/04/MIL-STD-1472G.pdf)
 - Color Science page (/color-science) — live CIE scotopic/photopic luminosity validation and WCAG 2.2 contrast calculations for Covert Recon Mode palette, with MIL-STD-1472H compliance badges
 - Report integrity hash (SHA-3-512 fingerprint binding domain, analysis ID, timestamp, tool version, and results data) with copy-to-clipboard and header preview
 - Architecture page (/architecture) — interactive Mermaid diagrams of system architecture
 - Posture drift detection foundation (canonical SHA-3-512 hashing for longitudinal monitoring, backward-compatible legacy SHA-256 recomputation)
-- ICAE Intelligence Confidence Matrix with tier-colored next-tier progress labels and two-layer (Collection + Analysis) auditing, 129 deterministic test cases across 9 protocols
+- ICAE Intelligence Confidence Matrix with tier-colored next-tier progress labels and two-layer (Collection + Analysis) auditing, 129 deterministic test cases across 9 protocols, empirically validated via calibration metrics (Brier Score 0.0018, ECE 0.031, 645 predictions across 5 resolver scenarios)
 - Changelog page
 - Security policy page
 - Sources and methodology reference
@@ -91,6 +91,7 @@ The tool performs RFC-compliant parsing and validation of these protocols:
 - Hash Integrity Audit Engine — automated recomputation and verification of stored posture hashes
 - Brand colors page (/brand-colors) — brand palette reference with live CIE validation
 - Origin story page (/about) with verified timeline: Memphis 1980, Nashville IT, Raspberry Pi, PhreakNIC ~2006, Hak5 offensive security, 2015-2024 defensive security (Objective-See, CISA RPT Jan 2022, Hak5 Payload Award Sept 2023), Python CLI (Snap Store Nov 2023), Go platform Feb 2025
+- Wayback Machine automatic archival — every successful, non-private, non-scan-flagged analysis is submitted to the Internet Archive via web.archive.org/save/ in a background goroutine; snapshot URL stored in domain_analyses.wayback_url; green "Archived" badge in results header; "Internet Archive — Permanent Record" card on Engineer's and Executive's reports with View/Copy buttons; three-layer evidence chain (SHA-3-512 integrity hash + posture hash + third-party Wayback archive)
 
 ## Security and Infrastructure
 

@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny design
 package handlers
 
 import (
@@ -45,6 +46,9 @@ func (h *ConfidenceHandler) Confidence(c *gin.Context) {
                                         metrics.HashAudit.TotalHashedInDB = int(totalHashed)
                                 }
                         }
+                        ce := icae.NewCalibrationEngine()
+                        calResult := icae.RunDegradedCalibration(ce)
+                        metrics.Calibration = &calResult
                         data["ICAEMetrics"] = metrics
                 }
         }

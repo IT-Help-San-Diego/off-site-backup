@@ -9,6 +9,11 @@
     <meta property="og:title" content="Analysis Transparency Log - DNS Tool">
     <meta property="og:description" content="Public accountability log of failed DNS analyses. Every failure tracked transparently.">
     <meta property="og:image" content="https://dnstool.it-help.tech/static/images/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="DNS Tool - Analysis Transparency Log">
+    <meta property="og:site_name" content="DNS Tool">
     <meta name="twitter:card" content="summary_large_image">
     <meta property="twitter:domain" content="dnstool.it-help.tech">
     <meta property="twitter:url" content="https://dnstool.it-help.tech/failures">
@@ -233,7 +238,7 @@
             margin-bottom: 0.75rem;
             display: block;
         }
-        .failures-empty i.fa-info-circle {
+        .failures-empty .icon-info-circle {
             color: #58a6ff;
         }
         .failures-empty p {
@@ -267,16 +272,16 @@
             <div class="failures-hero">
                 <div class="u-z1">
                     <div class="failures-hero-badge">
-                        <i class="fas fa-shield-alt"></i>
+                        {{icon "shield-alt"}}
                         Accountability
                     </div>
-                    <h1><i class="fas fa-clipboard-list me-2 u-text-red-bright"></i>Analysis Transparency Log</h1>
+                    <h1>{{icon "clipboard-list" "me-2 u-text-red-bright"}}Analysis Transparency Log</h1>
                     <p class="failures-hero-sub">Every failed analysis is tracked publicly. No hidden failures, no silent drops &mdash; full operational accountability.</p>
                 </div>
 
                 <div class="failures-philosophy">
                     <div class="failures-philosophy-icon">
-                        <i class="fas fa-balance-scale"></i>
+                        {{icon "balance-scale"}}
                     </div>
                     <div>
                         <div class="failures-philosophy-title">Why We Publish This</div>
@@ -302,14 +307,14 @@
 
             <div class="failures-section">
                 <div class="failures-section-header">
-                    <i class="fas fa-exclamation-triangle failures-section-icon"></i>
+                    {{icon "exclamation-triangle" "failures-section-icon"}}
                     <h2 class="failures-section-title">Failure Log (Most Recent 50)</h2>
                 </div>
                 <div class="failures-section-body">
                     {{if .Failures}}
                     {{range .Failures}}
                     <div class="failure-entry">
-                        <div class="failure-icon"><i class="{{.Icon}}"></i></div>
+                        <div class="failure-icon">{{icon .Icon}}</div>
                         <div class="failure-domain" title="{{.Domain}}">{{.Domain}}</div>
                         <div class="failure-category">{{.Category}}</div>
                         <div class="failure-time" title="{{.Timestamp}}">{{.TimeAgo}}</div>
@@ -318,13 +323,13 @@
                     {{else}}
                         {{if gt .TotalFailed 0}}
                     <div class="failures-empty">
-                        <i class="fas fa-info-circle"></i>
+                        {{icon "info-circle"}}
                         <p class="success-label">{{.TotalFailed}} Failures Counted</p>
                         <p>Our telemetry recorded {{.TotalFailed}} failed analyses, but detailed error logs were not preserved for these events. This typically occurs when a failure happens before the analysis record is persisted &mdash; for example, DNS resolution timeouts during initial domain validation. The count is accurate; only the per-record details are unavailable.</p>
                     </div>
                         {{else}}
                     <div class="failures-empty">
-                        <i class="fas fa-check-circle"></i>
+                        {{icon "check-circle"}}
                         <p class="success-label">Zero Failures</p>
                         <p>No failed analyses recorded. This is either impressive or suspicious &mdash; we prefer honest.</p>
                     </div>

@@ -14,6 +14,11 @@
     <meta property="og:title" content="DNS Tool — Domain Security Intelligence | OSINT Reports">
     <meta property="og:description" content="OSINT domain security audit — no login required. Analyzes SPF, DKIM, DMARC, DANE, DNSSEC, BIMI, MTA-STS, CAA. Engineer and Executive intelligence reports.">
     <meta property="og:image" content="{{.BaseURL}}/static/images/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="DNS Tool - Domain Security Intelligence">
+    <meta property="og:site_name" content="DNS Tool">
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
@@ -32,8 +37,10 @@
         "alternateName": ["DNS Security Intelligence", "Domain Security Audit", "DNS OSINT Tool", "SPF Checker", "DMARC Lookup", "DKIM Validator", "DNSSEC Checker", "DANE Checker", "TLSA Lookup", "Email Security Audit Tool", "Email Security Management Detector", "MTA-STS Checker", "TLS-RPT Checker", "CAA Checker", "BIMI Checker", "IP Intelligence Tool", "Email Header Analyzer", "Subdomain Discovery Tool", "Field Tech Toolkit", "Network Troubleshooting Tool", "Intelligence Confidence Audit Engine", "Intelligence Currency Assurance Engine", "ICAE", "ICuAE", "Domain Dossier", "DMARCbis Checker", "Analysis Transparency Log"],
         "description": "OSINT-based domain security audit producing Engineer's DNS Intelligence Reports and Executive's DNS Intelligence Briefs. All analysis uses open-source intelligence — publicly available DNS records, certificate transparency logs, RDAP registry data, and web resources. Analyzes SPF, DKIM, DMARC, DANE/TLSA, DNSSEC, BIMI, MTA-STS, TLS-RPT, and CAA from multiple intelligence sources (Cloudflare, Google, Quad9, OpenDNS, DNS4EU). Email Header Analyzer for spoofing detection with OpenPhish integration. IP Intelligence with ASN attribution and geolocation. AI Surface Scanner for llms.txt and crawler governance. Configurable TLP classification (AMBER/GREEN/CLEAR). Multi-layer subdomain discovery via Certificate Transparency and DNS intelligence. Posture drift detection via canonical hashing. All analysis uses open-standard protocols.",
         "url": "https://dnstool.it-help.tech",
+        "image": "https://dnstool.it-help.tech/static/images/og-image.png",
+        "screenshot": "https://dnstool.it-help.tech/static/images/og-image.png",
         "applicationCategory": "SecurityApplication",
-        "operatingSystem": "Web Browser",
+        "operatingSystem": "Web",
         "softwareVersion": "{{.AppVersion}}",
         "audience": {
             "@type": "Audience",
@@ -112,9 +119,12 @@
             "@type": "Organization",
             "name": "IT Help San Diego Inc.",
             "url": "https://www.it-help.tech",
+            "image": "https://dnstool.it-help.tech/static/images/og-image.png",
+            "logo": "https://dnstool.it-help.tech/static/images/owl-of-athena-160.png",
             "telephone": "+1-619-853-5008",
             "address": {
                 "@type": "PostalAddress",
+                "streetAddress": "888 Prospect St, Suite 200",
                 "addressLocality": "La Jolla",
                 "addressRegion": "CA",
                 "postalCode": "92037",
@@ -211,7 +221,7 @@
                 "name": "Do I need to create an account?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "No account is required to run any analysis. Paste a domain, click Analyze, and get your intelligence report immediately. Optional Google sign-in is available for scan history and premium features. We don't collect tracking cookies and marketing messages are opt-in only. Every analysis queries DNS records in real-time from multiple resolvers (Cloudflare, Google, Quad9, OpenDNS, DNS4EU) to provide the most current data available to public resolvers."
+                    "text": "No account is required to run any analysis. Paste a domain, click Analyze, and get your intelligence report immediately. Optional Google sign-in unlocks personal features like scan history, watchlists, and domain dossiers. We don't collect tracking cookies and marketing messages are opt-in only. Every analysis queries DNS records in real-time from multiple resolvers (Cloudflare, Google, Quad9, OpenDNS, DNS4EU) to provide the most current data available to public resolvers."
                 }
             },
             {
@@ -304,7 +314,7 @@
         <div class="container">
             <div class="text-center hero-content">
                 <div class="hero-badge mb-3">
-                    <i class="fas fa-shield-alt me-1" aria-hidden="true"></i> DNS Security Intelligence
+                    {{icon "shield-alt" "me-1"}} DNS Security Intelligence
                 </div>
                 <h1 class="hero-title mb-3">
                     <span class="hero-ascii-covert d-none" aria-hidden="true"><pre class="hero-ascii-pre">       ██████  ███    ██ ███████
@@ -333,24 +343,29 @@
                         <div class="alert border-0 mb-0 u-covert-banner" role="alert">
                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                                 <div class="d-flex align-items-start">
-                                    <i class="fas fa-biohazard me-2 mt-1 u-covert-active-label"></i>
+                                    {{icon "biohazard" "me-2 mt-1 u-covert-active-label"}}
                                     <div>
                                         <strong class="u-covert-active-label">COVERT MODE ACTIVE</strong> <span class="u-covert-recon-beta-tag">Beta</span>
                                         <span class="text-muted ms-1">&mdash; Same intelligence, adversarial lens. Every finding reframed for offensive awareness.</span>
-                                        <div class="small text-muted mt-1"><i class="fas fa-moon me-1"></i>Optimized for low-light tactical environments
+                                        <div class="small text-muted mt-1">{{icon "moon" "me-1"}}Optimized for low-light tactical environments
                                             <span class="covert-env-selector">
                                                 <span class="covert-env-label">Environment:</span>
-                                                <button type="button" class="covert-env-btn" data-env="submarine" title="Submarine — Ultra-low emission, silent running. MIL-STD-3009 Class B minimum luminance."><i class="fas fa-eye-slash me-1"></i>Submarine</button>
-                                                <button type="button" class="covert-env-btn active" data-env="tactical" title="Tactical Field — Standard night ops, NVG-off. Rhodopsin-preserving red per MIL-STD-3009."><i class="fas fa-crosshairs me-1"></i>Tactical</button>
-                                                <button type="button" class="covert-env-btn" data-env="basement" title="Operator's Den — Enhanced readability with tactical red tinting. For extended analysis sessions."><i class="fas fa-terminal me-1"></i>Operator</button>
+                                                <button type="button" class="covert-env-btn" data-env="submarine" title="Submarine — Ultra-low emission, silent running. MIL-STD-3009 Class B minimum luminance.">{{icon "eye-slash" "me-1"}}Submarine</button>
+                                                <button type="button" class="covert-env-btn active" data-env="tactical" title="Tactical Field — Standard night ops, NVG-off. Rhodopsin-preserving red per MIL-STD-3009.">{{icon "crosshairs" "me-1"}}Tactical</button>
+                                                <button type="button" class="covert-env-btn" data-env="basement" title="Operator's Den — Enhanced readability with tactical red tinting. For extended analysis sessions.">{{icon "terminal" "me-1"}}Operator</button>
                                             </span>
                                         </div>
-                                        <div class="mt-1 u-covert-disclosure"><i class="fas fa-info-circle me-1"></i>Red spectrum preserves <a href="https://doi.org/10.1016/j.visres.2004.07.040" target="_blank" rel="noopener">scotopic adaptation</a> per <a href="https://quicksearch.dla.mil/qsDocDetails.aspx?ident_number=36903" target="_blank" rel="noopener">MIL-STD-3009 tactical lighting discipline</a>. All findings are identical to the standard report.</div>
+                                        <div class="mt-1 u-covert-disclosure">{{icon "info-circle" "me-1"}}Red spectrum preserves <a href="https://apps.dtic.mil/sti/citations/tr/AD0639176" target="_blank" rel="noopener">scotopic adaptation</a> per <a href="https://apps.dtic.mil/sti/tr/pdf/ADA148883.pdf" target="_blank" rel="noopener">MIL-STD-3009</a> and <a href="https://cvgstrategy.com/wp-content/uploads/2023/04/MIL-STD-1472G.pdf" target="_blank" rel="noopener">MIL-STD-1472G</a> tactical lighting discipline. All findings are identical to the standard report. For full immersion, use Focus Mode or <a href="https://support.google.com/chrome/answer/9658361" target="_blank" rel="noopener">install as app</a>.</div>
                                     </div>
                                 </div>
-                                <button class="btn btn-sm text-nowrap u-covert-exit-btn" type="button" id="covertExitHome">
-                                    <i class="fas fa-arrow-right me-1"></i>Exit Covert Mode
-                                </button>
+                                <div class="d-flex gap-2 align-items-center flex-nowrap">
+                                    <button class="btn btn-sm text-nowrap u-covert-focus-btn covert-fullscreen-btn" type="button" title="Focus Mode — hide browser chrome for full scotopic immersion">
+                                        {{icon "expand" "me-1"}}Focus
+                                    </button>
+                                    <button class="btn btn-sm text-nowrap u-covert-exit-btn" type="button" id="covertExitHome">
+                                        {{icon "arrow-right" "me-1"}}Exit Covert Mode
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -384,7 +399,7 @@
                             <input type="hidden" name="csrf_token" value="{{.CsrfToken}}">
                             <input type="hidden" name="covert" id="covertField" value="">
                             <label for="domain" class="form-label search-label">
-                                <i class="fas fa-search me-2"></i>Domain Name
+                                {{icon "search" "me-2"}}Domain Name
                             </label>
                             <div class="input-group input-group-lg search-input-group">
                                 <input type="text" 
@@ -395,54 +410,54 @@
                                        autocomplete="off"
                                        autocapitalize="none"
                                        spellcheck="false"
-                                       aria-label="Domain to analyze"
                                        value="{{if .PrefillDomain}}{{.PrefillDomain}}{{else}}{{.WaitDomain}}{{end}}">
-                                <button class="btn btn-analyze search-btn" type="submit" id="analyzeBtn" aria-label="Analyze domain"
+                                <button class="btn btn-analyze search-btn" type="submit" id="analyzeBtn"
                                     {{if .WaitSeconds}}
                                     data-wait-seconds="{{.WaitSeconds}}"
                                     data-wait-domain="{{.WaitDomain}}"
                                     data-wait-reason="{{.WaitReason}}"
                                     {{end}}>
-                                    <i class="fas fa-search me-2" aria-hidden="true"></i>Analyze
+                                    {{icon "search" "me-2"}}Analyze
                                 </button>
                             </div>
                             <div class="form-text search-hint mt-2">
-                                <i class="fas fa-info-circle me-1" aria-hidden="true"></i>
+                                {{icon "info-circle" "me-1"}}
                                 Enter a domain (e.g., <strong>example.com</strong>) or a top-level zone (e.g., <strong>tech</strong>, <strong>co.uk</strong>) &mdash; no https://. TLDs produce a <strong>Registry Zone Health Report</strong>.
                             </div>
                             <div class="form-text text-muted mt-1 u-privacy-hint">
-                                <i class="fas fa-shield-alt me-1" aria-hidden="true"></i>DNS lookups may be logged by upstream resolvers and authoritative nameservers. Avoid querying domains you do not own if front-running risk is a concern.
-                            </div>
-                            <div class="mt-1" id="systemStatus" aria-live="polite">
-                                <span class="u-status-dot u-status-ok" id="statusDot" aria-hidden="true"></span>
-                                <span class="u-fs-075em text-muted" id="statusText">All Systems Operational</span>
+                                {{icon "shield-alt" "me-1"}}DNS lookups may be logged by upstream resolvers and authoritative nameservers.
+                                <button type="button" id="privacyToggle" class="u-privacy-toggle btn btn-link p-0 border-0 text-decoration-none text-reset" tabindex="0">{{icon "chevron-down" "ms-1 small"}} Shopping for a domain?</button>
+                                <div id="privacyDetail" class="form-text text-muted mt-1 d-none">{{icon "info-circle" "me-1"}}When you look up a domain, that query can be seen by third parties. If you&rsquo;re considering buying a domain and don&rsquo;t want anyone to know you&rsquo;re interested, don&rsquo;t search for it here or on any public tool &mdash; someone could register it before you do. Before you buy, check whether the domain already carries a bad reputation using <a href="https://www.talosintelligence.com/reputation_center" target="_blank" rel="noopener noreferrer" class="text-info">Cisco Talos Reputation Center</a> &mdash; but do it from a private browser, not here.</div>
                             </div>
                             <div class="mt-2">
                                 <button type="button" class="btn btn-link small text-decoration-none p-0 border-0 u-a11y-muted" data-bs-toggle="collapse" data-bs-target="#advancedOptions" aria-expanded="{{if .DKIMExpand}}true{{else}}false{{end}}" aria-controls="advancedOptions">
-                                    <i class="fas fa-sliders-h me-1 u-color-blue-soft" aria-hidden="true"></i>Advanced Options <span class="u-a11y-muted small">(optional)</span> <i class="fas fa-chevron-down ms-1 small" aria-hidden="true"></i>
+                                    {{icon "sliders-h" "me-1 u-color-blue-soft"}}Advanced Options <span class="u-a11y-muted small">(optional)</span> {{icon "chevron-down" "ms-1 small"}}
                                 </button>
                                 <div class="collapse{{if .DKIMExpand}} show{{end}} mt-2" id="advancedOptions">
                                     <div class="row g-3">
                                         <div class="col-md-7">
-                                            <label for="dkim_selector1" class="form-label text-muted small mb-1"><i class="fas fa-key me-1 u-color-gold" aria-hidden="true"></i>DKIM Selectors</label>
+                                            <label for="dkim_selector1" class="form-label text-muted small mb-1">{{icon "key" "me-1 u-color-gold"}}DKIM Selectors</label>
                                             <div class="row g-2">
                                                 <div class="col-6">
                                                     <input type="text"
                                                            class="form-control form-control-sm bg-dark text-light border-secondary"
                                                            name="dkim_selector1"
                                                            id="dkim_selector1"
-                                                           aria-label="DKIM selector 1"
                                                            placeholder="e.g. selector1"
-                                                           autocomplete="off">
+                                                           autocomplete="off"
+                                                           autocapitalize="none"
+                                                           spellcheck="false">
                                                 </div>
                                                 <div class="col-6">
+                                                    <label for="dkim_selector2" class="visually-hidden">DKIM Selector 2</label>
                                                     <input type="text"
                                                            class="form-control form-control-sm bg-dark text-light border-secondary"
                                                            name="dkim_selector2"
                                                            id="dkim_selector2"
-                                                           aria-label="DKIM selector 2"
                                                            placeholder="e.g. 8452036334128736"
-                                                           autocomplete="off">
+                                                           autocomplete="off"
+                                                           autocapitalize="none"
+                                                           spellcheck="false">
                                                 </div>
                                             </div>
                                             <div class="form-text text-muted mt-1 u-fs-075em">
@@ -450,28 +465,29 @@
                                             </div>
                                         </div>
                                         <div class="col-md-5">
-                                            <label for="securitytrails_api_key" class="form-label text-muted small mb-1"><i class="fas fa-history me-1 u-color-info-alt" aria-hidden="true"></i>SecurityTrails API Key</label>
+                                            <label for="securitytrails_api_key" class="form-label text-muted small mb-1">{{icon "history" "me-1 u-color-info-alt"}}SecurityTrails API Key</label>
                                             <div class="input-group input-group-sm">
-                                                <span class="input-group-text bg-dark border-secondary text-muted" aria-hidden="true"><i class="fas fa-shield-alt"></i></span>
+                                                <span class="input-group-text bg-dark border-secondary text-muted" aria-hidden="true">{{icon "shield-alt"}}</span>
                                                 <input type="password"
                                                        class="form-control form-control-sm bg-dark text-light border-secondary"
                                                        name="securitytrails_api_key"
                                                        id="securitytrails_api_key"
                                                        placeholder="SecurityTrails API Key"
                                                        autocomplete="off"
+                                                       autocapitalize="none"
                                                        spellcheck="false">
                                             </div>
                                             <div class="form-text text-muted mt-1 u-fs-075em">
-                                                <i class="fas fa-lock me-1" aria-hidden="true"></i>Never stored. <a href="https://securitytrails.com/app/signup" target="_blank" rel="noopener" class="text-info">Get API key</a>
+                                                {{icon "lock" "me-1"}}Never stored. <a href="https://securitytrails.com/app/signup" target="_blank" rel="noopener" class="text-info">Get API key</a>
                                             </div>
                                         </div>
                                         <div class="col-12 mt-2">
                                             <div class="form-check">
                                                 <input type="checkbox" class="form-check-input" name="exposure_checks" id="exposure_checks" value="1">
                                                 <label class="form-check-label small text-muted" for="exposure_checks">
-                                                    <i class="fas fa-search me-1 u-color-gold" aria-hidden="true"></i><strong>Expanded Exposure Checks</strong>
+                                                    {{icon "search" "me-1 u-color-gold"}}<strong>Expanded Exposure Checks</strong>
                                                     <span class="d-block mt-1 u-fs-075em u-color-gray-400">
-                                                        Deeper reconnaissance &mdash; actively checks well-known misconfiguration paths (<code>/.env</code>, <code>/.git/config</code>, <code>/server-status</code>, etc.) on the target domain. These are publicly accessible URLs any browser could visit. <strong class="text-warning"><i class="fas fa-clock me-1" aria-hidden="true"></i>Adds extra scan time.</strong>
+                                                        Deeper reconnaissance &mdash; actively checks well-known misconfiguration paths (<code>/.env</code>, <code>/.git/config</code>, <code>/server-status</code>, etc.) on the target domain. These are publicly accessible URLs any browser could visit. <strong class="text-warning">{{icon "clock" "me-1"}}Adds extra scan time.</strong>
                                                     </span>
                                                 </label>
                                             </div>
@@ -480,7 +496,7 @@
                                             <div class="form-check">
                                                 <input type="checkbox" class="form-check-input" name="devnull" id="devnull" value="1">
                                                 <label class="form-check-label small text-muted" for="devnull">
-                                                    <i class="fas fa-terminal me-1 text-danger" aria-hidden="true"></i><strong>/dev/null Scan</strong>
+                                                    {{icon "terminal" "me-1 text-danger"}}<strong>/dev/null Scan</strong>
                                                     <span class="d-block mt-1 u-fs-075em u-color-gray-400">
                                                         Maximum intelligence, zero persistence. Automatically enables Expanded Exposure Checks for full reconnaissance. Nothing is written to our database &mdash; no history, no analytics, no statistics, no account association. Results exist only in this browser tab. Standard network activity (DNS queries, CT lookups) occurs normally.
                                                     </span>
@@ -498,7 +514,7 @@
             {{if .ICAEMetrics}}
             <div class="icae-hero-card mt-4 mb-3">
                 <a href="/confidence" class="icae-hero-statement" data-bs-toggle="tooltip" data-bs-placement="top" title="View Intelligence Confidence Audit Engine details">
-                    <i class="fas fa-satellite-dish"></i> Intelligence Confidence Level: <span class="icae-hero-maturity icae-level-{{if eq .ICAEMetrics.OverallMaturity "gold_master"}}gold-master{{else if eq .ICAEMetrics.OverallMaturity "development"}}dev{{else}}{{.ICAEMetrics.OverallMaturity}}{{end}}">{{.ICAEMetrics.OverallMaturityDisplay}}</span>
+                    {{icon "satellite-dish"}} Intelligence Confidence Level: <span class="icae-hero-maturity icae-level-{{if eq .ICAEMetrics.OverallMaturity "gold_master"}}gold-master{{else if eq .ICAEMetrics.OverallMaturity "development"}}dev{{else}}{{.ICAEMetrics.OverallMaturity}}{{end}}">{{.ICAEMetrics.OverallMaturityDisplay}}</span>
                 </a>
                 <div class="icae-hero-protocols">
                     <div class="d-flex flex-wrap justify-content-center gap-1">
@@ -509,11 +525,11 @@
                 </div>
                 <div class="icae-hero-protocols mt-1 u-hero-protocols-divider">
                     <div class="d-flex flex-wrap justify-content-center gap-2 align-items-center">
-                        <span class="text-muted small opacity-75"><i class="fas fa-clock me-1"></i>Currency Level:</span>
-                        <a href="/confidence#icuae" class="icuae-badge icuae-badge-{{if .ICuAEMetrics}}{{.ICuAEMetrics.AvgGrade}}{{else}}adequate{{end}}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Intelligence Currency Audit Engine — measures data timeliness per ICD 203, NIST SP 800-53 SI-18, ISO/IEC 25012">{{if .ICuAEMetrics}}{{.ICuAEMetrics.AvgGradeDisplay}} {{.ICuAEMetrics.AvgScoreDisplay}}{{else}}Currency Engine{{end}} <span class="icuae-dot"></span></a>
+                        <span class="text-muted small opacity-75">{{icon "clock" "me-1"}}Currency Level:</span>
+                        <a href="/confidence#icuae" class="icuae-badge icuae-badge-{{if .ICuAEMetrics}}{{.ICuAEMetrics.AvgGrade}}{{else}}adequate{{end}}" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Intelligence Currency Audit Engine — measures data timeliness per ICD 203, NIST SP 800-53 SI-7, ISO/IEC 25012">{{if .ICuAEMetrics}}{{.ICuAEMetrics.AvgGradeDisplay}} {{.ICuAEMetrics.AvgScoreDisplay}}{{else}}Currency Engine{{end}} <span class="icuae-dot"></span></a>
                         <span class="text-muted small opacity-50">|</span>
                         <a href="/confidence" class="text-muted text-decoration-none small" data-bs-toggle="tooltip" data-bs-placement="bottom" title="SHA-3-512 (NIST FIPS 202) integrity hashing on all exports">
-                            <i class="fas fa-fingerprint me-1"></i>SHA-3-512 Provenance
+                            {{icon "fingerprint" "me-1"}}SHA-3-512 Provenance
                         </a>
                     </div>
                 </div>
@@ -528,13 +544,13 @@
 
             <!-- Trust indicators -->
             <div class="text-center mt-4 hero-trust">
-                <span><i class="fas fa-bolt me-1" aria-hidden="true"></i> Live DNS, Real-Time Results</span>
+                <span>{{icon "bolt" "me-1"}} Live DNS, Real-Time Results</span>
                 <span class="trust-divider"></span>
-                <span><i class="fas fa-lock me-1" aria-hidden="true"></i> Analyze Without an Account</span>
+                <span>{{icon "lock" "me-1"}} Analyze Without an Account</span>
                 <span class="trust-divider"></span>
-                <span><i class="fas fa-globe me-1" aria-hidden="true"></i> Multi-Resolver Consensus</span>
+                <span>{{icon "globe" "me-1"}} Multi-Resolver Consensus</span>
                 <span class="trust-divider"></span>
-                <span><i class="fas fa-gavel me-1" aria-hidden="true"></i> RFC-Aligned OSINT Intelligence Analysis</span>
+                <span>{{icon "gavel" "me-1"}} RFC-Aligned OSINT Intelligence Analysis</span>
             </div>
         </div>
     </div>
@@ -547,7 +563,7 @@
                         <div class="card-body py-3 px-4">
                             <div class="d-flex align-items-center">
                                 <div class="me-3">
-                                    <i class="fas fa-sliders-h fa-2x text-info" aria-hidden="true"></i>
+                                    {{icon "sliders-h" "icon-2x text-brand-cobalt icon-premium"}}
                                 </div>
                                 <div class="flex-grow-1">
                                     <p class="mb-1 fw-semibold">Are your DNS TTLs costing you performance?</p>
@@ -555,7 +571,7 @@
                                 </div>
                                 <div class="ms-3">
                                     <a href="/ttl-tuner" class="btn btn-outline-info btn-sm text-nowrap">
-                                        <i class="fas fa-sliders-h me-1" aria-hidden="true"></i>TTL Tuner <span class="badge bg-warning text-dark ms-1 u-fs-065em-vmid">BETA</span>
+                                        {{icon "sliders-h" "me-1"}}TTL Tuner <span class="badge bg-warning text-dark ms-1 u-fs-065em-vmid">BETA</span>
                                     </a>
                                 </div>
                             </div>
@@ -573,7 +589,7 @@
                 <div class="col-md-6 col-lg-3">
                     <div class="feature-card">
                         <div class="feature-card-icon feature-card-icon--primary">
-                            <i class="fas fa-server" aria-hidden="true"></i>
+                            {{icon "server"}}
                         </div>
                         <h3 class="feature-card-title">DNS Records</h3>
                         <p class="feature-card-text">A, AAAA, MX, TXT, and NS records from multiple resolvers with multi-resolver consensus verification</p>
@@ -582,7 +598,7 @@
                 <div class="col-md-6 col-lg-3">
                     <div class="feature-card">
                         <div class="feature-card-icon feature-card-icon--success">
-                            <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                            {{icon "shield-alt"}}
                         </div>
                         <h3 class="feature-card-title">Email Authentication</h3>
                         <p class="feature-card-text">SPF, DMARC, and DKIM validation with key strength analysis, DANE/TLSA certificate pinning, MTA-STS enforcement, TLS-RPT reporting, and SMTP transport verification</p>
@@ -591,7 +607,7 @@
                 <div class="col-md-6 col-lg-3">
                     <div class="feature-card">
                         <div class="feature-card-icon feature-card-icon--info">
-                            <i class="fas fa-building" aria-hidden="true"></i>
+                            {{icon "building"}}
                         </div>
                         <h3 class="feature-card-title">Domain Intelligence</h3>
                         <p class="feature-card-text">Domain registration via RDAP, enterprise infrastructure detection, email security management provider identification, Certificate Transparency subdomain discovery, and DNS provider analysis</p>
@@ -600,7 +616,7 @@
                 <div class="col-md-6 col-lg-3">
                     <div class="feature-card">
                         <div class="feature-card-icon feature-card-icon--warning">
-                            <i class="fas fa-lock" aria-hidden="true"></i>
+                            {{icon "lock"}}
                         </div>
                         <h3 class="feature-card-title">Security Posture</h3>
                         <p class="feature-card-text">DNSSEC validation, DANE/TLSA verification, BIMI, CAA with MPIC context, DMARCbis readiness, graduated security posture scoring, and per-section remediation with RFC-cited fixes</p>
@@ -616,35 +632,35 @@
             <div class="row g-4 justify-content-center">
                 <div class="col-md-6 col-lg-4">
                     <div class="persona-card">
-                        <div class="persona-card-icon"><i class="fas fa-briefcase text-primary" aria-hidden="true"></i></div>
-                        <h3 class="persona-card-title text-primary">Executives & Board Members</h3>
+                        <div class="persona-card-icon">{{icon "briefcase" "text-brand-gold icon-premium-gold"}}</div>
+                        <h3 class="persona-card-title text-brand-gold">Executives & Board Members</h3>
                         <p class="persona-card-text">Clear CVSS-aligned risk levels (Critical / High / Medium / Low / Informational) that communicate cybersecurity posture at a glance. See whether email security is actively managed by professional providers or left unmonitored.</p>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-4">
                     <div class="persona-card">
-                        <div class="persona-card-icon"><i class="fas fa-laptop-code text-success" aria-hidden="true"></i></div>
+                        <div class="persona-card-icon">{{icon "laptop-code" "text-success"}}</div>
                         <h3 class="persona-card-title text-success">IT Professionals</h3>
                         <p class="persona-card-text">Validate SPF, DKIM, DMARC, and DANE/TLSA configurations. Check email authentication, verify DNSSEC, and troubleshoot DNS records across multiple resolvers.</p>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-4">
                     <div class="persona-card">
-                        <div class="persona-card-icon"><i class="fas fa-network-wired text-warning" aria-hidden="true"></i></div>
+                        <div class="persona-card-icon">{{icon "network-wired" "text-warning"}}</div>
                         <h3 class="persona-card-title text-warning">DNS Specialists</h3>
                         <p class="persona-card-text">Authoritative nameserver queries, multi-resolver consensus verification, DNSSEC chain validation, DANE/TLSA analysis, and enterprise DNS provider detection.</p>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-4">
                     <div class="persona-card">
-                        <div class="persona-card-icon"><i class="fas fa-briefcase text-info" aria-hidden="true"></i></div>
-                        <h3 class="persona-card-title text-info">Risk & Compliance</h3>
+                        <div class="persona-card-icon">{{icon "briefcase" "text-brand-violet icon-premium-violet"}}</div>
+                        <h3 class="persona-card-title text-brand-violet">Risk & Compliance</h3>
                         <p class="persona-card-text">Verify your domain can't be impersonated. Identify who manages your DMARC monitoring and SPF. Assess brand protection with BIMI. Audit-supporting evidence artifacts &mdash; SHA-3 integrity hashing, RFC-cited findings, and reproducible verification commands for cyber insurance and compliance workflows.</p>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-4">
                     <div class="persona-card">
-                        <div class="persona-card-icon"><i class="fas fa-terminal text-danger" aria-hidden="true"></i></div>
+                        <div class="persona-card-icon">{{icon "terminal" "text-danger"}}</div>
                         <h3 class="persona-card-title text-danger">Security Researchers & Red Teams</h3>
                         <p class="persona-card-text">OSINT-grade DNS recon, multi-layer subdomain discovery, and attack surface enumeration with verifiable evidence. Built for reconnaissance, threat modeling, and security assessments. CLI edition on the roadmap.</p>
                     </div>
@@ -659,20 +675,20 @@
                         <div class="dri-accent-bar"></div>
                         <div class="dri-body">
                             <div class="dri-header">
-                                <span class="dri-badge"><i class="fas fa-crosshairs me-1" aria-hidden="true"></i>Intelligence Brief</span>
+                                <span class="dri-badge">{{icon "crosshairs" "me-1"}}Intelligence Brief</span>
                                 <h3 class="dri-title">Decision-Ready Intelligence</h3>
                                 <p class="dri-subtitle">Every section of your report opens with a plain-language strategic question &mdash; answered with a data-driven verdict before the technical detail begins.</p>
                             </div>
                             <div class="dri-question-block">
-                                <span class="dri-question-label"><i class="fas fa-shield-alt me-1" aria-hidden="true"></i>The Big Question</span>
+                                <span class="dri-question-label">{{icon "shield-alt" "me-1"}}The Big Question</span>
                                 <span class="dri-question-text dt-question">Can this domain be impersonated by email?</span>
                                 <span class="dri-question-answer"><span class="badge bg-danger me-1">YES</span> DMARC is monitor-only (p=none)</span>
                             </div>
                             <div class="dri-examples">
-                                <div class="dri-example"><i class="fas fa-angle-right me-1 text-info" aria-hidden="true"></i>Are spoofed emails rejected or quarantined?</div>
-                                <div class="dri-example"><i class="fas fa-angle-right me-1 text-info" aria-hidden="true"></i>Can attackers downgrade SMTP to intercept mail?</div>
-                                <div class="dri-example"><i class="fas fa-angle-right me-1 text-info" aria-hidden="true"></i>Can this brand be convincingly faked?</div>
-                                <div class="dri-example"><i class="fas fa-angle-right me-1 text-info" aria-hidden="true"></i>Can DNS responses be tampered with in transit?</div>
+                                <div class="dri-example">{{icon "angle-right" "me-1 text-brand-steel"}}Are spoofed emails rejected or quarantined?</div>
+                                <div class="dri-example">{{icon "angle-right" "me-1 text-brand-steel"}}Can attackers downgrade SMTP to intercept mail?</div>
+                                <div class="dri-example">{{icon "angle-right" "me-1 text-brand-steel"}}Can this brand be convincingly faked?</div>
+                                <div class="dri-example">{{icon "angle-right" "me-1 text-brand-steel"}}Can DNS responses be tampered with in transit?</div>
                             </div>
                             <p class="dri-footer">Raw DNS data tells you <em>what</em> exists. Decision-ready intelligence tells you <em>what it means</em> and <em>why it matters</em>.</p>
                         </div>
@@ -687,25 +703,25 @@
                     <div class="card bg-dark border-secondary">
                         <div class="card-body py-4 px-4">
                             <div class="text-center mb-3">
-                                <h2 class="h5 mb-0"><i class="fas fa-compass me-2 text-info" aria-hidden="true"></i>Our Mission</h2>
+                                <h2 class="h5 mb-0">{{icon "compass" "me-2 icon-premium-gold"}}Our Mission</h2>
                             </div>
                             <p class="text-center text-muted mb-3">Produce actionable domain security intelligence from publicly observable data &mdash; transparently, independently verifiably, and without requiring authorization from or interaction with the target.</p>
                             <div class="row g-3 text-center">
                                 <div class="col-md-4">
                                     <div class="p-2">
-                                        <i class="fas fa-layer-group text-info mb-2 fa-lg" aria-hidden="true"></i>
+                                        {{icon "layer-group" "text-brand-cobalt mb-2 icon-lg icon-premium"}}
                                         <p class="small text-muted mb-0"><strong class="text-light">Multi-Source Collection</strong><br>Redundant public sources, cross-referenced and corroborated. No single source is sufficient.</p>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="p-2">
-                                        <i class="fas fa-check-double text-info mb-2 fa-lg" aria-hidden="true"></i>
+                                        {{icon "check-double" "text-brand-cobalt mb-2 icon-lg icon-premium"}}
                                         <p class="small text-muted mb-0"><strong class="text-light">Independently Verifiable</strong><br>Every conclusion reproducible with standard tools. <code>dig</code>, <code>openssl</code>, <code>curl</code> &mdash; verify it yourself.</p>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="p-2">
-                                        <i class="fas fa-shield-halved text-info mb-2 fa-lg" aria-hidden="true"></i>
+                                        {{icon "shield-halved" "text-brand-cobalt mb-2 icon-lg icon-premium"}}
                                         <p class="small text-muted mb-0"><strong class="text-light">Passive OSINT Only</strong><br>We read public data and produce intelligence. No exploitation, no authorization required.</p>
                                     </div>
                                 </div>
@@ -715,33 +731,6 @@
                 </div>
             </div>
         </section>
-
-        {{if .Changelog}}
-        <section class="mt-5 mb-4" id="whats-new">
-            <h2 class="section-heading text-center mb-2"><i class="fas fa-bolt me-2" aria-hidden="true"></i>Changelog</h2>
-            <p class="text-center text-muted mb-4">Recent improvements to analysis accuracy, transparency, and intelligence depth</p>
-            <div class="row g-3">
-                {{range .Changelog}}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card bg-dark border-secondary h-100 {{if .IsIncident}}changelog-card-incident{{end}}">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="{{.Icon}} {{if .IsIncident}}text-warning{{else}}text-info{{end}} me-2"></i>
-                                <span class="badge changelog-badge changelog-badge-{{.Category | lower}} me-2 u-fs-065rem">{{.Category}}</span>
-                                <span class="text-muted small ms-auto">{{.Date}}</span>
-                            </div>
-                            <p class="card-title mb-1 fw-semibold">{{.Title}}</p>
-                            <p class="card-text text-muted small mb-0">{{.Description}}</p>
-                        </div>
-                    </div>
-                </div>
-                {{end}}
-            </div>
-            <div class="text-center mt-3">
-                <a href="/changelog" class="btn btn-outline-info btn-sm"><i class="fas fa-history me-1" aria-hidden="true"></i>View All Updates</a>
-            </div>
-        </section>
-        {{end}}
 
         <!-- FAQ Section -->
         <div class="row mt-4 mb-5">
@@ -818,7 +807,7 @@
                         </h3>
                         <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                             <div class="accordion-body text-muted small">
-                                No account is required to run any analysis. Paste a domain, click Analyze, and get your intelligence report immediately. Optional Google sign-in is available for scan history and premium features. We don&rsquo;t collect tracking cookies and marketing messages are opt-in only. Every analysis queries DNS records in real-time from multiple resolvers (Cloudflare, Google, Quad9, OpenDNS, DNS4EU) to provide the most current data available to public resolvers. Built by <a href="https://www.it-help.tech" target="_blank" rel="noopener" class="text-info">IT Help San Diego Inc.</a>&mdash;a San Diego-based IT consultancy providing remote DNS configuration and troubleshooting, email deliverability consulting, and network security for organizations worldwide. Our team offers on-demand support without retainers or contracts.
+                                No account is required to run any analysis. Paste a domain, click Analyze, and get your intelligence report immediately. Optional Google sign-in unlocks personal features like scan history, watchlists, and domain dossiers. We don&rsquo;t collect tracking cookies and marketing messages are opt-in only. Every analysis queries DNS records in real-time from multiple resolvers (Cloudflare, Google, Quad9, OpenDNS, DNS4EU) to provide the most current data available to public resolvers. Built by <a href="https://www.it-help.tech" target="_blank" rel="noopener" class="text-info">IT Help San Diego Inc.</a>&mdash;a San Diego-based IT consultancy providing remote DNS configuration and troubleshooting, email deliverability consulting, and network security for organizations worldwide. Our team offers on-demand support without retainers or contracts.
                             </div>
                         </div>
                     </div>
@@ -984,11 +973,11 @@
     </div>
     </main>
 
-    <output id="loadingOverlay" class="loading-overlay" aria-live="polite" aria-busy="true" aria-label="Running domain analysis">
+    <output id="loadingOverlay" class="loading-overlay" aria-live="polite" aria-busy="true">
         <div class="loading-content">
             <div class="loading-spinner" aria-hidden="true">
-                <i class="fas fa-globe fa-spin covert-hide" aria-hidden="true"></i>
-                <i class="fas fa-crosshairs fa-spin covert-show" aria-hidden="true"></i>
+                {{icon "globe" "icon-spin covert-hide"}}
+                {{icon "crosshairs" "icon-spin covert-show"}}
             </div>
             <output class="mt-4 mb-2 h4 covert-hide">Running Multi-Source Intelligence Audit</output>
             <output class="mt-4 mb-2 h4 covert-show">Initiating Recon Sweep</output>
@@ -999,47 +988,66 @@
             <div class="loading-dots mt-2" aria-hidden="true">
                 <span></span><span></span><span></span>
             </div>
-            <div class="scan-checklist mt-3" id="scanChecklist" aria-hidden="true">
-                <div class="scan-phase" data-delay="0">
-                    <i class="fas fa-circle-notch fa-spin scan-icon scan-pending" aria-hidden="true"></i>
-                    <span class="covert-hide">DNS records &mdash; Cloudflare, Google, Quad9, OpenDNS, DNS4EU</span>
-                    <span class="covert-show">Enumerating DNS across 5 resolvers&hellip;</span>
-                </div>
-                <div class="scan-phase" data-delay="1200">
-                    <i class="fas fa-circle-notch fa-spin scan-icon scan-pending" aria-hidden="true"></i>
-                    <span class="covert-hide">Email auth &mdash; SPF, DMARC, DKIM selectors</span>
-                    <span class="covert-show">Probing email spoofability &mdash; SPF, DMARC, DKIM</span>
-                </div>
-                <div class="scan-phase" data-delay="2500">
-                    <i class="fas fa-circle-notch fa-spin scan-icon scan-pending" aria-hidden="true"></i>
-                    <span class="covert-hide">DNSSEC chain of trust &amp; DANE/TLSA</span>
-                    <span class="covert-show">Testing DNS poison resistance &mdash; DNSSEC, DANE</span>
-                </div>
-                <div class="scan-phase" data-delay="3500">
-                    <i class="fas fa-circle-notch fa-spin scan-icon scan-pending" aria-hidden="true"></i>
-                    <span class="covert-hide">Certificate Transparency &amp; subdomain discovery</span>
-                    <span class="covert-show">Harvesting subdomains from CT logs&hellip;</span>
-                </div>
-                <div class="scan-phase" data-delay="5000">
-                    <i class="fas fa-circle-notch fa-spin scan-icon scan-pending" aria-hidden="true"></i>
-                    <span class="covert-hide">SMTP transport &amp; STARTTLS verification</span>
-                    <span class="covert-show">Fingerprinting SMTP &amp; checking downgrade paths</span>
-                </div>
-                <div class="scan-phase" data-delay="7000">
-                    <i class="fas fa-circle-notch fa-spin scan-icon scan-pending" aria-hidden="true"></i>
-                    <span class="covert-hide">MTA-STS, TLS-RPT, BIMI, CAA</span>
-                    <span class="covert-show">Checking policy enforcement &mdash; MTA-STS, CAA, BIMI</span>
-                </div>
-                <div class="scan-phase" data-delay="9000">
-                    <i class="fas fa-circle-notch fa-spin scan-icon scan-pending" aria-hidden="true"></i>
-                    <span class="covert-hide">Registrar &amp; infrastructure analysis</span>
-                    <span class="covert-show">Mapping registrar &amp; infrastructure footprint</span>
-                </div>
-                <div class="scan-phase" data-delay="12000">
-                    <i class="fas fa-circle-notch fa-spin scan-icon scan-pending" aria-hidden="true"></i>
-                    <span class="covert-hide">Classifying &amp; Interpreting Intelligence</span>
-                    <span class="covert-show">Correlating attack surface&hellip;</span>
-                </div>
+            <div class="scan-topology mt-3" id="scanTopology" aria-hidden="true">
+                <svg viewBox="0 0 440 280" width="440" height="280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Scan progress topology">
+                    <style>
+                        .topo-node { fill: #2d333b; stroke: #444c56; stroke-width: 1.5; transition: fill 0.4s, stroke 0.4s; }
+                        .topo-label { fill: #8b949e; font-size: 10px; font-family: system-ui, sans-serif; text-anchor: middle; transition: fill 0.4s; }
+                        .topo-dur { fill: #8b949e; font-size: 9px; font-family: monospace; text-anchor: middle; opacity: 0; transition: opacity 0.3s; }
+                        .topo-node.phase-running { stroke: #4a8fe7; animation: topo-pulse 1.2s ease-in-out infinite; }
+                        .topo-node.phase-done { fill: #4a8fe7; stroke: #6cb0f7; }
+                        .topo-node.phase-done + text { fill: #c9d1d9; }
+                        .topo-dur.visible { opacity: 1; }
+                        @keyframes topo-pulse { 0%, 100% { fill: #2d333b; } 50% { fill: #1a3a5c; } }
+                        .topo-connector { stroke: #444c56; stroke-width: 1; stroke-dasharray: 3,3; opacity: 0.5; }
+                    </style>
+                    <line x1="220" y1="55" x2="60" y2="110" class="topo-connector"/>
+                    <line x1="220" y1="55" x2="160" y2="110" class="topo-connector"/>
+                    <line x1="220" y1="55" x2="280" y2="110" class="topo-connector"/>
+                    <line x1="220" y1="55" x2="380" y2="110" class="topo-connector"/>
+                    <line x1="60" y1="110" x2="60" y2="180" class="topo-connector"/>
+                    <line x1="160" y1="110" x2="160" y2="180" class="topo-connector"/>
+                    <line x1="280" y1="110" x2="280" y2="180" class="topo-connector"/>
+                    <line x1="380" y1="110" x2="380" y2="180" class="topo-connector"/>
+                    <line x1="60" y1="180" x2="220" y2="240" class="topo-connector"/>
+                    <line x1="160" y1="180" x2="220" y2="240" class="topo-connector"/>
+                    <line x1="280" y1="180" x2="220" y2="240" class="topo-connector"/>
+                    <line x1="380" y1="180" x2="220" y2="240" class="topo-connector"/>
+
+                    <rect x="180" y="20" width="80" height="35" rx="6" class="topo-node" data-phase="dns_records"/>
+                    <text x="220" y="42" class="topo-label">DNS Records</text>
+                    <text x="220" y="54" class="topo-dur" data-dur="dns_records"></text>
+
+                    <rect x="20" y="90" width="80" height="35" rx="6" class="topo-node" data-phase="email_auth"/>
+                    <text x="60" y="112" class="topo-label">Email Auth</text>
+                    <text x="60" y="124" class="topo-dur" data-dur="email_auth"></text>
+
+                    <rect x="120" y="90" width="80" height="35" rx="6" class="topo-node" data-phase="dnssec_dane"/>
+                    <text x="160" y="112" class="topo-label">DNSSEC/DANE</text>
+                    <text x="160" y="124" class="topo-dur" data-dur="dnssec_dane"></text>
+
+                    <rect x="240" y="90" width="80" height="35" rx="6" class="topo-node" data-phase="ct_subdomains"/>
+                    <text x="280" y="112" class="topo-label">CT/Subdomains</text>
+                    <text x="280" y="124" class="topo-dur" data-dur="ct_subdomains"></text>
+
+                    <rect x="340" y="90" width="80" height="35" rx="6" class="topo-node" data-phase="smtp_transport"/>
+                    <text x="380" y="112" class="topo-label">SMTP</text>
+                    <text x="380" y="124" class="topo-dur" data-dur="smtp_transport"></text>
+
+                    <rect x="20" y="160" width="80" height="35" rx="6" class="topo-node" data-phase="policy_records"/>
+                    <text x="60" y="182" class="topo-label">Policy Records</text>
+                    <text x="60" y="194" class="topo-dur" data-dur="policy_records"></text>
+
+                    <rect x="120" y="160" width="80" height="35" rx="6" class="topo-node" data-phase="registrar_infra"/>
+                    <text x="160" y="182" class="topo-label">Registrar</text>
+                    <text x="160" y="194" class="topo-dur" data-dur="registrar_infra"></text>
+
+                    <rect x="180" y="225" width="80" height="35" rx="6" class="topo-node" data-phase="analysis_engine"/>
+                    <text x="220" y="247" class="topo-label">Analysis</text>
+                    <text x="220" y="259" class="topo-dur" data-dur="analysis_engine"></text>
+                </svg>
+            </div>
+            <div class="scan-checklist mt-3 d-none" id="scanChecklist" aria-hidden="true">
             </div>
             <p class="text-muted small mt-3 mb-0 u-maxw-440-fadein covert-hide" id="loadingNote">
                 Every result includes terminal commands you can run to independently verify the underlying data. No proprietary magic.
@@ -1056,8 +1064,8 @@
                 const ttList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
                 ttList.forEach(function(el) { el._bsTooltip = new bootstrap.Tooltip(el); });
             }
-            if (typeof bootstrap !== 'undefined') { initTooltips(); }
-            else { globalThis.addEventListener('load', initTooltips); }
+            if (typeof bootstrap === 'undefined') { globalThis.addEventListener('load', initTooltips); }
+            else { initTooltips(); }
             if (new URLSearchParams(globalThis.location.search).has('dkim')) {
                 const sel1 = document.querySelector('input[name="dkim_selector1"]');
                 if (sel1) { sel1.focus(); }
@@ -1071,7 +1079,7 @@
             }
             const analyzeBtn = document.getElementById('analyzeBtn');
             if (analyzeBtn && analyzeBtn.dataset.waitSeconds) {
-                const waitSeconds = Number.parseInt(analyzeBtn.dataset.waitSeconds, 10);
+                let waitSeconds = Number.parseInt(analyzeBtn.dataset.waitSeconds, 10);
                 const originalHTML = analyzeBtn.innerHTML;
                 
                 if (waitSeconds > 0) {
@@ -1079,7 +1087,7 @@
                     
                     function updateCountdown() {
                         if (waitSeconds > 0) {
-                            analyzeBtn.innerHTML = '<i class="fas fa-clock me-2"></i>Ready in ' + waitSeconds + 's';
+                            analyzeBtn.innerHTML = '{{icon "clock" "me-2"}}Ready in ' + waitSeconds + 's';
                             waitSeconds--;
                             setTimeout(updateCountdown, 1000);
                         } else {

@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny plumbing
 package telemetry
 
 import (
@@ -8,12 +9,12 @@ import (
 )
 
 type CacheStats struct {
-	Name     string `json:"name"`
-	Size     int    `json:"size"`
-	MaxSize  int    `json:"max_size"`
-	Hits     int64  `json:"hits"`
-	Misses   int64  `json:"misses"`
-	HitRate  string `json:"hit_rate"`
+	Name    string `json:"name"`
+	Size    int    `json:"size"`
+	MaxSize int    `json:"max_size"`
+	Hits    int64  `json:"hits"`
+	Misses  int64  `json:"misses"`
+	HitRate string `json:"hit_rate"`
 }
 
 type cacheEntry[V any] struct {
@@ -22,13 +23,13 @@ type cacheEntry[V any] struct {
 }
 
 type TTLCache[V any] struct {
-	mu       sync.RWMutex
-	name     string
-	items    map[string]cacheEntry[V]
-	maxSize  int
-	ttl      time.Duration
-	hits     int64
-	misses   int64
+	mu      sync.RWMutex
+	name    string
+	items   map[string]cacheEntry[V]
+	maxSize int
+	ttl     time.Duration
+	hits    int64
+	misses  int64
 }
 
 func NewTTLCache[V any](name string, maxSize int, ttl time.Duration) *TTLCache[V] {

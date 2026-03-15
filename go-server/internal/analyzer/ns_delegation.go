@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny science
 package analyzer
 
 import (
@@ -10,8 +11,8 @@ import (
 )
 
 const (
-        mapKeyEnterpriseDetail = "enterprise_detail"
-        mapKeyEnterpriseLabel = "enterprise_label"
+        mapKeyEnterpriseDetail  = "enterprise_detail"
+        mapKeyEnterpriseLabel   = "enterprise_label"
         mapKeyEnterprisePattern = "enterprise_pattern"
 )
 
@@ -170,48 +171,48 @@ func registrableDomain(domain string) string {
         return strings.Join(parts[len(parts)-2:], ".")
 }
 
-func classifyEnterpriseDNS(domain string, nameservers []string) map[string]any {
-        if len(nameservers) == 0 {
-                return nil
-        }
+type nsClassification struct {
+        dedicated   int
+        managed     int
+        providers   map[string]int
+        dedicatedNS []string
+        managedNS   []string
+}
 
-        domainBase := registrableDomain(domain)
-
-        dedicated := 0
-        managed := 0
-        providers := map[string]int{}
-        dedicatedNS := []string{}
-        managedNS := []string{}
-
+func classifyNameservers(nameservers []string, domainBase string) nsClassification {
+        c := nsClassification{providers: map[string]int{}}
         for _, ns := range nameservers {
                 provider := classifyNSProvider(ns)
                 if provider != "" {
-                        managed++
-                        providers[provider]++
-                        managedNS = append(managedNS, ns)
+                        c.managed++
+                        c.providers[provider]++
+                        c.managedNS = append(c.managedNS, ns)
                 } else if domainBase != "" && strings.HasSuffix(strings.ToLower(ns), "."+domainBase) {
-                        dedicated++
-                        dedicatedNS = append(dedicatedNS, ns)
+                        c.dedicated++
+                        c.dedicatedNS = append(c.dedicatedNS, ns)
                 } else {
-                        managed++
-                        managedNS = append(managedNS, ns)
+                        c.managed++
+                        c.managedNS = append(c.managedNS, ns)
                 }
         }
+        return c
+}
 
+func determineEnterprisePattern(c nsClassification, total int, domainBase string) map[string]any {
         result := map[string]any{}
-        total := len(nameservers)
-
-        if dedicated > 0 && managed > 0 {
+        if c.dedicated > 0 && c.managed > 0 {
                 result[mapKeyEnterprisePattern] = "mixed"
                 result[mapKeyEnterpriseLabel] = "Enterprise DNS (Mixed Configuration)"
                 result[mapKeyEnterpriseDetail] = fmt.Sprintf(
                         "%d of %d nameservers are dedicated (%s-branded), %d use external provider(s). "+
                                 "This pattern is common in large organizations using split-horizon DNS or "+
                                 "maintaining redundancy across internal and external infrastructure.",
-                        dedicated, total, domainBase, managed)
-                result["dedicated_ns"] = dedicatedNS
-                result["managed_ns"] = managedNS
-        } else if dedicated == total {
+                        c.dedicated, total, domainBase, c.managed)
+                result["dedicated_ns"] = c.dedicatedNS
+                result["managed_ns"] = c.managedNS
+                return result
+        }
+        if c.dedicated == total {
                 result[mapKeyEnterprisePattern] = "dedicated"
                 result[mapKeyEnterpriseLabel] = "Enterprise DNS (Dedicated Infrastructure)"
                 result[mapKeyEnterpriseDetail] = fmt.Sprintf(
@@ -219,20 +220,20 @@ func classifyEnterpriseDNS(domain string, nameservers []string) map[string]any {
                                 "This is typical of large enterprises, government agencies, and organizations "+
                                 "that maintain full control of their DNS resolution chain.",
                         total, domainBase)
-        } else if len(providers) > 1 {
-                providerNames := []string{}
-                for p := range providers {
-                        providerNames = append(providerNames, p)
-                }
-                sort.Strings(providerNames)
+                return result
+        }
+        if len(c.providers) > 1 {
+                providerNames := sortedProviderNames(c.providers)
                 result[mapKeyEnterprisePattern] = "multi-provider"
                 result[mapKeyEnterpriseLabel] = "Enterprise DNS (Multi-Provider Redundancy)"
                 result[mapKeyEnterpriseDetail] = fmt.Sprintf(
                         "Nameservers span %d providers (%s). Multi-provider DNS provides resilience "+
                                 "against single-provider outages — an enterprise best practice for critical domains.",
-                        len(providers), strings.Join(providerNames, ", "))
-        } else if len(providers) == 1 {
-                for p := range providers {
+                        len(c.providers), strings.Join(providerNames, ", "))
+                return result
+        }
+        if len(c.providers) == 1 {
+                for p := range c.providers {
                         result[mapKeyEnterprisePattern] = "managed"
                         result[mapKeyEnterpriseLabel] = "Managed DNS"
                         result[mapKeyEnterpriseDetail] = fmt.Sprintf(
@@ -241,13 +242,29 @@ func classifyEnterpriseDNS(domain string, nameservers []string) map[string]any {
                                 total, p)
                 }
         }
+        return result
+}
 
-        if len(providers) > 0 {
-                providerList := []string{}
-                for p := range providers {
-                        providerList = append(providerList, p)
-                }
-                sort.Strings(providerList)
+func sortedProviderNames(providers map[string]int) []string {
+        names := make([]string, 0, len(providers))
+        for p := range providers {
+                names = append(names, p)
+        }
+        sort.Strings(names)
+        return names
+}
+
+func classifyEnterpriseDNS(domain string, nameservers []string) map[string]any {
+        if len(nameservers) == 0 {
+                return nil
+        }
+
+        domainBase := registrableDomain(domain)
+        c := classifyNameservers(nameservers, domainBase)
+        result := determineEnterprisePattern(c, len(nameservers), domainBase)
+
+        if len(c.providers) > 0 {
+                providerList := sortedProviderNames(c.providers)
                 result["dns_providers"] = providerList
         }
 

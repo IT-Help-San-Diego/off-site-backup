@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny plumbing
 package middleware
 
 import (
@@ -19,8 +20,7 @@ const (
         RateLimitMaxRequests = 8
         AntiRepeatWindow     = 15
 
-
-        mapKeyReason = "reason"
+        mapKeyReason      = "reason"
         mapKeyWaitSeconds = "wait_seconds"
 )
 
@@ -177,60 +177,81 @@ func AnalyzeRateLimit(limiter RateLimiter) gin.HandlerFunc {
                 result := limiter.CheckAndRecord(clientIP, domain)
 
                 if !result.Allowed {
-                        traceID, _ := c.Get(ginKeyTraceID)
-                        slog.Info("Rate limit triggered",
-                                ginKeyTraceID, traceID,
-                                "ip", clientIP,
-                                "domain", domain,
-                                mapKeyReason, result.Reason,
-                                mapKeyWaitSeconds, result.WaitSeconds,
-                        )
-
-                        var msg string
-                        switch result.Reason {
-                        case "rate_limit":
-                                msg = fmt.Sprintf("Rate limit reached. Please wait %d seconds before trying again.", result.WaitSeconds)
-                        case "anti_repeat":
-                                msg = fmt.Sprintf("This domain was recently analyzed. Please wait %d seconds before re-analyzing.", result.WaitSeconds)
-                        }
-
-                        if c.GetHeader("Accept") == "application/json" {
-                                c.JSON(http.StatusTooManyRequests, gin.H{
-                                        "error":        msg,
-                                        mapKeyReason:       result.Reason,
-                                        mapKeyWaitSeconds: result.WaitSeconds,
-                                })
-                        } else {
-                                http.SetCookie(c.Writer, &http.Cookie{
-                                        Name:     "flash_message",
-                                        Value:    msg,
-                                        Path:     "/",
-                                        MaxAge:   10,
-                                        HttpOnly: true,
-                                        Secure:   true,
-                                        SameSite: http.SameSiteStrictMode,
-                                })
-                                http.SetCookie(c.Writer, &http.Cookie{
-                                        Name:     "flash_category",
-                                        Value:    "warning",
-                                        Path:     "/",
-                                        MaxAge:   10,
-                                        HttpOnly: true,
-                                        Secure:   true,
-                                        SameSite: http.SameSiteStrictMode,
-                                })
-                                redirectTo := "/"
-                                if ref := c.Request.Referer(); ref != "" {
-                                        if u, err := url.Parse(ref); err == nil && u.Path != "" {
-                                                redirectTo = u.Path
-                                        }
-                                }
-                                c.Redirect(http.StatusSeeOther, redirectTo)
-                        }
+                        logRateLimitTriggered(c, clientIP, domain, result)
+                        respondRateLimited(c, result)
                         c.Abort()
                         return
                 }
 
                 c.Next()
         }
+}
+
+func logRateLimitTriggered(c *gin.Context, clientIP, domain string, result RateLimitResult) {
+        traceID, _ := c.Get(ginKeyTraceID) //nolint:errcheck // value used for logging only
+        slog.Info("Rate limit triggered",
+                ginKeyTraceID, traceID,
+                "ip", clientIP,
+                "domain", domain,
+                mapKeyReason, result.Reason,
+                mapKeyWaitSeconds, result.WaitSeconds,
+        )
+}
+
+func rateLimitMessage(result RateLimitResult) string {
+        switch result.Reason {
+        case "rate_limit":
+                return fmt.Sprintf("Rate limit reached. Please wait %d seconds before trying again.", result.WaitSeconds)
+        case "anti_repeat":
+                return fmt.Sprintf("This domain was recently analyzed. Please wait %d seconds before re-analyzing.", result.WaitSeconds)
+        default:
+                return fmt.Sprintf("Please wait %d seconds before trying again.", result.WaitSeconds)
+        }
+}
+
+func respondRateLimited(c *gin.Context, result RateLimitResult) {
+        msg := rateLimitMessage(result)
+        if c.GetHeader("Accept") == "application/json" {
+                c.JSON(http.StatusTooManyRequests, gin.H{
+                        "error":           msg,
+                        mapKeyReason:      result.Reason,
+                        mapKeyWaitSeconds: result.WaitSeconds,
+                })
+                return
+        }
+        setFlashCookies(c, msg)
+        c.Redirect(http.StatusSeeOther, safeRefererPath(c))
+}
+
+func setFlashCookies(c *gin.Context, msg string) {
+        http.SetCookie(c.Writer, &http.Cookie{
+                Name:     "flash_message",
+                Value:    msg,
+                Path:     "/",
+                MaxAge:   10,
+                HttpOnly: true,
+                Secure:   true,
+                SameSite: http.SameSiteStrictMode,
+        })
+        http.SetCookie(c.Writer, &http.Cookie{
+                Name:     "flash_category",
+                Value:    "warning",
+                Path:     "/",
+                MaxAge:   10,
+                HttpOnly: true,
+                Secure:   true,
+                SameSite: http.SameSiteStrictMode,
+        })
+}
+
+func safeRefererPath(c *gin.Context) string {
+        ref := c.Request.Referer()
+        if ref == "" {
+                return "/"
+        }
+        u, err := url.Parse(ref)
+        if err != nil || u.Path == "" || !strings.HasPrefix(u.Path, "/") || strings.Contains(u.Path, "//") {
+                return "/"
+        }
+        return u.Path
 }

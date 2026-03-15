@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny science
 package analyzer
 
 import (
@@ -11,7 +12,6 @@ import (
 	"sync"
 	"time"
 )
-
 
 type IPInfoResult struct {
 	IP       string `json:"ip"`
@@ -70,7 +70,7 @@ func FetchIPInfo(ctx context.Context, ip, token string) (*IPInfoResult, error) {
 		slog.Warn("IPInfo: request failed", "ip", ip, mapKeyError, err)
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer safeClose(resp.Body, "ipinfo")
 
 	if resp.StatusCode == http.StatusTooManyRequests {
 		slog.Warn("IPInfo: rate limited (429)", "ip", ip)

@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny design
 package handlers
 
 import (
@@ -17,7 +18,6 @@ const (
         headerContentType  = "Content-Type"
         headerCacheControl = "Cache-Control"
         cachePublicDay     = "public, max-age=86400"
-
 
         mapKeyMonthly = "monthly"
         mapKeyWeekly  = "weekly"
@@ -91,6 +91,13 @@ func (h *StaticHandler) MethodologyPDF(c *gin.Context) {
         c.File(filepath.Join(h.StaticDir, "docs", "dns-tool-methodology.pdf"))
 }
 
+func (h *StaticHandler) FoundationsPDF(c *gin.Context) {
+        c.Header(headerContentType, "application/pdf")
+        c.Header(headerCacheControl, cachePublicDay)
+        c.Header("Content-Disposition", "inline; filename=\"philosophical-foundations.pdf\"")
+        c.File(filepath.Join(h.StaticDir, "docs", "philosophical-foundations.pdf"))
+}
+
 func (h *StaticHandler) SitemapXML(c *gin.Context) {
         today := time.Now().Format("2006-01-02")
 
@@ -103,12 +110,18 @@ func (h *StaticHandler) SitemapXML(c *gin.Context) {
                 {h.BaseURL + "/investigate", mapKeyWeekly, sitemapPriorityHigh},
                 {h.BaseURL + "/email-header", mapKeyWeekly, sitemapPriorityHigh},
                 {h.BaseURL + "/toolkit", mapKeyWeekly, sitemapPriorityHigh},
+                {h.BaseURL + "/about", mapKeyMonthly, sitemapPriorityMedium},
                 {h.BaseURL + "/sources", mapKeyMonthly, sitemapPriorityMedium},
                 {h.BaseURL + "/history", "daily", sitemapPriorityMedium},
                 {h.BaseURL + "/stats", "daily", sitemapPriorityLow},
                 {h.BaseURL + "/approach", mapKeyMonthly, sitemapPriorityMedium},
+                {h.BaseURL + "/confidence", mapKeyMonthly, sitemapPriorityMedium},
                 {h.BaseURL + "/roadmap", mapKeyWeekly, sitemapPriorityLow},
                 {h.BaseURL + "/architecture", mapKeyMonthly, sitemapPriorityLow},
+                {h.BaseURL + "/topology", mapKeyMonthly, sitemapPriorityLow},
+                {h.BaseURL + "/ttl-tuner", mapKeyMonthly, sitemapPriorityLow},
+                {h.BaseURL + "/ede", mapKeyMonthly, sitemapPriorityLow},
+                {h.BaseURL + "/roe", mapKeyMonthly, sitemapPriorityLow},
                 {h.BaseURL + "/security-policy", mapKeyMonthly, "0.4"},
                 {h.BaseURL + "/changelog", mapKeyMonthly, "0.3"},
         }

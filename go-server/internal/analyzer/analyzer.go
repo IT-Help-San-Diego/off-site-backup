@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny science
 package analyzer
 
 import (
@@ -25,14 +26,15 @@ type ProbeEndpoint struct {
 }
 
 type Analyzer struct {
-        DNS        DNSQuerier
-        HTTP       HTTPClient
-        SlowHTTP   HTTPClient
-        RDAPHTTP   HTTPClient
+        DNS         DNSQuerier
+        HTTP        HTTPClient
+        SlowHTTP    HTTPClient
+        RDAPHTTP    HTTPClient
         IANARDAPMap map[string][]string
-        ianaMu     sync.RWMutex
-        Telemetry  *telemetry.Registry
-        RDAPCache  *telemetry.TTLCache[map[string]any]
+        ianaMu      sync.RWMutex
+        Telemetry   *telemetry.Registry
+        RDAPCache   *telemetry.TTLCache[map[string]any]
+        CTStore     CTStore
 
         ctCacheMu  sync.RWMutex
         ctCache    map[string]ctCacheEntry
@@ -64,10 +66,12 @@ func WithMaxConcurrent(n int) Option {
 }
 
 func New(opts ...Option) *Analyzer {
+        ctHTTP := dnsclient.NewSafeHTTPClientWithTimeout(75 * time.Second)
+        ctHTTP.SkipSSRF = true
         a := &Analyzer{
                 DNS:           dnsclient.New(),
                 HTTP:          dnsclient.NewSafeHTTPClient(),
-                SlowHTTP:      dnsclient.NewSafeHTTPClientWithTimeout(75 * time.Second),
+                SlowHTTP:      ctHTTP,
                 RDAPHTTP:      dnsclient.NewRDAPHTTPClient(),
                 IANARDAPMap:   make(map[string][]string),
                 Telemetry:     telemetry.NewRegistry(),

@@ -1,10 +1,11 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny science
 package zoneparse
 
 import (
-        "golang.org/x/crypto/sha3"
         "fmt"
+        "golang.org/x/crypto/sha3"
         "io"
         "sort"
         "strings"
@@ -22,11 +23,24 @@ type ParsedRecord struct {
 }
 
 type ParseResult struct {
-        Domain      string         `json:"domain"`
-        Records     []ParsedRecord `json:"records"`
-        RecordCount int            `json:"record_count"`
-        IntegrityHash string       `json:"sha3_512"`
-        ParseErrors []string       `json:"parse_errors,omitempty"`
+        Domain        string         `json:"domain"`
+        Records       []ParsedRecord `json:"records"`
+        RecordCount   int            `json:"record_count"`
+        IntegrityHash string         `json:"sha3_512"`
+        ParseErrors   []string       `json:"parse_errors,omitempty"`
+}
+
+func detectDomain(origin string, records []ParsedRecord) string {
+        domain := strings.TrimSuffix(origin, ".")
+        if domain != "" || len(records) == 0 {
+                return domain
+        }
+        for _, r := range records {
+                if r.Type == "SOA" {
+                        return strings.TrimSuffix(r.Name, ".")
+                }
+        }
+        return strings.TrimSuffix(records[0].Name, ".")
 }
 
 func ParseZoneFile(r io.Reader, origin string) (*ParseResult, []byte, error) {
@@ -66,18 +80,7 @@ func ParseZoneFile(r io.Reader, origin string) (*ParseResult, []byte, error) {
                 parseErrors = append(parseErrors, err.Error())
         }
 
-        domain := strings.TrimSuffix(origin, ".")
-        if domain == "" && len(records) > 0 {
-                for _, r := range records {
-                        if r.Type == "SOA" {
-                                domain = strings.TrimSuffix(r.Name, ".")
-                                break
-                        }
-                }
-                if domain == "" {
-                        domain = strings.TrimSuffix(records[0].Name, ".")
-                }
-        }
+        domain := detectDomain(origin, records)
 
         sort.Slice(records, func(i, j int) bool {
                 if records[i].Type != records[j].Type {
@@ -87,11 +90,11 @@ func ParseZoneFile(r io.Reader, origin string) (*ParseResult, []byte, error) {
         })
 
         result := &ParseResult{
-                Domain:      domain,
-                Records:     records,
-                RecordCount: len(records),
+                Domain:        domain,
+                Records:       records,
+                RecordCount:   len(records),
                 IntegrityHash: hashHex,
-                ParseErrors: parseErrors,
+                ParseErrors:   parseErrors,
         }
 
         return result, raw, nil

@@ -20,7 +20,7 @@
 - **URL**: https://csrc.nist.gov
 - **We track**:
   - SP 800-177 Rev 1 — Trustworthy Email (SPF/DKIM/DMARC/DANE guidance)
-  - SP 800-53 Rev 5, SI-18 — System and Information Integrity: PII Quality Management (data currency requirements)
+  - SP 800-53 Rev 5, SI-7 — System and Information Integrity: Software, Firmware, and Information Integrity (data integrity and completeness requirements)
   - Cryptographic key strength recommendations (RSA 2048-bit minimum)
   - CVSS severity color conventions (via NVD)
 - **Used for**: Documentation citation style, cryptographic strength classification, remediation priority language, ICuAE data currency dimension grounding
@@ -80,6 +80,7 @@
 
 | RFC | Title | Status | Our Use |
 |-----|-------|--------|---------|
+| 5321 | Simple Mail Transfer Protocol | Standards Track | SMTP transport, MX host extraction, null MX handling |
 | 7208 | SPF (Sender Policy Framework) | Standards Track | Core SPF parsing, validation, 10-lookup limit |
 | 6376 | DKIM (DomainKeys Identified Mail) | Standards Track | DKIM record parsing, signature verification |
 | 7489 | DMARC | Informational | Policy enforcement, alignment, inherited policy (§6.6.3) |
@@ -108,6 +109,7 @@
 | 9904 | DNSSEC Algorithm Recommendation Update Process | Standards Track (Nov 2025) | Moves algorithm guidance to IANA registries; obsoletes RFC 8624 |
 | 8078 | CDS and CDNSKEY | Standards Track | Automated DNSSEC key rollover signaling |
 | 8659 | CAA | Standards Track | Certificate issuance control records |
+| 8767 | Serving Stale Data to Improve DNS Resiliency | Standards Track | TTL compliance auditing, cache behavior analysis |
 | 8162 | SMIMEA | Experimental | S/MIME certificate publication in DNS |
 | 7929 | OPENPGPKEY | Standards Track | OpenPGP key publication in DNS |
 | 9460/9461 | HTTPS/SVCB Records | Standards Track | Service binding, HTTPS parameter discovery |

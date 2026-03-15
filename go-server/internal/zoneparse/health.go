@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny science
 package zoneparse
 
 import (
@@ -31,19 +32,19 @@ type ZoneHealth struct {
 
         PolicySignals []PolicySignal `json:"policy_signals,omitempty"`
 
-        StructuralScore   int    `json:"structural_score"`
-        StructuralVerdict string `json:"structural_verdict"`
+        StructuralScore   int               `json:"structural_score"`
+        StructuralVerdict string            `json:"structural_verdict"`
         StructuralChecks  []StructuralCheck `json:"structural_checks"`
 
         NSTargets   []string `json:"ns_targets"`
         NSCount     int      `json:"ns_count"`
         HasIPv6Glue bool     `json:"has_ipv6_glue"`
 
-        MinTTL    uint32    `json:"min_ttl"`
-        MaxTTL    uint32    `json:"max_ttl"`
-        MedianTTL uint32    `json:"median_ttl"`
-        TTLByType []TypeTTL `json:"ttl_by_type"`
-        TTLSpreadHigh bool  `json:"ttl_spread_high"`
+        MinTTL        uint32    `json:"min_ttl"`
+        MaxTTL        uint32    `json:"max_ttl"`
+        MedianTTL     uint32    `json:"median_ttl"`
+        TTLByType     []TypeTTL `json:"ttl_by_type"`
+        TTLSpreadHigh bool      `json:"ttl_spread_high"`
 
         DNSKEYCount     int `json:"dnskey_count"`
         RRSIGCount      int `json:"rrsig_count"`
@@ -52,8 +53,8 @@ type ZoneHealth struct {
         NSEC3Count      int `json:"nsec3_count"`
         NSEC3ParamCount int `json:"nsec3param_count"`
 
-        SOATimers    *SOATimerAnalysis `json:"soa_timers,omitempty"`
-        Duplicates   []DuplicateRRset  `json:"duplicates,omitempty"`
+        SOATimers  *SOATimerAnalysis `json:"soa_timers,omitempty"`
+        Duplicates []DuplicateRRset  `json:"duplicates,omitempty"`
 
         RecordsByType map[string][]ParsedRecord `json:"-"`
 }
@@ -74,14 +75,14 @@ type StructuralCheck struct {
 }
 
 type SOATimerAnalysis struct {
-        Serial     uint32 `json:"serial"`
-        Refresh    uint32 `json:"refresh"`
-        Retry      uint32 `json:"retry"`
-        Expire     uint32 `json:"expire"`
-        Minimum    uint32 `json:"minimum"`
-        MName      string `json:"mname"`
-        RName      string `json:"rname"`
-        Findings   []SOAFinding `json:"findings,omitempty"`
+        Serial   uint32       `json:"serial"`
+        Refresh  uint32       `json:"refresh"`
+        Retry    uint32       `json:"retry"`
+        Expire   uint32       `json:"expire"`
+        Minimum  uint32       `json:"minimum"`
+        MName    string       `json:"mname"`
+        RName    string       `json:"rname"`
+        Findings []SOAFinding `json:"findings,omitempty"`
 }
 
 type SOAFinding struct {
@@ -110,6 +111,21 @@ type TypeTTL struct {
         Count   int    `json:"count"`
         Uniform bool   `json:"uniform"`
 }
+
+const (
+        sevCritical = "critical"
+        sevWarning  = "warning"
+        sevInfo     = "info"
+
+        sigDetected = "detected"
+        sigMissing  = "missing"
+
+        profileDelegationOnly = "Delegation-Only"
+        profileMinimal        = "Minimal"
+
+        fieldRetry  = "retry"
+        fieldExpire = "expire"
+)
 
 func AnalyzeHealth(records []ParsedRecord) *ZoneHealth {
         h := &ZoneHealth{
@@ -145,55 +161,7 @@ func AnalyzeHealth(records []ParsedRecord) *ZoneHealth {
                 allTTLs = append(allTTLs, r.TTL)
                 typeTTLs[r.Type] = append(typeTTLs[r.Type], r.TTL)
                 h.RecordsByType[r.Type] = append(h.RecordsByType[r.Type], r)
-
-                switch r.Type {
-                case "SOA":
-                        h.HasSOA = true
-                case "NS":
-                        if apex == "" || strings.ToLower(r.Name) == apex {
-                                h.HasNS = true
-                        }
-                        nsTargets[strings.TrimSuffix(strings.ToLower(r.RData), ".")] = struct{}{}
-                case "MX":
-                        h.HasMX = true
-                case "A":
-                        h.HasA = true
-                case "AAAA":
-                        h.HasAAAA = true
-                case "CAA":
-                        h.HasCAA = true
-                case "TLSA":
-                        h.HasTLSA = true
-                case "DNSKEY":
-                        h.HasDNSSEC = true
-                        h.DNSKEYCount++
-                case "RRSIG":
-                        h.HasDNSSEC = true
-                        h.RRSIGCount++
-                case "DS":
-                        h.HasDNSSEC = true
-                        h.DSCount++
-                case "NSEC":
-                        h.HasDNSSEC = true
-                        h.NSECCount++
-                case "NSEC3":
-                        h.HasDNSSEC = true
-                        h.NSEC3Count++
-                case "NSEC3PARAM":
-                        h.HasDNSSEC = true
-                        h.NSEC3ParamCount++
-                case "TXT":
-                        rdata := strings.ToLower(r.RData)
-                        if strings.Contains(rdata, "v=spf1") {
-                                h.HasSPF = true
-                        }
-                        if strings.HasPrefix(r.Name, "_dmarc.") {
-                                h.HasDMARC = true
-                        }
-                        if strings.Contains(r.Name, "._domainkey.") {
-                                h.HasDKIM = true
-                        }
-                }
+                h.classifyRecord(r, apex, nsTargets)
         }
 
         h.UniqueHostnames = len(hostnames)
@@ -204,20 +172,7 @@ func AnalyzeHealth(records []ParsedRecord) *ZoneHealth {
         sort.Strings(h.NSTargets)
         h.NSCount = len(h.NSTargets)
 
-        for _, r := range records {
-                if r.Type == "AAAA" {
-                        name := strings.TrimSuffix(strings.ToLower(r.Name), ".")
-                        for ns := range nsTargets {
-                                if name == ns {
-                                        h.HasIPv6Glue = true
-                                        break
-                                }
-                        }
-                        if h.HasIPv6Glue {
-                                break
-                        }
-                }
-        }
+        h.HasIPv6Glue = hasIPv6Glue(records, nsTargets)
 
         for rtype, count := range typeCounts {
                 pct := float64(count) / float64(h.TotalRecords) * 100
@@ -231,6 +186,19 @@ func AnalyzeHealth(records []ParsedRecord) *ZoneHealth {
                 return h.TypeDistribution[i].Count > h.TypeDistribution[j].Count
         })
 
+        computeTTLStats(h, allTTLs, typeTTLs)
+
+        h.SOATimers = analyzeSOA(records)
+        h.Duplicates = findDuplicates(records)
+        h.ZoneProfile, h.ZoneProfileDesc = classifyZoneProfile(h)
+        h.PolicySignals = buildPolicySignals(h)
+        h.StructuralChecks = runStructuralChecks(h)
+        h.StructuralScore, h.StructuralVerdict = computeStructuralScore(h.StructuralChecks)
+
+        return h
+}
+
+func computeTTLStats(h *ZoneHealth, allTTLs []uint32, typeTTLs map[string][]uint32) {
         sort.Slice(allTTLs, func(i, j int) bool { return allTTLs[i] < allTTLs[j] })
         h.MinTTL = allTTLs[0]
         h.MaxTTL = allTTLs[len(allTTLs)-1]
@@ -260,15 +228,74 @@ func AnalyzeHealth(records []ParsedRecord) *ZoneHealth {
                         Uniform: uniform,
                 })
         }
+}
 
-        h.SOATimers = analyzeSOA(records)
-        h.Duplicates = findDuplicates(records)
-        h.ZoneProfile, h.ZoneProfileDesc = classifyZoneProfile(h)
-        h.PolicySignals = buildPolicySignals(h)
-        h.StructuralChecks = runStructuralChecks(h)
-        h.StructuralScore, h.StructuralVerdict = computeStructuralScore(h.StructuralChecks)
+func hasIPv6Glue(records []ParsedRecord, nsTargets map[string]struct{}) bool {
+        for _, r := range records {
+                if r.Type != "AAAA" {
+                        continue
+                }
+                name := strings.TrimSuffix(strings.ToLower(r.Name), ".")
+                if _, ok := nsTargets[name]; ok {
+                        return true
+                }
+        }
+        return false
+}
 
-        return h
+func (h *ZoneHealth) classifyRecord(r ParsedRecord, apex string, nsTargets map[string]struct{}) {
+        switch r.Type {
+        case "SOA":
+                h.HasSOA = true
+        case "NS":
+                if apex == "" || strings.ToLower(r.Name) == apex {
+                        h.HasNS = true
+                }
+                nsTargets[strings.TrimSuffix(strings.ToLower(r.RData), ".")] = struct{}{}
+        case "MX":
+                h.HasMX = true
+        case "A":
+                h.HasA = true
+        case "AAAA":
+                h.HasAAAA = true
+        case "CAA":
+                h.HasCAA = true
+        case "TLSA":
+                h.HasTLSA = true
+        case "DNSKEY":
+                h.HasDNSSEC = true
+                h.DNSKEYCount++
+        case "RRSIG":
+                h.HasDNSSEC = true
+                h.RRSIGCount++
+        case "DS":
+                h.HasDNSSEC = true
+                h.DSCount++
+        case "NSEC":
+                h.HasDNSSEC = true
+                h.NSECCount++
+        case "NSEC3":
+                h.HasDNSSEC = true
+                h.NSEC3Count++
+        case "NSEC3PARAM":
+                h.HasDNSSEC = true
+                h.NSEC3ParamCount++
+        case "TXT":
+                h.classifyTXT(r)
+        }
+}
+
+func (h *ZoneHealth) classifyTXT(r ParsedRecord) {
+        rdata := strings.ToLower(r.RData)
+        if strings.Contains(rdata, "v=spf1") {
+                h.HasSPF = true
+        }
+        if strings.HasPrefix(r.Name, "_dmarc.") {
+                h.HasDMARC = true
+        }
+        if strings.Contains(r.Name, "._domainkey.") {
+                h.HasDKIM = true
+        }
 }
 
 func classifyZoneProfile(h *ZoneHealth) (string, string) {
@@ -277,11 +304,11 @@ func classifyZoneProfile(h *ZoneHealth) (string, string) {
         hasEmail := h.HasMX || h.HasSPF || h.HasDMARC || h.HasDKIM
 
         if hasDelegations && !hasAddresses && !hasEmail {
-                return "Delegation-Only", "This zone contains only delegation records (SOA, NS, DS). Typical of TLD/registry zones or parent zones that delegate to child zones."
+                return profileDelegationOnly, "This zone contains only delegation records (SOA, NS, DS). Typical of TLD/registry zones or parent zones that delegate to child zones."
         }
 
         if h.HasNS && !hasAddresses && !hasEmail && !hasDelegations {
-                return "Delegation-Only", "This zone contains structural records (SOA, NS) without address or email records. Typical of delegation-only zones."
+                return profileDelegationOnly, "This zone contains structural records (SOA, NS) without address or email records. Typical of delegation-only zones."
         }
 
         if hasAddresses && hasEmail {
@@ -296,13 +323,13 @@ func classifyZoneProfile(h *ZoneHealth) (string, string) {
                 return "Email-Only", "This zone contains email records but no address records. Web hosting may use a CNAME or external service."
         }
 
-        return "Minimal", "This zone contains limited record types."
+        return profileMinimal, "This zone contains limited record types."
 }
 
 func buildPolicySignals(h *ZoneHealth) []PolicySignal {
         var signals []PolicySignal
 
-        isDelegation := h.ZoneProfile == "Delegation-Only"
+        isDelegation := h.ZoneProfile == profileDelegationOnly
         emailIntent := h.HasMX || h.HasSPF || h.HasDMARC || h.HasDKIM
         webIntent := h.HasA || h.HasAAAA
 
@@ -311,7 +338,7 @@ func buildPolicySignals(h *ZoneHealth) []PolicySignal {
                         Label:  "MX",
                         Icon:   "mail-bulk",
                         Detail: "Mail exchange records present",
-                        Status: "detected",
+                        Status: sigDetected,
                 })
         }
 
@@ -320,14 +347,14 @@ func buildPolicySignals(h *ZoneHealth) []PolicySignal {
                         Label:  "SPF",
                         Icon:   "envelope",
                         Detail: "Sender Policy Framework record detected",
-                        Status: "detected",
+                        Status: sigDetected,
                 })
         } else if !isDelegation {
                 signals = append(signals, PolicySignal{
                         Label:  "SPF",
                         Icon:   "envelope",
                         Detail: "No SPF record — any server can claim to send email as this domain (RFC 7208)",
-                        Status: "missing",
+                        Status: sigMissing,
                 })
         }
 
@@ -336,14 +363,14 @@ func buildPolicySignals(h *ZoneHealth) []PolicySignal {
                         Label:  "DMARC",
                         Icon:   "shield-alt",
                         Detail: "Domain-based Message Authentication policy detected",
-                        Status: "detected",
+                        Status: sigDetected,
                 })
         } else if !isDelegation {
                 signals = append(signals, PolicySignal{
                         Label:  "DMARC",
                         Icon:   "shield-alt",
                         Detail: "No DMARC policy — receiving servers have no spoofing policy to enforce (RFC 7489)",
-                        Status: "missing",
+                        Status: sigMissing,
                 })
         }
 
@@ -352,14 +379,14 @@ func buildPolicySignals(h *ZoneHealth) []PolicySignal {
                         Label:  "DKIM",
                         Icon:   "key",
                         Detail: "DomainKeys Identified Mail selector detected",
-                        Status: "detected",
+                        Status: sigDetected,
                 })
         } else if emailIntent && !isDelegation {
                 signals = append(signals, PolicySignal{
                         Label:  "DKIM",
                         Icon:   "key",
                         Detail: "No DKIM selector found in zone file — may be managed by email provider",
-                        Status: "info",
+                        Status: sevInfo,
                 })
         }
 
@@ -368,14 +395,14 @@ func buildPolicySignals(h *ZoneHealth) []PolicySignal {
                         Label:  "CAA",
                         Icon:   "certificate",
                         Detail: "Certificate Authority Authorization records present",
-                        Status: "detected",
+                        Status: sigDetected,
                 })
         } else if webIntent && !isDelegation {
                 signals = append(signals, PolicySignal{
                         Label:  "CAA",
                         Icon:   "certificate",
                         Detail: "Web presence detected without CAA records restricting certificate issuance",
-                        Status: "info",
+                        Status: sevInfo,
                 })
         }
 
@@ -384,7 +411,7 @@ func buildPolicySignals(h *ZoneHealth) []PolicySignal {
                         Label:  "TLSA/DANE",
                         Icon:   "lock",
                         Detail: "DNS-Based Authentication of Named Entities records present",
-                        Status: "detected",
+                        Status: sigDetected,
                 })
         }
 
@@ -398,7 +425,7 @@ func runStructuralChecks(h *ZoneHealth) []StructuralCheck {
                 Label:    "SOA record present",
                 RFC:      "RFC 1035 \u00a75.2.1",
                 Pass:     h.HasSOA,
-                Severity: "critical",
+                Severity: sevCritical,
                 Detail:   condStr(h.HasSOA, "Zone has a Start of Authority record", "Every zone MUST have exactly one SOA record at the apex"),
         })
 
@@ -406,7 +433,7 @@ func runStructuralChecks(h *ZoneHealth) []StructuralCheck {
                 Label:    "NS records at apex",
                 RFC:      "RFC 1035 \u00a75.2.1",
                 Pass:     h.HasNS,
-                Severity: "critical",
+                Severity: sevCritical,
                 Detail:   condStr(h.HasNS, fmt.Sprintf("%d nameserver(s) defined", h.NSCount), "Zone MUST have at least one NS record at the apex"),
         })
 
@@ -415,7 +442,7 @@ func runStructuralChecks(h *ZoneHealth) []StructuralCheck {
                 Label:    "NS redundancy (\u22652 nameservers)",
                 RFC:      "RFC 2182 \u00a74",
                 Pass:     nsRedundant,
-                Severity: "warning",
+                Severity: sevWarning,
                 Detail:   condStr(nsRedundant, fmt.Sprintf("%d nameservers provide redundancy", h.NSCount), "RFC 2182 recommends at least 2 nameservers for resilience"),
         })
 
@@ -424,19 +451,19 @@ func runStructuralChecks(h *ZoneHealth) []StructuralCheck {
                 Label:    "Address records (A/AAAA)",
                 RFC:      "RFC 1035 \u00a73.2.1",
                 Pass:     hasAddr,
-                Severity: "info",
+                Severity: sevInfo,
                 Detail:   condStr(hasAddr, "Zone contains address records for resolution", "No A or AAAA records found \u2014 zone may be delegation-only"),
         })
 
         soaOK := h.SOATimers != nil && len(h.SOATimers.Findings) == 0
         soaDetail := "No SOA record to evaluate"
-        soaSeverity := "info"
+        soaSeverity := sevInfo
         if h.SOATimers != nil {
                 if soaOK {
                         soaDetail = "SOA timers within recommended ranges"
                 } else {
                         soaDetail = fmt.Sprintf("%d timer finding(s)", len(h.SOATimers.Findings))
-                        soaSeverity = "warning"
+                        soaSeverity = sevWarning
                 }
         }
         checks = append(checks, StructuralCheck{
@@ -452,7 +479,7 @@ func runStructuralChecks(h *ZoneHealth) []StructuralCheck {
                 Label:    "TTL consistency",
                 RFC:      "RFC 2308 \u00a74",
                 Pass:     ttlConsistent,
-                Severity: "warning",
+                Severity: sevWarning,
                 Detail:   condStr(ttlConsistent, fmt.Sprintf("TTL spread %ds\u2013%ds is reasonable", h.MinTTL, h.MaxTTL), fmt.Sprintf("TTL spread %ds\u2013%ds exceeds 100\u00d7 ratio \u2014 review for coherence", h.MinTTL, h.MaxTTL)),
         })
 
@@ -461,7 +488,7 @@ func runStructuralChecks(h *ZoneHealth) []StructuralCheck {
                 Label:    "No duplicate RRsets",
                 RFC:      "RFC 2181 \u00a75.2",
                 Pass:     noDups,
-                Severity: "warning",
+                Severity: sevWarning,
                 Detail:   condStr(noDups, "No exact duplicate records detected", fmt.Sprintf("%d duplicate RRset(s) found", len(h.Duplicates))),
         })
 
@@ -479,11 +506,11 @@ func computeStructuralScore(checks []StructuralCheck) (int, string) {
                 }
         }
         if total == 0 {
-                return 0, "Minimal"
+                return 0, profileMinimal
         }
 
         pct := score * 100 / total
-        verdict := "Minimal"
+        verdict := profileMinimal
         switch {
         case pct >= 90:
                 verdict = "Well-Formed"
@@ -499,11 +526,11 @@ func computeStructuralScore(checks []StructuralCheck) (int, string) {
 
 func checkWeight(severity string) int {
         switch severity {
-        case "critical":
+        case sevCritical:
                 return 25
-        case "warning":
+        case sevWarning:
                 return 15
-        case "info":
+        case sevInfo:
                 return 10
         }
         return 5
@@ -535,65 +562,66 @@ func analyzeSOA(records []ParsedRecord) *SOATimerAnalysis {
                         Minimum: uint32(minimum),
                 }
 
-                if soa.Refresh < 1200 {
-                        soa.Findings = append(soa.Findings, SOAFinding{
-                                Field:    "refresh",
-                                Severity: "warning",
-                                Message:  fmt.Sprintf("Refresh %ds is below RFC 1912 recommendation of 1200\u201343200s", soa.Refresh),
-                        })
-                }
-
-                if soa.Retry < 120 {
-                        soa.Findings = append(soa.Findings, SOAFinding{
-                                Field:    "retry",
-                                Severity: "warning",
-                                Message:  fmt.Sprintf("Retry %ds is below RFC 1912 recommendation of 120\u201310800s", soa.Retry),
-                        })
-                }
-
-                if soa.Retry >= soa.Refresh {
-                        soa.Findings = append(soa.Findings, SOAFinding{
-                                Field:    "retry",
-                                Severity: "warning",
-                                Message:  "Retry should be less than Refresh (RFC 1912 \u00a72.2)",
-                        })
-                }
-
-                if soa.Expire < 1209600 {
-                        soa.Findings = append(soa.Findings, SOAFinding{
-                                Field:    "expire",
-                                Severity: "info",
-                                Message:  fmt.Sprintf("Expire %ds is below RFC 1912 recommendation of 2\u20134 weeks (%d\u2013%d)", soa.Expire, 1209600, 2419200),
-                        })
-                }
-
-                if soa.Minimum > 86400 {
-                        soa.Findings = append(soa.Findings, SOAFinding{
-                                Field:    "minimum",
-                                Severity: "info",
-                                Message:  fmt.Sprintf("Negative cache TTL %ds exceeds 1 day; RFC 2308 \u00a75 recommends 1\u20133 hours for most zones", soa.Minimum),
-                        })
-                }
-
-                if soa.Expire <= soa.Refresh {
-                        soa.Findings = append(soa.Findings, SOAFinding{
-                                Field:    "expire",
-                                Severity: "warning",
-                                Message:  "Expire must be greater than Refresh (RFC 1912 \u00a72.2)",
-                        })
-                }
-
-                if soa.Serial == 0 {
-                        soa.Findings = append(soa.Findings, SOAFinding{
-                                Field:    "serial",
-                                Severity: "info",
-                                Message:  "Serial is 0 \u2014 consider using YYYYMMDDNN format for meaningful versioning",
-                        })
-                }
+                soa.Findings = collectSOAFindings(soa)
 
                 return soa
         }
         return nil
+}
+
+func collectSOAFindings(soa *SOATimerAnalysis) []SOAFinding {
+        var findings []SOAFinding
+
+        if soa.Refresh < 1200 {
+                findings = append(findings, SOAFinding{
+                        Field:    "refresh",
+                        Severity: sevWarning,
+                        Message:  fmt.Sprintf("Refresh %ds is below RFC 1912 recommendation of 1200–43200s", soa.Refresh),
+                })
+        }
+        if soa.Retry < 120 {
+                findings = append(findings, SOAFinding{
+                        Field:    fieldRetry,
+                        Severity: sevWarning,
+                        Message:  fmt.Sprintf("Retry %ds is below RFC 1912 recommendation of 120–10800s", soa.Retry),
+                })
+        }
+        if soa.Retry >= soa.Refresh {
+                findings = append(findings, SOAFinding{
+                        Field:    fieldRetry,
+                        Severity: sevWarning,
+                        Message:  "Retry should be less than Refresh (RFC 1912 §2.2)",
+                })
+        }
+        if soa.Expire < 1209600 {
+                findings = append(findings, SOAFinding{
+                        Field:    fieldExpire,
+                        Severity: sevInfo,
+                        Message:  fmt.Sprintf("Expire %ds is below RFC 1912 recommendation of 2–4 weeks (%d–%d)", soa.Expire, 1209600, 2419200),
+                })
+        }
+        if soa.Minimum > 86400 {
+                findings = append(findings, SOAFinding{
+                        Field:    "minimum",
+                        Severity: sevInfo,
+                        Message:  fmt.Sprintf("Negative cache TTL %ds exceeds 1 day; RFC 2308 §5 recommends 1–3 hours for most zones", soa.Minimum),
+                })
+        }
+        if soa.Expire <= soa.Refresh {
+                findings = append(findings, SOAFinding{
+                        Field:    fieldExpire,
+                        Severity: sevWarning,
+                        Message:  "Expire must be greater than Refresh (RFC 1912 §2.2)",
+                })
+        }
+        if soa.Serial == 0 {
+                findings = append(findings, SOAFinding{
+                        Field:    "serial",
+                        Severity: sevInfo,
+                        Message:  "Serial is 0 — consider using YYYYMMDDNN format for meaningful versioning",
+                })
+        }
+        return findings
 }
 
 func findDuplicates(records []ParsedRecord) []DuplicateRRset {

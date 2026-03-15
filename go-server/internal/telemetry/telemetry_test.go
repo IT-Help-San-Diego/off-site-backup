@@ -227,31 +227,31 @@ func TestCooldown(t *testing.T) {
                 expectedCooldownMax time.Duration
         }{
                 {
-                        name:                "cooldown_after_3_failures",
+                        name:                "cooldown_after_6_failures",
                         provider:            "google",
-                        failureCount:        3,
+                        failureCount:        6,
                         expectCooldown:      true,
                         expectedCooldownMin: 5 * time.Second,
                         expectedCooldownMax: 10 * time.Second,
                 },
                 {
-                        name:           "no_cooldown_with_2_failures",
+                        name:           "no_cooldown_with_5_failures",
                         provider:       "cloudflare",
-                        failureCount:   2,
+                        failureCount:   5,
                         expectCooldown: false,
                 },
                 {
-                        name:                "exponential_backoff_at_4_failures",
+                        name:                "exponential_backoff_at_7_failures",
                         provider:            "quad9",
-                        failureCount:        4,
+                        failureCount:        7,
                         expectCooldown:      true,
                         expectedCooldownMin: 10 * time.Second,
                         expectedCooldownMax: 20 * time.Second,
                 },
                 {
-                        name:                "exponential_backoff_at_5_failures",
+                        name:                "exponential_backoff_at_8_failures",
                         provider:            "opendns",
-                        failureCount:        5,
+                        failureCount:        8,
                         expectCooldown:      true,
                         expectedCooldownMin: 20 * time.Second,
                         expectedCooldownMax: 40 * time.Second,
@@ -285,10 +285,10 @@ func TestCooldownCap(t *testing.T) {
                 maxCooldown  time.Duration
         }{
                 {
-                        name:         "cooldown_capped_at_5_minutes",
+                        name:         "cooldown_capped_at_2_minutes",
                         provider:     "google",
-                        failureCount: 10,
-                        maxCooldown:  5 * time.Minute,
+                        failureCount: 20,
+                        maxCooldown:  2 * time.Minute,
                 },
         }
 
@@ -321,15 +321,15 @@ func TestCooldownReset(t *testing.T) {
                 {
                         name:                   "success_resets_cooldown",
                         provider:               "google",
-                        failuresBeforeSuccess:  3,
+                        failuresBeforeSuccess:  6,
                         latencyAfterSuccess:    100 * time.Millisecond,
                         expectedConsecFailures: 0,
                         expectedInCooldown:     false,
                 },
                 {
-                        name:                   "success_after_5_failures",
+                        name:                   "success_after_10_failures",
                         provider:               "cloudflare",
-                        failuresBeforeSuccess:  5,
+                        failuresBeforeSuccess:  10,
                         latencyAfterSuccess:    50 * time.Millisecond,
                         expectedConsecFailures: 0,
                         expectedInCooldown:     false,
@@ -368,27 +368,27 @@ func TestHealthStates(t *testing.T) {
                         expectedHealthState: telemetry.Healthy,
                 },
                 {
-                        name:                "degraded_with_3_failures",
+                        name:                "healthy_with_5_failures",
                         provider:            "quad9",
-                        failureCount:        3,
-                        expectedHealthState: telemetry.Degraded,
-                },
-                {
-                        name:                "degraded_with_4_failures",
-                        provider:            "opendns",
-                        failureCount:        4,
-                        expectedHealthState: telemetry.Degraded,
-                },
-                {
-                        name:                "unhealthy_with_5_failures",
-                        provider:            "verisign",
                         failureCount:        5,
-                        expectedHealthState: telemetry.Unhealthy,
+                        expectedHealthState: telemetry.Healthy,
                 },
                 {
-                        name:                "unhealthy_with_6_failures",
-                        provider:            "akamai",
+                        name:                "degraded_with_6_failures",
+                        provider:            "opendns",
                         failureCount:        6,
+                        expectedHealthState: telemetry.Degraded,
+                },
+                {
+                        name:                "degraded_with_9_failures",
+                        provider:            "verisign",
+                        failureCount:        9,
+                        expectedHealthState: telemetry.Degraded,
+                },
+                {
+                        name:                "unhealthy_with_10_failures",
+                        provider:            "akamai",
+                        failureCount:        10,
                         expectedHealthState: telemetry.Unhealthy,
                 },
         }
@@ -421,20 +421,20 @@ func TestHealthStateTransitions(t *testing.T) {
                 {
                         name:           "healthy_to_degraded",
                         provider:       "google",
-                        operations:     []string{"fail", "fail", "fail"},
-                        expectedStates: []telemetry.HealthState{telemetry.Healthy, telemetry.Healthy, telemetry.Degraded},
+                        operations:     []string{"fail", "fail", "fail", "fail", "fail", "fail"},
+                        expectedStates: []telemetry.HealthState{telemetry.Healthy, telemetry.Healthy, telemetry.Healthy, telemetry.Healthy, telemetry.Healthy, telemetry.Degraded},
                 },
                 {
                         name:           "degraded_to_unhealthy",
                         provider:       "cloudflare",
-                        operations:     []string{"fail", "fail", "fail", "fail", "fail"},
-                        expectedStates: []telemetry.HealthState{telemetry.Healthy, telemetry.Healthy, telemetry.Degraded, telemetry.Degraded, telemetry.Unhealthy},
+                        operations:     []string{"fail", "fail", "fail", "fail", "fail", "fail", "fail", "fail", "fail", "fail"},
+                        expectedStates: []telemetry.HealthState{telemetry.Healthy, telemetry.Healthy, telemetry.Healthy, telemetry.Healthy, telemetry.Healthy, telemetry.Degraded, telemetry.Degraded, telemetry.Degraded, telemetry.Degraded, telemetry.Unhealthy},
                 },
                 {
                         name:           "unhealthy_back_to_healthy",
                         provider:       "quad9",
-                        operations:     []string{"fail", "fail", "fail", "fail", "fail", "success"},
-                        expectedStates: []telemetry.HealthState{telemetry.Healthy, telemetry.Healthy, telemetry.Degraded, telemetry.Degraded, telemetry.Unhealthy, telemetry.Healthy},
+                        operations:     []string{"fail", "fail", "fail", "fail", "fail", "fail", "fail", "fail", "fail", "fail", "success"},
+                        expectedStates: []telemetry.HealthState{telemetry.Healthy, telemetry.Healthy, telemetry.Healthy, telemetry.Healthy, telemetry.Healthy, telemetry.Degraded, telemetry.Degraded, telemetry.Degraded, telemetry.Degraded, telemetry.Unhealthy, telemetry.Healthy},
                 },
         }
 

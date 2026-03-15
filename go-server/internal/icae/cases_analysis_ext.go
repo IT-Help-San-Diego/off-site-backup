@@ -1,5 +1,6 @@
 // Copyright (c) 2024-2026 IT Help San Diego Inc.
 // Licensed under BUSL-1.1 — See LICENSE for terms.
+// dns-tool:scrutiny science
 package icae
 
 import (
@@ -10,33 +11,27 @@ import (
 
 const (
         testDKIMPrefix           = "v=DKIM1; k=rsa; p="
-        rfcDKIM8301              = "RFC 8301"
         testProviderMicrosoft365 = "Microsoft 365"
         testProviderLetsEncrypt  = "Let's Encrypt"
         testCAAIssueLetsEncrypt  = `0 issue "letsencrypt.org"`
-        rfcMTASTSSection5        = "RFC 8461 §5"
-        rfcBIMISection3          = "RFC 9495 §3"
         testBIMIRecord           = "v=BIMI1; l=https://example.com/logo.svg"
-        rfcDMARCSection63        = "RFC 7489 §6.3"
         fmtAnswerLabel           = "answer=%s, label=%s"
-        rfcDANE7672              = "RFC 7672"
         testMail1ExampleCom      = "mail1.example.com"
         testMailExampleCom       = "mail.example.com"
 
-
-        mapKeyEnforce = "enforce"
+        mapKeyEnforce      = "enforce"
         mapKeyMatchingType = "matching_type"
-        mapKeyMtaSts = "mta_sts"
-        mapKeyMxHost = "mx_host"
-        mapKeyTlsrpt = "tlsrpt"
-        mapKeyUsage = "usage"
-        mapKeyWarning = "warning"
-        strAdequate = "Adequate"
-        strEd25519 = "ed25519"
-        protocolDKIM = "dkim"
-        protocolBIMI = "bimi"
-        protocolDANE = "dane"
-        expectedTrue = "true"
+        mapKeyMtaSts       = "mta_sts"
+        mapKeyMxHost       = "mx_host"
+        mapKeyTlsrpt       = "tlsrpt"
+        mapKeyUsage        = "usage"
+        mapKeyWarning      = "warning"
+        strAdequate        = "Adequate"
+        strEd25519         = "ed25519"
+        protocolDKIM       = "dkim"
+        protocolBIMI       = "bimi"
+        protocolDANE       = "dane"
+        expectedTrue       = "true"
 )
 
 func dkimAnalysisCases() []TestCase {
@@ -75,7 +70,7 @@ func dkimAnalysisCases() []TestCase {
                         CaseName:   "Revoked key detected (p= empty)",
                         Protocol:   protocolDKIM,
                         Layer:      LayerAnalysis,
-                        RFCSection: "RFC 6376 §3.6.1",
+                        RFCSection: citRFC6376S361,
                         Expected:   expectedTrue,
                         RunFn: func() (string, bool) {
                                 result := analyzer.ExportAnalyzeDKIMKey(testDKIMPrefix)
@@ -88,7 +83,7 @@ func dkimAnalysisCases() []TestCase {
                         CaseName:   "Test mode detected (t=y flag)",
                         Protocol:   protocolDKIM,
                         Layer:      LayerAnalysis,
-                        RFCSection: "RFC 6376 §3.6.1",
+                        RFCSection: citRFC6376S361,
                         Expected:   expectedTrue,
                         RunFn: func() (string, bool) {
                                 result := analyzer.ExportAnalyzeDKIMKey("v=DKIM1; k=rsa; t=y; p=" + strings.Repeat("A", 266))
@@ -101,7 +96,7 @@ func dkimAnalysisCases() []TestCase {
                         CaseName:   "Ed25519 key type parsed correctly",
                         Protocol:   protocolDKIM,
                         Layer:      LayerAnalysis,
-                        RFCSection: "RFC 8463",
+                        RFCSection: rfcDKIM8463,
                         Expected:   strEd25519,
                         RunFn: func() (string, bool) {
                                 result := analyzer.ExportAnalyzeDKIMKey("v=DKIM1; k=ed25519; p=AAAA")
@@ -114,7 +109,7 @@ func dkimAnalysisCases() []TestCase {
                         CaseName:   "Selector provider classified for Google",
                         Protocol:   protocolDKIM,
                         Layer:      LayerAnalysis,
-                        RFCSection: "RFC 6376",
+                        RFCSection: rfcDKIM6376,
                         Expected:   "Google Workspace",
                         RunFn: func() (string, bool) {
                                 result := analyzer.ExportClassifySelectorProvider("google._domainkey", "Unknown")
@@ -126,7 +121,7 @@ func dkimAnalysisCases() []TestCase {
                         CaseName:   "Selector provider classified for Microsoft 365",
                         Protocol:   protocolDKIM,
                         Layer:      LayerAnalysis,
-                        RFCSection: "RFC 6376",
+                        RFCSection: rfcDKIM6376,
                         Expected:   testProviderMicrosoft365,
                         RunFn: func() (string, bool) {
                                 result := analyzer.ExportClassifySelectorProvider("selector1._domainkey", testProviderMicrosoft365)
@@ -143,7 +138,7 @@ func caaAnalysisCases() []TestCase {
                         CaseName:   "CAA issuer identified as Let's Encrypt",
                         Protocol:   "caa",
                         Layer:      LayerAnalysis,
-                        RFCSection: "RFC 8659 §4",
+                        RFCSection: citRFC8659S4,
                         Expected:   testProviderLetsEncrypt,
                         RunFn: func() (string, bool) {
                                 result := analyzer.ExportIdentifyCAIssuer(testCAAIssueLetsEncrypt)
@@ -155,7 +150,7 @@ func caaAnalysisCases() []TestCase {
                         CaseName:   "CAA issuer identified as DigiCert",
                         Protocol:   "caa",
                         Layer:      LayerAnalysis,
-                        RFCSection: "RFC 8659 §4",
+                        RFCSection: citRFC8659S4,
                         Expected:   "DigiCert",
                         RunFn: func() (string, bool) {
                                 result := analyzer.ExportIdentifyCAIssuer("0 issue \"digicert.com\"")
@@ -167,7 +162,7 @@ func caaAnalysisCases() []TestCase {
                         CaseName:   "CAA records parsed with issuewild detected",
                         Protocol:   "caa",
                         Layer:      LayerAnalysis,
-                        RFCSection: "RFC 8659 §4.3",
+                        RFCSection: citRFC8659S43,
                         Expected:   expectedTrue,
                         RunFn: func() (string, bool) {
                                 _, _, hasWildcard, _ := analyzer.ExportParseCAARecords([]string{
@@ -182,7 +177,7 @@ func caaAnalysisCases() []TestCase {
                         CaseName:   "CAA iodef record detected",
                         Protocol:   "caa",
                         Layer:      LayerAnalysis,
-                        RFCSection: "RFC 8659 §4.4",
+                        RFCSection: citRFC8659S44,
                         Expected:   expectedTrue,
                         RunFn: func() (string, bool) {
                                 _, _, _, hasIodef := analyzer.ExportParseCAARecords([]string{
@@ -197,7 +192,7 @@ func caaAnalysisCases() []TestCase {
                         CaseName:   "CAA message built correctly with issuers",
                         Protocol:   "caa",
                         Layer:      LayerAnalysis,
-                        RFCSection: "RFC 8659",
+                        RFCSection: rfcCAA8659,
                         Expected:   "contains 'CAA configured'",
                         RunFn: func() (string, bool) {
                                 result := analyzer.ExportBuildCAAMessage([]string{testProviderLetsEncrypt}, nil, false)
@@ -240,7 +235,7 @@ func mtaStsAnalysisCases() []TestCase {
                         CaseName:   "MTA-STS policy parsing extracts mode and mx",
                         Protocol:   mapKeyMtaSts,
                         Layer:      LayerAnalysis,
-                        RFCSection: "RFC 8461 §3.2",
+                        RFCSection: citRFC8461S32,
                         Expected:   mapKeyEnforce,
                         RunFn: func() (string, bool) {
                                 mode, _, mx, hasVersion := analyzer.ExportParseMTASTSPolicyLines("version: STSv1\nmode: enforce\nmax_age: 86400\nmx: mail.example.com\nmx: *.example.com")
@@ -257,7 +252,7 @@ func mtaStsAnalysisCases() []TestCase {
                         CaseName:   "MTA-STS valid record filtered correctly",
                         Protocol:   mapKeyMtaSts,
                         Layer:      LayerAnalysis,
-                        RFCSection: "RFC 8461 §3.1",
+                        RFCSection: citRFC8461S31,
                         Expected:   "1",
                         RunFn: func() (string, bool) {
                                 records := analyzer.ExportFilterSTSRecords([]string{"v=STSv1; id=20230101", "not-an-sts-record"})
@@ -270,7 +265,7 @@ func mtaStsAnalysisCases() []TestCase {
                         CaseName:   "MTA-STS ID extracted from record",
                         Protocol:   mapKeyMtaSts,
                         Layer:      LayerAnalysis,
-                        RFCSection: "RFC 8461 §3.1",
+                        RFCSection: citRFC8461S31,
                         Expected:   "20230101",
                         RunFn: func() (string, bool) {
                                 id := analyzer.ExportExtractSTSID("v=STSv1; id=20230101")
@@ -314,7 +309,7 @@ func tlsrptAnalysisCases() []TestCase {
                         CaseName:   "DS digest type 2 (SHA-256) classified as adequate",
                         Protocol:   mapKeyTlsrpt,
                         Layer:      LayerAnalysis,
-                        RFCSection: "RFC 8624 §3.3",
+                        RFCSection: citRFC8624S33,
                         Expected:   strAdequate,
                         RunFn: func() (string, bool) {
                                 c := analyzer.ClassifyDSDigest(2)
@@ -391,7 +386,7 @@ func regressionCases() []TestCase {
                         CaseName:   "Stub isHostedEmailProvider returns true (conservative default prevents DANE recs for hosted providers)",
                         Protocol:   protocolDANE,
                         Layer:      LayerAnalysis,
-                        RFCSection: "RFC 7672 §1.3",
+                        RFCSection: citRFC7672S13,
                         Expected:   expectedTrue,
                         RunFn: func() (string, bool) {
                                 result := analyzer.ExportIsHostedEmailProvider("example.com")
@@ -579,7 +574,7 @@ func daneAnalysisCases() []TestCase {
                         CaseName:   "TLSA entry parsed with usage 3 (DANE-EE)",
                         Protocol:   protocolDANE,
                         Layer:      LayerAnalysis,
-                        RFCSection: "RFC 7672 §3.1",
+                        RFCSection: citRFC7672S31,
                         Expected:   "DANE-EE (Domain-issued certificate)",
                         RunFn: func() (string, bool) {
                                 rec, ok := analyzer.ExportParseTLSAEntry("3 1 1 AABBCCDD", testMailExampleCom, "_25._tcp.mail.example.com")
@@ -595,7 +590,7 @@ func daneAnalysisCases() []TestCase {
                         CaseName:   "TLSA usage 0 triggers RFC 7672 recommendation",
                         Protocol:   protocolDANE,
                         Layer:      LayerAnalysis,
-                        RFCSection: "RFC 7672 §3.1",
+                        RFCSection: citRFC7672S31,
                         Expected:   "contains recommendation",
                         RunFn: func() (string, bool) {
                                 rec, ok := analyzer.ExportParseTLSAEntry("0 1 1 AABBCCDD", testMailExampleCom, "_25._tcp.mail.example.com")
@@ -611,7 +606,7 @@ func daneAnalysisCases() []TestCase {
                         CaseName:   "MX hosts extracted correctly from records",
                         Protocol:   protocolDANE,
                         Layer:      LayerAnalysis,
-                        RFCSection: "RFC 5321 §5",
+                        RFCSection: citRFC5321S5,
                         Expected:   "2",
                         RunFn: func() (string, bool) {
                                 hosts := analyzer.ExportExtractMXHosts([]string{"10 mail1.example.com.", "20 mail2.example.com."})
