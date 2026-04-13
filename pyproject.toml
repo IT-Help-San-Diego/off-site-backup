@@ -6,7 +6,7 @@ requires-python = ">=3.12"
 dependencies = [
     "brotli>=1.2.0",
     "cffconvert>=2.0.0",
-    "fonttools>=4.61.1",
+    "fonttools>=4.62.1",
     "pykwalify>=1.8.0",
     "pynacl>=1.6.2",
     "ruamel-yaml>=0.19.1",
