@@ -3,7 +3,7 @@ module dnstool
 go 1.25.8
 
 require (
-	codeberg.org/miekg/dns v0.6.70
+	codeberg.org/miekg/dns v0.6.83
 	github.com/gin-contrib/gzip v1.2.5
 	github.com/gin-gonic/gin v1.11.0
 	github.com/goccy/go-yaml v1.19.2
